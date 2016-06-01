@@ -8,26 +8,26 @@
 #include "timers.h"
 
 
-namespace rtos_cpp {
+namespace cpp_freertos {
 
 
 /**
- *  This is the exception that is thrown if a CThread constructor fails.
+ *  This is the exception that is thrown if a Thread constructor fails.
  */
-class TimerCreationException  : public std::exception {
+class TimerCreateException  : public std::exception {
 
     public:
         /**
          *  Create the exception.
          */
-        TimerCreationException(BaseType_t error)
+        TimerCreateException(BaseType_t error)
         {
             errorCode = error;
             sprintf(errorString, "Timer Constructor Failed %d", errorCode);
         }
 
         /**
-         *  Get what happened as a string. 
+         *  Get what happened as a string.
          *  We are overriding the base implementation here.
          */
         virtual const char *what() const throw()
@@ -55,7 +55,7 @@ class TimerCreationException  : public std::exception {
         char errorString[40];
 };
 
-    
+
 class Timer {
 
     public:
@@ -84,6 +84,3 @@ class Timer {
 
 }
 #endif
-
-
-

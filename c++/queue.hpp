@@ -11,31 +11,34 @@
 #include "queue.h"
 
 
+namespace cpp_freertos {
+
+
 /**
- *  This is the exception that is thrown if a CQueue constructor fails.
+ *  This is the exception that is thrown if a Queue constructor fails.
  */
-class CQueueCreationException : public std::exception {
+class QueueCreateException : public std::exception {
 
     public:
         /**
          *  Create the exception.
          */
-        CQueueCreationException()
+        QueueCreateException()
         {
-            sprintf(errorString, "CQueue Constructor Failed");
+            sprintf(errorString, "Queue Constructor Failed");
         }
 
         /**
          *  Create the exception.
          */
-        CQueueCreationException(const char *info)
+        QueueCreateException(const char *info)
         {
-            snprintf(errorString, sizeof(errorString), 
-                        "CQueue Constructor Failed %s", info);
+            snprintf(errorString, sizeof(errorString),
+                        "Queue Constructor Failed %s", info);
         }
 
         /**
-         *  Get what happened as a string. 
+         *  Get what happened as a string.
          *  We are overriding the base implementation here.
          */
         virtual const char *what() const throw()
@@ -51,17 +54,17 @@ class CQueueCreationException : public std::exception {
 };
 
 
-class CQueue {
+class Queue {
 
     public:
-        CQueue(UBaseType_t maxItems, UBaseType_t itemSize);
-        virtual ~CQueue();
+        Queue(UBaseType_t maxItems, UBaseType_t itemSize);
+        virtual ~Queue();
 
         virtual bool Enqueue(void *item);
         virtual bool Enqueue(void *item, TickType_t xBlockTime);
         bool Dequeue(void *item, TickType_t xBlockTime = portMAX_DELAY);
         bool Peek(void *item, TickType_t xBlockTime = portMAX_DELAY);
-        
+
         virtual bool EnqueueFromISR(void *item, BaseType_t *pxHigherPriorityTaskWoken);
         bool DequeueFromISR(void *item, BaseType_t *pxHigherPriorityTaskWoken);
         bool PeekFromISR(void *item);
@@ -81,7 +84,7 @@ class CQueue {
 /**
  *  Double ended queue (almost).
  */
-class CDeque : public CQueue {
+class CDeque : public Queue {
 
     public:
         CDeque(UBaseType_t maxItems, UBaseType_t itemSize);
@@ -93,7 +96,7 @@ class CDeque : public CQueue {
 /**
  *  Binary queue with overwrite.
  */
-class CBinaryQueue : public CQueue {
+class CBinaryQueue : public Queue {
 
     public:
 
@@ -111,7 +114,5 @@ class CBinaryQueue : public CQueue {
 };
 
 
+}
 #endif
-
-
-

@@ -16,7 +16,7 @@ Timer::Timer(  const char * const TimerName,
                             TimerCallbackFunctionAdapter);
 
     if (handle == NULL) {
-        throw TimerCreationException();
+        throw TimerCreateException();
     }
 }
 
@@ -35,5 +35,3 @@ TaskHandle_t Timer::GetTimerDaemonHandle()
 }
 
 #endif
-
-

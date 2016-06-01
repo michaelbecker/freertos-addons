@@ -1,5 +1,3 @@
-+ Use namespaces / fix up class names
-
 + Clean up documentation / comments.
 + Fixed size Memory pools
 + Priority queues
@@ -8,4 +6,3 @@
 + timers
 + events
 + work queues
-

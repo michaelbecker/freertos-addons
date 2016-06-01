@@ -7,22 +7,25 @@
 #include "semphr.h"
 
 
+namespace cpp_freertos {
+
+
 /**
- *  This is the exception that is thrown if a CSemaphore constructor fails.
+ *  This is the exception that is thrown if a Mutex constructor fails.
  */
-class CMutexCreationException : public std::exception {
+class MutexCreateException : public std::exception {
 
     public:
         /**
          *  Create the exception.
          */
-        CMutexCreationException()
+        MutexCreateException()
         {
-            sprintf(errorString, "CMutex Constructor Failed");
+            sprintf(errorString, "Mutex Constructor Failed");
         }
 
         /**
-         *  Get what happened as a string. 
+         *  Get what happened as a string.
          *  We are overriding the base implementation here.
          */
         virtual const char *what() const throw()
@@ -41,12 +44,14 @@ class CMutexCreationException : public std::exception {
 /**
  *  Base wrapper class around FreeRTOS's implementation of mutexes.
  *
- *  It is not expected that an application will derive from this class.
+ *  By definition, Mutexes can @em NOT be used from ISR contexts.
  *
- *  Mutexes can not be used from ISR contexts.
- *
+ *  @note It is expected that an application will instantiate one of the
+ *        derived classes and use that object for synchronization. It is
+ *        not expected that a user or application will derive from these
+ *        classes.
  */
-class CMutex {
+class Mutex {
 
     /////////////////////////////////////////////////////////////////////////
     //
@@ -54,13 +59,29 @@ class CMutex {
     //
     /////////////////////////////////////////////////////////////////////////
     public:
-        bool Lock(TickType_t xBlockTime) = 0;
+        /**
+         *  Lock the Mutex.
+         *
+         *  Each type of Mutex implements it's own locking code as per the
+         *  FreeRTOS API.
+         *
+         *  @param Timeout How long to wait to get the Lock until giving up.
+         *  @return true if the Lock was acquired, false if it timed out.
+         */
+        bool Lock(TickType_t Timeout) = 0;
+
+        /**
+         *  Unlock the Mutex.
+         *
+         *  @return true if the Lock was released, false if it failed. (Hint,
+         *           if it fails, did you call Lock() first?)
+         */
         bool Unlock() = 0;
 
         /**
          *  Our destructor
          */
-        virtual ~CMutex();
+        virtual ~Mutex();
 
     /////////////////////////////////////////////////////////////////////////
     //
@@ -69,57 +90,166 @@ class CMutex {
     //
     /////////////////////////////////////////////////////////////////////////
     protected:
+        /**
+         *  FreeRTOS semaphore handle.
+         */
         SemaphoreHandle_t handle;
 
     /////////////////////////////////////////////////////////////////////////
     //
-    //  Private API 
-    //  The internals of this wrapper class.
-    //  
+    //  Private API
+    //
     /////////////////////////////////////////////////////////////////////////
     private:
-        CMutex() = delete;
+        /**
+         *  The constructor should not exist for this class.
+         */
+        Mutex() = delete;
 
 };
 
 
-class CMutexStandard {
+/**
+ *  Standard usage Mutex.
+ *  By default calls to Lock these objects block forever, but this can be
+ *  changed by simply passing in a argument to the Lock() method.
+ *  These objects are not recursively acquirable. Calling Lock() twice from
+ *  the same Thread / Task will deadlock.
+ *
+ *  @note Standard Mutexes use less resources than Recursive Mutexes. You
+ *        should typically use this type of Mutex, unless you have a strong
+ *        need for a Recursive Mutex.
+ */
+class MutexStandard {
+
     /////////////////////////////////////////////////////////////////////////
     //
     //  Public API
     //
     /////////////////////////////////////////////////////////////////////////
     public:
-        CMutexStandard();
-        bool Lock(TickType_t xBlockTime = portMAX_DELAY);
-        bool Unlock();        
-};
+        /**
+         *  Create a standard, non-recursize Mutex.
+         */
+        MutexStandard();
 
+        /**
+         *  Lock the Mutex.
+         *
+         *  @param Timeout How long to wait to get the Lock until giving up.
+         *  @return true if the Lock was acquired, false if it timed out.
+         */
+        bool Lock(TickType_t Timeout = portMAX_DELAY);
 
-class CMutexRecursive {
-    /////////////////////////////////////////////////////////////////////////
-    //
-    //  Public API
-    //
-    /////////////////////////////////////////////////////////////////////////
-    public:
-        CMutexRecursive();
-        bool Lock(TickType_t xBlockTime = portMAX_DELAY);
+        /**
+         *  Unlock the Mutex.
+         *
+         *  @return true if the Lock was released, false if it failed. (Hint,
+         *           if it fails, did you call Lock() first?)
+         */
         bool Unlock();
 };
 
 
+#if (configUSE_RECURSIVE_MUTEXES == 1)
 
-class CLockGuard {
+/**
+ *  Recursive usage Mutex.
+ *
+ *  By default calls to Lock these objects block forever, but this can be
+ *  changed by simply passing in a argument to the Lock() method.
+ *  These objects are recursively acquirable. Calling Lock() twice from
+ *  the same Thread / Task works fine. The caller just needs to be sure to
+ *  call Unlock() as many times as Lock().
+ *
+ *  @note Recursive Mutexes use more resources than Standard Mutexes. You
+ *        should be sure that you actually need this type of synchronization
+ *        before using it.
+ */
+class MutexRecursive {
+
+    /////////////////////////////////////////////////////////////////////////
+    //
+    //  Public API
+    //
+    /////////////////////////////////////////////////////////////////////////
     public:
-        explicit CLockGuard(CMutex& m);
-        ~CLockGuard();
+        /**
+         *  Create a recursize Mutex.
+         */
+        MutexRecursive();
 
-    private:
-        CLockGuard(const CLockGuard&) = delete;
-        CMutex& mutex;
+        /**
+         *  Lock the Mutex.
+         *
+         *  @param Timeout How long to wait to get the Lock until giving up.
+         *  @return true if the Lock was acquired, false if it timed out.
+         */
+        bool Lock(TickType_t Timeout = portMAX_DELAY);
+
+        /**
+         *  Unlock the Mutex.
+         *
+         *  @return true if the Lock was released, false if it failed. (Hint,
+         *           if it fails, did you call Lock() first?)
+         */
+        bool Unlock();
 };
-
 
 #endif
 
+
+/**
+ *  Synchronization helper class that leverages the C++ language to help
+ *  prevent deadlocks.
+ *  This is a C++11 feature that allows Mutex Locking and Unlocking to behave
+ *  following RAII style. The constructor of this helper object locks the
+ *  Mutex. The destructor unlocks the Mutex. Since C++ guarantees that an
+ *  object's desctuctor is always called when it goes out of scope, calls to
+ *  Unlock become unnecessary and are in fact guaranteed as long as correct
+ *  scoping is used.
+ */
+class LockGuard {
+
+    /////////////////////////////////////////////////////////////////////////
+    //
+    //  Public API
+    //
+    /////////////////////////////////////////////////////////////////////////
+    public:
+        /**
+         *  Create a LockGuard with a specific Mutex.
+         *
+         *  @post The Mutex will be locked.
+         *  @note There is no timeout for the Lock().
+         */
+        explicit LockGuard(Mutex& m);
+
+        /**
+         *  Destroy a LockGuard.
+         *
+         *  @post The Mutex will be unlocked.
+         */
+        ~LockGuard();
+
+        /////////////////////////////////////////////////////////////////////////
+        //
+        //  Private API
+        //
+        /////////////////////////////////////////////////////////////////////////
+    private:
+        /**
+         *  We do not want a copy constructor.
+         */
+        LockGuard(const LockGuard&) = delete;
+
+        /**
+         *  Reference to the Mutex we locked, so it can be unlocked
+         *  in the destructor.
+         */
+        Mutex& mutex;
+};
+
+
+}
+#endif

@@ -2,7 +2,7 @@
  *
  *  @Note
  *  + Features not implemented yet
- *    - MPU restricted threads 
+ *    - MPU restricted threads
  *    - eTaskGetState
  *    - uxTaskGetNumberOfTasks
  *    - uxTaskGetStackHighWaterMark
@@ -18,23 +18,26 @@
 #include "task.h"
 
 
+namespace cpp_freertos {
+
+
 /**
- *  This is the exception that is thrown if a CThread constructor fails.
+ *  This is the exception that is thrown if a Thread constructor fails.
  */
-class CThreadCreationException  : public std::exception {
+class ThreadCreateException  : public std::exception {
 
     public:
         /**
          *  Create the exception.
          */
-        CThreadCreationException(BaseType_t error)
+        ThreadCreateException(BaseType_t error)
         {
             errorCode = error;
-            sprintf(errorString, "CThread Constructor Failed %d", errorCode);
+            sprintf(errorString, "Thread Constructor Failed %d", errorCode);
         }
 
         /**
-         *  Get what happened as a string. 
+         *  Get what happened as a string.
          *  We are overriding the base implementation here.
          */
         virtual const char *what() const throw()
@@ -66,36 +69,36 @@ class CThreadCreationException  : public std::exception {
 /**
  *  Wrapper class around FreeRTOS's implementation of a task.
  */
-class CThread {
+class Thread {
 
     /////////////////////////////////////////////////////////////////////////
     //
     //  Public API
-    //  Available from anywhere. Many of these require a CThread reference 
+    //  Available from anywhere. Many of these require a Thread reference
     //  if they are operating on a thread.
     //
     /////////////////////////////////////////////////////////////////////////
     public:
         /**
          *  Constructor to create a named thread.
-         *  This ctor throws a CThreadCreationException on failure.
+         *  This ctor throws a ThreadCreateException on failure.
          */
-        CThread(    const char * const pcName,
+        Thread(    const char * const pcName,
                     uint16_t usStackDepth,
                     UBaseType_t uxPriority);
 
         /**
          *  Constructor to create an unnamed thread.
-         *  This ctor throws a CThreadCreationException on failure.
+         *  This ctor throws a ThreadCreateException on failure.
          */
-        CThread(    uint16_t usStackDepth,
+        Thread(    uint16_t usStackDepth,
                     UBaseType_t uxPriority);
 
         /**
          *  Constructor to create an MPU restricted named thread.
-         *  This ctor throws a CThreadCreationException on failure.
+         *  This ctor throws a ThreadCreateException on failure.
          */
-        CThread(    const char * const pcName,
+        Thread(    const char * const pcName,
                     uint16_t usStackDepth,
                     UBaseType_t uxPriority,
                     bool isPrivileged,
@@ -103,9 +106,9 @@ class CThread {
 
         /**
          *  Constructor to create an MPU restricted unnamed thread.
-         *  This ctor throws a CThreadCreationException on failure.
+         *  This ctor throws a ThreadCreateException on failure.
          */
-        CThread(    uint16_t usStackDepth,
+        Thread(    uint16_t usStackDepth,
                     UBaseType_t uxPriority,
                     bool isPrivileged,
                     StackType_t *puxStackBuffer);
@@ -114,13 +117,13 @@ class CThread {
         /**
          *  Our destructor.
          */
-        virtual ~CThread();
+        virtual ~Thread();
 #else
         /**
-         *  If we can't delete a task, it makes no sense to have a 
+         *  If we can't delete a task, it makes no sense to have a
          *  destructor.
          */
-        ~CThread() = delete;
+        ~Thread() = delete;
 #endif
 
         /**
@@ -150,8 +153,8 @@ class CThread {
 
         /**
          *  End the scheduler.
-         *  @note Please see the FreeRTOS documentation regarding constraints 
-         *  with the implementation of this. 
+         *  @note Please see the FreeRTOS documentation regarding constraints
+         *  with the implementation of this.
          */
         static inline void EndScheduler()
         {
@@ -162,7 +165,7 @@ class CThread {
         /**
          *  Suspend a specific thread.
          */
-        static inline void Suspend(CThread& thread)
+        static inline void Suspend(Thread& thread)
         {
             vTaskSuspend(thread.GetHandle());
         }
@@ -170,17 +173,17 @@ class CThread {
         /**
          *  Resume a specific thread.
          */
-        static inline void Resume(CThread& thread)
+        static inline void Resume(Thread& thread)
         {
             vTaskResume(thread.GetHandle());
         }
-#endif        
+#endif
 
 #if (INCLUDE_xTaskResumeFromISR == 1)
         /**
          *  Resume a specific thread from ISR context.
          */
-        static inline void ResumeFromISR(CThread& thread)
+        static inline void ResumeFromISR(Thread& thread)
         {
             xTaskResumeFromISR(thread.GetHandle());
         }
@@ -190,7 +193,7 @@ class CThread {
         /**
          *  Get the priority of another thread.
          */
-        static inline UBaseType_t GetPriority(CThread& thread)
+        static inline UBaseType_t GetPriority(Thread& thread)
         {
             return (uxTaskPriorityGet(thread.GetHandle()));
         }
@@ -198,7 +201,7 @@ class CThread {
         /**
          *  Get the priority of another thread from ISR context.
          */
-        static inline UBaseType_t GetPriorityFromISR(CThread& thread)
+        static inline UBaseType_t GetPriorityFromISR(Thread& thread)
         {
             return (uxTaskPriorityGetFromISR(thread.GetHandle()));
         }
@@ -208,7 +211,7 @@ class CThread {
         /**
          *  Get the priority of another thread.
          */
-        static inline void SetPriority( CThread& thread, 
+        static inline void SetPriority( Thread& thread,
                                         UBaseType_t uxNewPriority);
         {
             vTaskPrioritySet(thread.GetHandle(), uxNewPriority);
@@ -216,7 +219,7 @@ class CThread {
 #endif
 
 #if (INCLUDE_pcTaskGetTaskName == 1)
-        static inline std::string Name(CThread& thread)
+        static inline std::string Name(Thread& thread)
         {
             std::string name = pcTaskGetTaskName(thread.GetHandle());
             return name;
@@ -227,9 +230,9 @@ class CThread {
     /////////////////////////////////////////////////////////////////////////
     //
     //  Protected API
-    //  Available from inside your CThread implementation. 
-    //  You should make sure that you are only calling these methods 
-    //  from within your Run() method, or at Run() method is on the 
+    //  Available from inside your Thread implementation.
+    //  You should make sure that you are only calling these methods
+    //  from within your Run() method, or at Run() method is on the
     //  callstack.
     //
     /////////////////////////////////////////////////////////////////////////
@@ -242,7 +245,7 @@ class CThread {
 #if ( INCLUDE_vTaskSuspend == 1 )
         /**
          *  Suspend this thread.
-         *  Note that there is no Resume() function, becaue you 
+         *  Note that there is no Resume() function, becaue you
          *  can't resume from the thread you just suspended, because
          *  it's suspended.
          */
@@ -274,12 +277,12 @@ class CThread {
          *  If you need to adjust or reset the period.
          */
         void ResetDelayUntil();
-#endif 
+#endif
 
 #if (INCLUDE_uxTaskPriorityGet == 1)
         /**
          *  Obtain our own priority.
-         */        
+         */
         UBaseType_t inline GetPriority()
         {
             return (uxTaskPriorityGet(NULL));
@@ -287,12 +290,12 @@ class CThread {
 
         /**
          *  Obtain our own priority from an ISR context.
-         */        
+         */
         UBaseType_t inline GetPriorityFromISR()
         {
             return (uxTaskPriorityGetFromISR(NULL));
         }
-    
+
 #endif
 
 #if (INCLUDE_vTaskPrioritySet == 1)
@@ -302,7 +305,7 @@ class CThread {
         void SetPriority(UBaseType_t uxNewPriority)
         {
             vTaskPrioritySet(NULL, uxNewPriority);
-        }   
+        }
 #endif
 
 #if (INCLUDE_pcTaskGetTaskName == 1)
@@ -315,9 +318,9 @@ class CThread {
 
     /////////////////////////////////////////////////////////////////////////
     //
-    //  Private API 
+    //  Private API
     //  The internals of this wrapper class.
-    //  
+    //
     /////////////////////////////////////////////////////////////////////////
     private:
         /**
@@ -325,9 +328,9 @@ class CThread {
          *  Can be obtained from GetHandle().
          */
         TaskHandle_t handle;
-        
+
         /**
-         *  Adapter function that allows you to write a class 
+         *  Adapter function that allows you to write a class
          *  specific Run() function that interfaces with FreeRTOS.
          */
         static void TaskFunctionAdapter(void *pvParameters);
@@ -342,10 +345,10 @@ class CThread {
          *  Book keeping value for delay until.
          */
         TickType_t delayUntilPreviousWakeTime;
-#endif 
+#endif
 
 };
 
 
+}
 #endif
-

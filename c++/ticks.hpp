@@ -5,16 +5,19 @@
 #include "task.h"
 
 
+namespace cpp_freertos {
+
+
 /**
  *  Class encapsulating FreeRTOS idea of a tick.
  */
-class CTicks {
+class Ticks {
 
     public:
         /**
          *  Get the current tick count.
          */
-        static inline TickType_t GetTicks() 
+        static inline TickType_t GetTicks()
         {
             return xTaskGetTickCount();
         }
@@ -22,7 +25,7 @@ class CTicks {
         /**
          *  Get the current tick count from ISR context.
          */
-        static inline TickType_t GetTicksFromISR() 
+        static inline TickType_t GetTicksFromISR()
         {
             return xTaskGetTickCountFromISR();
         }
@@ -45,5 +48,5 @@ class CTicks {
 };
 
 
+}
 #endif
-

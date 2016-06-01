@@ -7,22 +7,25 @@
 #define READ_WRITE_LOCK_HPP_
 
 
+namespace cpp_freertos {
+
+
 /**
- *  This is the exception that is thrown if a CReadWriteLock constructor fails.
+ *  This is the exception that is thrown if a ReadWriteLock constructor fails.
  */
-class CReadWriteLockCreationException : public std::exception {
+class ReadWriteLockCreateException : public std::exception {
 
     public:
         /**
          *  Create the exception.
          */
-        CReadWriteLockCreationException()
+        ReadWriteLockCreateException()
         {
-            sprintf(errorString, "CReadWriteLock Constructor Failed");
+            sprintf(errorString, "ReadWriteLock Constructor Failed");
         }
 
         /**
-         *  Get what happened as a string. 
+         *  Get what happened as a string.
          *  We are overriding the base implementation here.
          */
         virtual const char *what() const throw()
@@ -38,11 +41,11 @@ class CReadWriteLockCreationException : public std::exception {
 };
 
 
-class CReadWriteLock {
+class ReadWriteLock {
 
     public:
-        CReadWriteLock();
-        virtual ~CReadWriteLock();
+        ReadWriteLock();
+        virtual ~ReadWriteLock();
 
         virtual void ReaderLock() = 0;
         virtual void ReaderUnlock() = 0;
@@ -57,7 +60,7 @@ class CReadWriteLock {
 };
 
 
-class CReadWriteLockPreferReader : public CReadWriteLock {
+class ReadWriteLockPreferReader : public ReadWriteLock {
 
     public:
         virtual void ReaderLock();
@@ -69,11 +72,11 @@ class CReadWriteLockPreferReader : public CReadWriteLock {
 };
 
 
-class CReadWriteLockPreferWriter : public CReadWriteLock {
+class ReadWriteLockPreferWriter : public ReadWriteLock {
 
     public:
-        CReadWriteLockPreferWriter();
-        virtual ~CReadWriteLockPreferWriter();
+        ReadWriteLockPreferWriter();
+        virtual ~ReadWriteLockPreferWriter();
 
         virtual void ReaderLock();
         virtual void ReaderUnlock();
@@ -88,6 +91,5 @@ class CReadWriteLockPreferWriter : public CReadWriteLock {
 };
 
 
+}
 #endif
-
-

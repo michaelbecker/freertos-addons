@@ -4,7 +4,10 @@
 #include "semaphore.hpp"
 
 
-bool CSemaphore::Take(TickType_t xBlockTime)
+using namespace rtos_cpp;
+
+
+bool Semaphore::Take(TickType_t xBlockTime)
 {
     BaseType_t success;
 
@@ -14,7 +17,7 @@ bool CSemaphore::Take(TickType_t xBlockTime)
 }
 
 
-bool CSemaphore::TakeFromISR(BaseType_t *pxHigherPriorityTaskWoken)
+bool Semaphore::TakeFromISR(BaseType_t *pxHigherPriorityTaskWoken)
 {
     BaseType_t success;
 
@@ -24,7 +27,7 @@ bool CSemaphore::TakeFromISR(BaseType_t *pxHigherPriorityTaskWoken)
 }
 
 
-bool CSemaphore::Give()
+bool Semaphore::Give()
 {
     BaseType_t success;
 
@@ -34,7 +37,7 @@ bool CSemaphore::Give()
 }
 
 
-bool CSemaphore::GiveFromISR(BaseType_t *pxHigherPriorityTaskWoken)
+bool Semaphore::GiveFromISR(BaseType_t *pxHigherPriorityTaskWoken)
 {
     BaseType_t success;
 
@@ -44,18 +47,18 @@ bool CSemaphore::GiveFromISR(BaseType_t *pxHigherPriorityTaskWoken)
 }
 
 
-CSemaphore::~CSemaphore()
+Semaphore::~Semaphore()
 {
     vSemaphoreDelete(handle);
 }
 
 
-CBinarySemaphore::CBinarySemaphore(bool set)
+BinarySemaphore::BinarySemaphore(bool set)
 {
     handle = xSemaphoreCreateBinary();
 
     if (handle == NULL) {
-        throw CSemaphoreCreationException();
+        throw SemaphoreCreateException();
     }
 
     if (set) {
@@ -64,21 +67,19 @@ CBinarySemaphore::CBinarySemaphore(bool set)
 }
 
 
-CCountingSemaphore::CCountingSemaphore(UBaseType_t maxCount, UBaseType_t initialCount)
+CountingSemaphore::CountingSemaphore(UBaseType_t maxCount, UBaseType_t initialCount)
 {
     if (maxCount == 0) {
-        throw CSemaphoreCreationException("bad maxCount");
+        throw SemaphoreCreateException("bad maxCount");
     }
 
     if (initialCount > maxCount) {
-        throw CSemaphoreCreationException("bad initialCount");
+        throw SemaphoreCreateException("bad initialCount");
     }
 
     handle = xSemaphoreCreateCounting(maxCount, initialCount);
 
     if (handle == NULL) {
-        throw CSemaphoreCreationException();
+        throw SemaphoreCreateException();
     }
 }
-
-

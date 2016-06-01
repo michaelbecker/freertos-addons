@@ -1,23 +1,26 @@
 #include "queue.hpp"
 
 
-CQueue::CQueue(UBaseType_t maxItems, UBaseType_t itemSize)
+using namespace rtos_cpp;
+
+
+Queue::Queue(UBaseType_t maxItems, UBaseType_t itemSize)
 {
     handle = xQueueCreate(maxItems, itemSize);
 
     if (handle == NULL) {
-        throw CQueueCreationException();
+        throw QueueCreateException();
     }
 }
 
 
-CQueue::~CQueue()
+Queue::~Queue()
 {
     vQueueDelete(handle);
 }
 
 
-bool CQueue::Enqueue(void *item)
+bool Queue::Enqueue(void *item)
 {
     BaseType_t success;
 
@@ -27,7 +30,7 @@ bool CQueue::Enqueue(void *item)
 }
 
 
-bool CQueue::Enqueue(void *item, TickType_t xBlockTime)
+bool Queue::Enqueue(void *item, TickType_t xBlockTime)
 {
     BaseType_t success;
 
@@ -37,7 +40,7 @@ bool CQueue::Enqueue(void *item, TickType_t xBlockTime)
 }
 
 
-bool CQueue::Dequeue(void *item, TickType_t xBlockTime)
+bool Queue::Dequeue(void *item, TickType_t xBlockTime)
 {
     BaseType_t success;
 
@@ -47,7 +50,7 @@ bool CQueue::Dequeue(void *item, TickType_t xBlockTime)
 }
 
 
-bool CQueue::Peek(void *item, TickType_t xBlockTime)
+bool Queue::Peek(void *item, TickType_t xBlockTime)
 {
     BaseType_t success;
 
@@ -57,7 +60,7 @@ bool CQueue::Peek(void *item, TickType_t xBlockTime)
 }
 
 
-bool CQueue::EnqueueFromISR(void *item, BaseType_t *pxHigherPriorityTaskWoken)
+bool Queue::EnqueueFromISR(void *item, BaseType_t *pxHigherPriorityTaskWoken)
 {
     BaseType_t success;
 
@@ -67,7 +70,7 @@ bool CQueue::EnqueueFromISR(void *item, BaseType_t *pxHigherPriorityTaskWoken)
 }
 
 
-bool CQueue::DequeueFromISR(void *item, BaseType_t *pxHigherPriorityTaskWoken)
+bool Queue::DequeueFromISR(void *item, BaseType_t *pxHigherPriorityTaskWoken)
 {
     BaseType_t success;
 
@@ -77,7 +80,7 @@ bool CQueue::DequeueFromISR(void *item, BaseType_t *pxHigherPriorityTaskWoken)
 }
 
 
-bool CQueue::PeekFromISR(void *item)
+bool Queue::PeekFromISR(void *item)
 {
     BaseType_t success;
 
@@ -87,7 +90,7 @@ bool CQueue::PeekFromISR(void *item)
 }
 
 
-bool CQueue::IsEmpty()
+bool Queue::IsEmpty()
 {
     UBaseType_t cnt = uxQueueMessagesWaiting(handle);
 
@@ -95,7 +98,7 @@ bool CQueue::IsEmpty()
 }
 
 
-bool CQueue::IsFull()
+bool Queue::IsFull()
 {
     UBaseType_t cnt = uxQueueSpacesAvailable(handle);
 
@@ -103,26 +106,26 @@ bool CQueue::IsFull()
 }
 
 
-void CQueue::Flush()
+void Queue::Flush()
 {
     xQueueReset(handle);
 }
 
 
-UBaseType_t CQueue::NumItems()
+UBaseType_t Queue::NumItems()
 {
     return uxQueueMessagesWaiting(handle);
 }
 
 
-UBaseType_t CQueue::NumSpacesLeft()
+UBaseType_t Queue::NumSpacesLeft()
 {
     return uxQueueSpacesAvailable(handle);
 }
 
 
 CDeque::CDeque(UBaseType_t maxItems, UBaseType_t itemSize)
-    : CQueue(maxItems, itemSize)
+    : Queue(maxItems, itemSize)
 {
 }
 
@@ -148,7 +151,7 @@ bool CDeque::EnqueueToFrontFromISR(void *item, BaseType_t *pxHigherPriorityTaskW
 
 
 CBinaryQueue::CBinaryQueue(UBaseType_t itemSize)
-    : CQueue(1, itemSize)
+    : Queue(1, itemSize)
 {
 }
 
@@ -165,6 +168,3 @@ bool CBinaryQueue::EnqueueFromISR(const void *item, BaseType_t *pxHigherPriority
     (void)xQueueOverwriteFromISR(handle, item, pxHigherPriorityTaskWoken);
     return true;
 }
-
-
-

@@ -1,30 +1,33 @@
 #include "mutex.hpp"
 
 
-CMutex::~CMutex()
+using namespace rtos_cpp;
+
+
+Mutex::~Mutex()
 {
     vSemaphoreDelete(handle);
 }
 
 
-CMutexStandard::CMutexStandard()
+MutexStandard::MutexStandard()
 {
     handle = xSemaphoreCreateMutex();
 
     if (handle == NULL) {
-        throw CMutexCreationException();
+        throw MutexCreateException();
     }
 }
 
 
-bool CMutexStandard::Lock(TickType_t xBlockTime)
+bool MutexStandard::Lock(TickType_t Timeout)
 {
-    BaseType_t success = xSemaphoreTake(handle, xBlockTime);
+    BaseType_t success = xSemaphoreTake(handle, Timeout);
     return success == pdTRUE ? true : false;
 }
 
 
-bool CMutexStandard::Unlock()
+bool MutexStandard::Unlock()
 {
     BaseType_t success = xSemaphoreGive(handle);
     return success == pdTRUE ? true : false;
@@ -33,24 +36,24 @@ bool CMutexStandard::Unlock()
 
 #if (configUSE_RECURSIVE_MUTEXES == 1)
 
-CMutexRecursive::CMutexRecursive()
+MutexRecursive::MutexRecursive()
 {
     handle = xSemaphoreCreateRecursiveMutex();
 
     if (handle == NULL) {
-        throw CMutexCreationException();
+        throw MutexCreateException();
     }
 }
 
 
-bool CMutexRecursive::Lock(TickType_t xBlockTime)
+bool MutexRecursive::Lock(TickType_t Timeout)
 {
-    BaseType_t success = xSemaphoreTakeRecursive(handle, xBlockTime);
+    BaseType_t success = xSemaphoreTakeRecursive(handle, Timeout);
     return success == pdTRUE ? true : false;
 }
 
 
-bool CMutexRecursive::Unlock()
+bool MutexRecursive::Unlock()
 {
     BaseType_t success = xSemaphoreGiveRecursive(handle);
     return success == pdTRUE ? true : false;
@@ -59,16 +62,14 @@ bool CMutexRecursive::Unlock()
 #endif
 
 
-CLockGuard::CLockGuard(CMutex& m)
+LockGuard::LockGuard(Mutex& m)
     : mutex(m)
 {
     mutex.Lock();
 }
 
 
-CLockGuard::~CLockGuard()
+LockGuard::~LockGuard()
 {
     mutex.Unlock();
 }
-
-

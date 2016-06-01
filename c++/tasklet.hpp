@@ -8,6 +8,9 @@
 #include "timers.h"
 
 
+namespace cpp_freertos {
+
+
 class Tasklet {
 
     public:
@@ -15,10 +18,10 @@ class Tasklet {
         Tasklet();
         virtual ~Tasklet();
 
-        bool ScheduleTasklet(   uint32_t parameter, 
+        bool ScheduleTasklet(   uint32_t parameter,
                                 TickType_t xTicksToWait = portMAX_DELAY);
 
-        bool ScheduleTaskletFromISR(uint32_t parameter, 
+        bool ScheduleTaskletFromISR(uint32_t parameter,
                                     BaseType_t *pxHigherPriorityTaskWoken);
 
     protected:
@@ -29,5 +32,5 @@ class Tasklet {
 
 };
 
+}
 #endif
-

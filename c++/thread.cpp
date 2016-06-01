@@ -1,24 +1,27 @@
 #include "task.hpp"
 
 
+using namespace rtos_cpp;
+
+
 /**
  *
  */
-CThread::CThread(   const char * const pcName,
+Thread::Thread(   const char * const pcName,
                     uint16_t usStackDepth,
                     UBaseType_t uxPriority)
 {
     if (pcName == NULL)
         pcName = "Default";
 
-    BaseType_t rc = xTaskCreate(TaskFunctionAdapter, 
+    BaseType_t rc = xTaskCreate(TaskFunctionAdapter,
                                 pcName,
                                 usStackDepth,
                                 this,
                                 uxPriority,
                                 &handle);
     if (rc != pdPASS) {
-        throw CThreadCreationException(rc);
+        throw ThreadCreateException(rc);
     }
 }
 
@@ -26,29 +29,29 @@ CThread::CThread(   const char * const pcName,
 /**
  *
  */
-CThread::CThread(   uint16_t usStackDepth,
+Thread::Thread(   uint16_t usStackDepth,
                     UBaseType_t uxPriority)
 {
-    BaseType_t rc = xTaskCreate(TaskFunctionAdapter, 
+    BaseType_t rc = xTaskCreate(TaskFunctionAdapter,
                                 "Default",
                                 usStackDepth,
                                 this,
                                 uxPriority,
                                 &handle);
     if (rc != pdPASS) {
-        throw CThreadCreationException(rc);
+        throw ThreadCreateException(rc);
     }
 }
 
 #if 0
 //
-//  
+//
 //
 
 /**
  *
  */
-CThread::CThread(   const char * const pcName,
+Thread::Thread(   const char * const pcName,
                     uint16_t usStackDepth,
                     UBaseType_t uxPriority,
                     bool isPrivileged,
@@ -61,7 +64,7 @@ CThread::CThread(   const char * const pcName,
     if (isPrivileged)
         uxPriority |= portPRIVILEGE_BIT;
 
-    TaskParameters_t params = 
+    TaskParameters_t params =
     {
         TaskFunctionAdapter,
         pcName,
@@ -75,7 +78,7 @@ CThread::CThread(   const char * const pcName,
 
     BaseType_t rc = xTaskCreateRestricted(&params &handle);
     if (rc != pdPASS) {
-        throw CThreadCreationException(rc);
+        throw ThreadCreateException(rc);
     }
 }
 
@@ -83,7 +86,7 @@ CThread::CThread(   const char * const pcName,
 /**
  *
  */
-CThread::CThread(   uint16_t usStackDepth,
+Thread::Thread(   uint16_t usStackDepth,
                     UBaseType_t uxPriority,
                     bool isPrivileged,
                     StackType_t *puxStackBuffer,
@@ -92,7 +95,7 @@ CThread::CThread(   uint16_t usStackDepth,
     if (isPrivileged)
         uxPriority |= portPRIVILEGE_BIT;
 
-    TaskParameters_t params = 
+    TaskParameters_t params =
     {
         TaskFunctionAdapter,
         "Default",
@@ -106,7 +109,7 @@ CThread::CThread(   uint16_t usStackDepth,
 
     BaseType_t rc = xTaskCreateRestricted(&params &handle);
     if (rc != pdPASS) {
-        throw CThreadCreationException(rc);
+        throw ThreadCreateException(rc);
     }
 }
 #endif
@@ -117,7 +120,7 @@ CThread::CThread(   uint16_t usStackDepth,
 /**
  *
  */
-CThread::~CThread()
+Thread::~Thread()
 {
     vTaskDelete(handle);
     handle = -1;
@@ -129,12 +132,12 @@ CThread::~CThread()
 /**
  *
  */
-void CThread::TaskFunctionAdapter(void *pvParameters)
+void Thread::TaskFunctionAdapter(void *pvParameters)
 {
-    CThread *thread = static_cast<CThread *>(pvParameters);
+    Thread *thread = static_cast<Thread *>(pvParameters);
 
     thread->run();
-    
+
 #if (INCLUDE_vTaskDelete == 1)
 
     vTaskDelete(thread->handle);
@@ -150,7 +153,7 @@ void CThread::TaskFunctionAdapter(void *pvParameters)
 /**
  *
  */
-void CThread::DelayUntil(const TickType_t Period)
+void Thread::DelayUntil(const TickType_t Period)
 {
     if (!delayUntilInitialized) {
         delayUntilInitialized = true;
@@ -164,11 +167,9 @@ void CThread::DelayUntil(const TickType_t Period)
 /**
  *
  */
-void CThread::ResetDelayUntil()
+void Thread::ResetDelayUntil()
 {
     delayUntilInitialized = false;
 }
 
 #endif
-
-

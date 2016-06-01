@@ -10,31 +10,34 @@
 #include "semphr.h"
 
 
+namespace cpp_freertos {
+
+
 /**
- *  This is the exception that is thrown if a CSemaphore constructor fails.
+ *  This is the exception that is thrown if a Semaphore constructor fails.
  */
-class CSemaphoreCreationException : public std::exception {
+class SemaphoreCreateException : public std::exception {
 
     public:
         /**
          *  Create the exception.
          */
-        CSemaphoreCreationException()
+        SemaphoreCreateException()
         {
-            sprintf(errorString, "CSemaphore Constructor Failed");
+            sprintf(errorString, "Semaphore Constructor Failed");
         }
 
         /**
          *  Create the exception.
          */
-        CSemaphoreCreationException(const char *info)
+        SemaphoreCreateException(const char *info)
         {
-            snprintf(errorString, sizeof(errorString), 
-                        "CSemaphore Constructor Failed %s", info);
+            snprintf(errorString, sizeof(errorString),
+                        "Semaphore Constructor Failed %s", info);
         }
 
         /**
-         *  Get what happened as a string. 
+         *  Get what happened as a string.
          *  We are overriding the base implementation here.
          */
         virtual const char *what() const throw()
@@ -51,18 +54,18 @@ class CSemaphoreCreationException : public std::exception {
 
 
 /**
- *  
+ *
  *  Base wrapper class around FreeRTOS's implementation of semaphores.
  *
  *  It is not expected that an application will derive from this class.
  *
- *  Note that we distinguish between Semaphore, Binary Semaphores, 
+ *  Note that we distinguish between Semaphore, Binary Semaphores,
  *  Counting Semaphores, and Mutexes. Mutexes, while implemented as a kind
- *  of semaphore in FreeRTOS, are conceptually very different in use and 
+ *  of semaphore in FreeRTOS, are conceptually very different in use and
  *  behavior from semaphores. We acknowledge this difference in the class
  *  heirarchy, implementing mutextes as a completely different class heirarchy.
  */
-class CSemaphore {
+class Semaphore {
 
     /////////////////////////////////////////////////////////////////////////
     //
@@ -75,7 +78,7 @@ class CSemaphore {
          *
          *  Example of blocking indefinitely:
          *      aSemaphore.Take();
-         *  
+         *
          *  Example of blocking for 100 ticks:
          *      aSemaphore.Take(100);
          */
@@ -99,7 +102,7 @@ class CSemaphore {
         /**
          *  Our destructor
          */
-        virtual ~CSemaphore();
+        virtual ~Semaphore();
 
     /////////////////////////////////////////////////////////////////////////
     //
@@ -112,23 +115,23 @@ class CSemaphore {
 
     /////////////////////////////////////////////////////////////////////////
     //
-    //  Private API 
+    //  Private API
     //  The internals of this wrapper class.
-    //  
+    //
     /////////////////////////////////////////////////////////////////////////
     private:
         /**
-         *  We do not want a CSemaphore ctor. This class should never be 
+         *  We do not want a Semaphore ctor. This class should never be
          *  directly created, this is a base class only.
          */
-        CSemaphore() = delete;
+        Semaphore() = delete;
 };
 
 
 /**
  *  Wrapper class for Binary Semaphores.
  */
-class CBinarySemaphore : public CSemaphore {
+class BinarySemaphore : public Semaphore {
 
     /////////////////////////////////////////////////////////////////////////
     //
@@ -139,18 +142,18 @@ class CBinarySemaphore : public CSemaphore {
         /**
          *  Constructor to create a binary semaphore.
          *
-         *  @returns Instance of a CBinarySemaphore.
+         *  @returns Instance of a BinarySemaphore.
          *  @set Is this semaphore "full" or not?
-         *  @throws CSemaphoreCreationException on failure.
+         *  @throws SemaphoreCreateException on failure.
          */
-        CBinarySemaphore(bool set = false);
+        BinarySemaphore(bool set = false);
 };
 
 
 /**
  *  Wrapper class for Counting Semaphores.
  */
-class CCountingSemaphore : public CSemaphore {
+class CountingSemaphore : public Semaphore {
 
     /////////////////////////////////////////////////////////////////////////
     //
@@ -160,16 +163,16 @@ class CCountingSemaphore : public CSemaphore {
     public:
         /**
          *  Constructor to create a counting semaphore.
-         *  This ctor throws a CSemaphoreCreationException on failure.
+         *  This ctor throws a SemaphoreCreateException on failure.
          *
-         *  @returns Instance of a CCountingSemaphore.
+         *  @returns Instance of a CountingSemaphore.
          *  @param maxCount Must be greater than 0.
          *  @param initialCount Must not be greater than maxCount.
-         *  @throws CSemaphoreCreationException on failure.
+         *  @throws SemaphoreCreateException on failure.
          */
-        CCountingSemaphore(UBaseType_t maxCount, UBaseType_t initialCount);
+        CountingSemaphore(UBaseType_t maxCount, UBaseType_t initialCount);
 };
 
 
+}
 #endif
-

@@ -1,29 +1,33 @@
 #include "read_write_lock.hpp"
 
-CReadWriteLock::CReadWriteLock()
+
+using namespace rtos_cpp;
+
+
+ReadWriteLock::ReadWriteLock()
     : ReadCount(0)
 {
     ReadLock = xSemaphoreCreateMutex();
     if (ReadLock == NULL) {
-        throw CReadWriteLockCreationException();
+        throw ReadWriteLockCreateException();
     }
 
     ResourceLock = xSemaphoreCreateMutex();
     if (ResourceLock == NULL) {
         vSemaphoreDelete(ReadLock);
-        throw CReadWriteLockCreationException();
+        throw ReadWriteLockCreateException();
     }
 }
 
 
-CReadWriteLock::~CReadWriteLock()
+ReadWriteLock::~ReadWriteLock()
 {
     vSemaphoreDelete(ReadLock);
     vSemaphoreDelete(ResourceLock);
 }
 
 
-void CReadWriteLockPreferReader::ReaderLock()
+void ReadWriteLockPreferReader::ReaderLock()
 {
     xSemaphoreTake(ReadLock, portMAX_DELAY);
 
@@ -36,7 +40,7 @@ void CReadWriteLockPreferReader::ReaderLock()
 }
 
 
-void CReadWriteLockPreferReader::ReaderUnlock()
+void ReadWriteLockPreferReader::ReaderUnlock()
 {
     xSemaphoreTake(ReadLock, portMAX_DELAY);
 
@@ -49,42 +53,42 @@ void CReadWriteLockPreferReader::ReaderUnlock()
 }
 
 
-void CReadWriteLockPreferReader::WriterLock()
+void ReadWriteLockPreferReader::WriterLock()
 {
     xSemaphoreTake(ResourceLock, portMAX_DELAY);
 }
 
 
-void CReadWriteLockPreferReader::WriterUnlock()
+void ReadWriteLockPreferReader::WriterUnlock()
 {
     xSemaphoreGive(ResourceLock);
 }
 
 
-CReadWriteLockPreferWriter::CReadWriteLockPreferWriter()
-    : CReadWriteLock()
+ReadWriteLockPreferWriter::ReadWriteLockPreferWriter()
+    : ReadWriteLock()
 {
     WriteLock = xSemaphoreCreateMutex();
     if (WriteLock == NULL) {
-        throw CReadWriteLockCreationException();
+        throw ReadWriteLockCreateException();
     }
 
     BlockReadersLock = xSemaphoreCreateMutex();
     if (BlockReadersLock == NULL) {
         vSemaphoreDelete(WriteLock);
-        throw CReadWriteLockCreationException();
+        throw ReadWriteLockCreateException();
     }
 }
 
 
-CReadWriteLockPreferWriter::~CReadWriteLockPreferWriter()
+ReadWriteLockPreferWriter::~ReadWriteLockPreferWriter()
 {
     vSemaphoreDelete(WriteLock);
     vSemaphoreDelete(BlockReadersLock);
 }
 
 
-void CReadWriteLockPreferWriter::ReaderLock()
+void ReadWriteLockPreferWriter::ReaderLock()
 {
     xSemaphoreTake(BlockReadersLock, portMAX_DELAY);
     xSemaphoreTake(ReadLock, portMAX_DELAY);
@@ -99,7 +103,7 @@ void CReadWriteLockPreferWriter::ReaderLock()
 }
 
 
-void CReadWriteLockPreferWriter::ReaderUnlock()
+void ReadWriteLockPreferWriter::ReaderUnlock()
 {
     xSemaphoreTake(ReadLock, portMAX_DELAY);
 
@@ -112,7 +116,7 @@ void CReadWriteLockPreferWriter::ReaderUnlock()
 }
 
 
-void CReadWriteLockPreferWriter::WriterLock()
+void ReadWriteLockPreferWriter::WriterLock()
 {
     xSemaphoreTake(WriteLock, portMAX_DELAY);
 
@@ -127,7 +131,7 @@ void CReadWriteLockPreferWriter::WriterLock()
 }
 
 
-void CReadWriteLockPreferWriter::WriterUnlock()
+void ReadWriteLockPreferWriter::WriterUnlock()
 {
     xSemaphoreGive(ResourceLock);
 
@@ -137,9 +141,6 @@ void CReadWriteLockPreferWriter::WriterUnlock()
     if (WriteCount == 0) {
         xSemaphoreGive(BlockReadersLock);
     }
-    
+
     xSemaphoreGive(WriteLock);
 }
-
-
-

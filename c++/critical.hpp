@@ -5,16 +5,19 @@
 #include "task.h"
 
 
+namespace cpp_freertos {
+
+
 /**
- *  Wrapper class around various critical section type 
+ *  Wrapper class around various critical section type
  *  synchronization mechanisms within FreeRTOS.
  */
-class CCritical {
+class CriticalSection {
 
     /////////////////////////////////////////////////////////////////////////
     //
     //  Public API
-    //  Available from anywhere. 
+    //  Available from anywhere.
     //
     /////////////////////////////////////////////////////////////////////////
     public:
@@ -35,7 +38,7 @@ class CCritical {
         }
 
         /**
-         *  Disable context switches as well as maskable interrupts 
+         *  Disable context switches as well as maskable interrupts
          *  from an interrupt context.
          */
         static inline void EnterCriticalFromISR()
@@ -85,5 +88,5 @@ class CCritical {
 };
 
 
+}
 #endif
-
