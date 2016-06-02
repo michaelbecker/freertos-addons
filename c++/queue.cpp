@@ -1,3 +1,6 @@
+/****************************************************************************
+ *
+ ***************************************************************************/
 #include "queue.hpp"
 
 
@@ -30,31 +33,31 @@ bool Queue::Enqueue(void *item)
 }
 
 
-bool Queue::Enqueue(void *item, TickType_t xBlockTime)
+bool Queue::Enqueue(void *item, TickType_t Timeout)
 {
     BaseType_t success;
 
-    success = xQueueSendToBack(handle, item, xBlockTime);
+    success = xQueueSendToBack(handle, item, Timeout);
 
     return success == pdTRUE ? true : false;
 }
 
 
-bool Queue::Dequeue(void *item, TickType_t xBlockTime)
+bool Queue::Dequeue(void *item, TickType_t Timeout)
 {
     BaseType_t success;
 
-    success = xQueueReceive(handle, item, xBlockTime);
+    success = xQueueReceive(handle, item, Timeout);
 
     return success == pdTRUE ? true : false;
 }
 
 
-bool Queue::Peek(void *item, TickType_t xBlockTime)
+bool Queue::Peek(void *item, TickType_t Timeout)
 {
     BaseType_t success;
 
-    success = xQueuePeek(handle, item, xBlockTime);
+    success = xQueuePeek(handle, item, Timeout);
 
     return success == pdTRUE ? true : false;
 }
@@ -124,23 +127,23 @@ UBaseType_t Queue::NumSpacesLeft()
 }
 
 
-CDeque::CDeque(UBaseType_t maxItems, UBaseType_t itemSize)
+Deque::Deque(UBaseType_t maxItems, UBaseType_t itemSize)
     : Queue(maxItems, itemSize)
 {
 }
 
 
-bool CDeque::EnqueueToFront(void *item, TickType_t xBlockTime)
+bool Deque::EnqueueToFront(void *item, TickType_t Timeout)
 {
     BaseType_t success;
 
-    success = xQueueSendToFront(handle, item, xBlockTime);
+    success = xQueueSendToFront(handle, item, Timeout);
 
     return success == pdTRUE ? true : false;
 }
 
 
-bool CDeque::EnqueueToFrontFromISR(void *item, BaseType_t *pxHigherPriorityTaskWoken)
+bool Deque::EnqueueToFrontFromISR(void *item, BaseType_t *pxHigherPriorityTaskWoken)
 {
     BaseType_t success;
 
@@ -150,20 +153,20 @@ bool CDeque::EnqueueToFrontFromISR(void *item, BaseType_t *pxHigherPriorityTaskW
 }
 
 
-CBinaryQueue::CBinaryQueue(UBaseType_t itemSize)
+BinaryQueue::BinaryQueue(UBaseType_t itemSize)
     : Queue(1, itemSize)
 {
 }
 
 
-bool CBinaryQueue::Enqueue(void *item)
+bool BinaryQueue::Enqueue(void *item)
 {
     (void)xQueueOverwrite(handle, item);
     return true;
 }
 
 
-bool CBinaryQueue::EnqueueFromISR(const void *item, BaseType_t *pxHigherPriorityTaskWoken)
+bool BinaryQueue::EnqueueFromISR(const void *item, BaseType_t *pxHigherPriorityTaskWoken)
 {
     (void)xQueueOverwriteFromISR(handle, item, pxHigherPriorityTaskWoken);
     return true;
