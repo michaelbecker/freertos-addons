@@ -81,21 +81,34 @@ class Semaphore {
          *
          *  Example of blocking for 100 ticks:
          *      aSemaphore.Take(100);
+         *
+         *  @param Timeout How long to wait to get the Lock until giving up.
+         *  @return true if the Semaphore was acquired, false if it timed out.
          */
-        bool Take(TickType_t xBlockTime = portMAX_DELAY);
+        bool Take(TickType_t Timeout = portMAX_DELAY);
 
         /**
          *  Release (give) a semaphore.
+         *
+         *  @return true if the Semaphore was released, false if it failed.
          */
         bool Give();
 
         /**
          *  Aquire (take) a semaphore from ISR context.
+         *
+         *  @param pxHigherPriorityTaskWoken Did this operation result in a
+         *         rescheduling event.
+         *  @return true if the Semaphore was acquired, false if it timed out.
          */
         bool TakeFromISR(BaseType_t *pxHigherPriorityTaskWoken);
 
         /**
          *  Release (give) a semaphore from ISR context.
+         *
+         *  @param pxHigherPriorityTaskWoken Did this operation result in a
+         *         rescheduling event.
+         *  @return true if the Semaphore was released, false if it failed.
          */
         bool GiveFromISR(BaseType_t *pxHigherPriorityTaskWoken);
 
@@ -111,6 +124,9 @@ class Semaphore {
     //
     /////////////////////////////////////////////////////////////////////////
     protected:
+        /**
+         *  FreeRTOS semaphore handle.
+         */
         SemaphoreHandle_t handle;
 
     /////////////////////////////////////////////////////////////////////////
@@ -142,9 +158,9 @@ class BinarySemaphore : public Semaphore {
         /**
          *  Constructor to create a binary semaphore.
          *
-         *  @returns Instance of a BinarySemaphore.
-         *  @set Is this semaphore "full" or not?
+         *  @param set Is this semaphore "full" or not?
          *  @throws SemaphoreCreateException on failure.
+         *  @return Instance of a BinarySemaphore.
          */
         BinarySemaphore(bool set = false);
 };
@@ -165,10 +181,10 @@ class CountingSemaphore : public Semaphore {
          *  Constructor to create a counting semaphore.
          *  This ctor throws a SemaphoreCreateException on failure.
          *
-         *  @returns Instance of a CountingSemaphore.
          *  @param maxCount Must be greater than 0.
          *  @param initialCount Must not be greater than maxCount.
          *  @throws SemaphoreCreateException on failure.
+         *  @return Instance of a CountingSemaphore.
          */
         CountingSemaphore(UBaseType_t maxCount, UBaseType_t initialCount);
 };
@@ -176,3 +192,5 @@ class CountingSemaphore : public Semaphore {
 
 }
 #endif
+
+
