@@ -69,9 +69,24 @@ class Timer {
                 bool Periodic = true
                 );
 
+        Timer(  TickType_t PeriodInTicks,
+                bool Periodic = true
+                );
+
+        ~Timer();
+
         bool IsActive();
 
-        bool Start();
+        bool Start(TickType_t Timeout = portMAX_DELAY);
+
+        bool Stop(TickType_t Timeout = portMAX_DELAY);
+
+        bool Reset(TickType_t Timeout = portMAX_DELAY);
+
+        bool SetPeriod( TickType_t NewPeriod,
+                        TickType_t Timeout = portMAX_DELAY);
+
+///     TODO - Get ISR versions here
 
 #if (INCLUDE_xTimerGetTimerDaemonTaskHandle == 1)
         static TaskHandle_t GetTimerDaemonHandle();
