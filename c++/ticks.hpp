@@ -16,6 +16,8 @@ class Ticks {
     public:
         /**
          *  Get the current tick count.
+         *
+         *  @return Current tick count.
          */
         static inline TickType_t GetTicks()
         {
@@ -24,6 +26,8 @@ class Ticks {
 
         /**
          *  Get the current tick count from ISR context.
+         *
+         *  @return Current tick count.
          */
         static inline TickType_t GetTicksFromISR()
         {
@@ -32,6 +36,9 @@ class Ticks {
 
         /**
          *  Convert from ticks to ms.
+         *
+         *  @param ticks ticks to convert.
+         *  @return milliseconds.
          */
         static inline TickType_t TicksToMs(TickType_t ticks)
         {
@@ -40,6 +47,9 @@ class Ticks {
 
         /**
          *  Convert from ms to ticks.
+         *
+         *  @param milliseconds milliseconds to convert.
+         *  @return ticks
          */
         static inline TickType_t MsToTicks(TickType_t milliseconds)
         {

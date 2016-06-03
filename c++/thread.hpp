@@ -68,6 +68,11 @@ class ThreadCreateException  : public std::exception {
 
 /**
  *  Wrapper class around FreeRTOS's implementation of a task.
+ *
+ *  This is an abstract base class.
+ *  To use this, you need to subclass it. All of your threads should
+ *  be derived from the Thread class. Then implement the virtual Run
+ *  function. This is a similar design to Java threading.
  */
 class Thread {
 
@@ -81,41 +86,30 @@ class Thread {
     public:
         /**
          *  Constructor to create a named thread.
-         *  This ctor throws a ThreadCreateException on failure.
+         *
+         *  @throws ThreadCreateException on failure.
+         *  @param Name Name of the thread. Only useful for debugging.
+         *  @param StackDepth Number of "words" allocated for the Thread stack.
+         *  @param Priority FreeRTOS priority of this Thread.
          */
-        Thread(    const char * const pcName,
-                    uint16_t usStackDepth,
-                    UBaseType_t uxPriority);
+        Thread( const char * const Name,
+                uint16_t StackDepth,
+                UBaseType_t Priority);
 
         /**
          *  Constructor to create an unnamed thread.
-         *  This ctor throws a ThreadCreateException on failure.
+         *
+         *  @throws ThreadCreateException on failure.
+         *  @param StackDepth Number of "words" allocated for the Thread stack.
+         *  @param Priority FreeRTOS priority of this Thread.
          */
-        Thread(    uint16_t usStackDepth,
-                    UBaseType_t uxPriority);
+        Thread( uint16_t StackDepth,
+                UBaseType_t Priority);
 
-        /**
-         *  Constructor to create an MPU restricted named thread.
-         *  This ctor throws a ThreadCreateException on failure.
-         */
-        Thread(    const char * const pcName,
-                    uint16_t usStackDepth,
-                    UBaseType_t uxPriority,
-                    bool isPrivileged,
-                    StackType_t *puxStackBuffer);
-
-        /**
-         *  Constructor to create an MPU restricted unnamed thread.
-         *  This ctor throws a ThreadCreateException on failure.
-         */
-        Thread(    uint16_t usStackDepth,
-                    UBaseType_t uxPriority,
-                    bool isPrivileged,
-                    StackType_t *puxStackBuffer);
 
 #if (INCLUDE_vTaskDelete == 1)
         /**
-         *  Our destructor.
+         *  Our destructor, if FreeRTOS is configured to allow task deletion.
          */
         virtual ~Thread();
 #else
@@ -129,6 +123,8 @@ class Thread {
         /**
          *  Accessor to get the thread's backing task handle.
          *  There is no setter, on purpose.
+         *
+         *  @return FreeRTOS task handle.
          */
         inline TaskHandle_t GetHandle()
         {
@@ -153,6 +149,7 @@ class Thread {
 
         /**
          *  End the scheduler.
+         *
          *  @note Please see the FreeRTOS documentation regarding constraints
          *  with the implementation of this.
          */
@@ -172,6 +169,8 @@ class Thread {
 
         /**
          *  Resume a specific thread.
+         *
+         *  @param thread Reference to the thread to resume.
          */
         static inline void Resume(Thread& thread)
         {
@@ -182,6 +181,8 @@ class Thread {
 #if (INCLUDE_xTaskResumeFromISR == 1)
         /**
          *  Resume a specific thread from ISR context.
+         *
+         *  @param thread Reference to the thread to resume.
          */
         static inline void ResumeFromISR(Thread& thread)
         {
@@ -192,6 +193,9 @@ class Thread {
 #if (INCLUDE_uxTaskPriorityGet == 1)
         /**
          *  Get the priority of another thread.
+         *
+         *  @param thread Reference to the thread.
+         *  @return Priority at the time this was called.
          */
         static inline UBaseType_t GetPriority(Thread& thread)
         {
@@ -200,6 +204,9 @@ class Thread {
 
         /**
          *  Get the priority of another thread from ISR context.
+         *
+         *  @param thread Reference to the thread.
+         *  @return Priority at the time this was called.
          */
         static inline UBaseType_t GetPriorityFromISR(Thread& thread)
         {
@@ -209,16 +216,25 @@ class Thread {
 
 #if (INCLUDE_vTaskPrioritySet == 1)
         /**
-         *  Get the priority of another thread.
+         *  Set the priority of another thread.
+         *
+         *  @param thread Reference to the thread.
+         *  @param NewPriority The thread's new priority.
          */
         static inline void SetPriority( Thread& thread,
-                                        UBaseType_t uxNewPriority);
+                                        UBaseType_t NewPriority);
         {
-            vTaskPrioritySet(thread.GetHandle(), uxNewPriority);
+            vTaskPrioritySet(thread.GetHandle(), NewPriority);
         }
 #endif
 
 #if (INCLUDE_pcTaskGetTaskName == 1)
+        /**
+         *  Get the name of a thread.
+         *
+         *  @param thread Reference to the thread.
+         *  @return The thread's name.
+         */
         static inline std::string Name(Thread& thread)
         {
             std::string name = pcTaskGetTaskName(thread.GetHandle());
@@ -232,20 +248,27 @@ class Thread {
     //  Protected API
     //  Available from inside your Thread implementation.
     //  You should make sure that you are only calling these methods
-    //  from within your Run() method, or at Run() method is on the
+    //  from within your Run() method, or that your Run() method is on the
     //  callstack.
     //
     /////////////////////////////////////////////////////////////////////////
     protected:
         /**
          *  Implementation of your actual thread code.
+         *  You must override this function.
+         *  @note If INCLUDE_vTaskDelete is defined, then you may return from
+         *  your Run method. This will cause the task to be deleted from
+         *  FreeRTOS, however you are still responsible to delete the
+         *  task object. If this is not defined, then retuning from your Run()
+         *  method will result in an assert.
          */
         virtual void Run() = 0;
 
 #if ( INCLUDE_vTaskSuspend == 1 )
         /**
          *  Suspend this thread.
-         *  Note that there is no Resume() function, becaue you
+         *
+         *  @note There is no Resume() function, becaue you
          *  can't resume from the thread you just suspended, because
          *  it's suspended.
          */
@@ -257,24 +280,31 @@ class Thread {
 
 #if (INCLUDE_vTaskDelay == 1)
         /**
-         *  Delay this thread for at least xTicksToDelay ticks.
+         *  Delay this thread for at least Delay ticks.
+         *
+         *  @param Delay How long to delay the thread.
          */
-        void inline Delay(const TickType_t xTicksToDelay)
+        void inline Delay(const TickType_t Delay)
         {
-            vTaskDelay(xTicksToDelay);
+            vTaskDelay(Delay);
         }
 #endif
 
 #if (INCLUDE_vTaskDelayUntil == 1)
         /**
-         *  Delay this thread for at least xTicksToDelay ticks.
+         *  Delay this thread for Period ticks, taking into account
+         *  the execution time of the thread.
+         *
          *  This FreeRTOS permutation of delay can be used by periodic
          *  tasks to ensure a constant execution frequency.
+         *
+         *  @param Period How long to delay the thread.
          */
         void DelayUntil(const TickType_t Period);
 
         /**
-         *  If you need to adjust or reset the period.
+         *  If you need to adjust or reset the period of the
+         *  DelayUntil method.
          */
         void ResetDelayUntil();
 #endif
@@ -282,6 +312,8 @@ class Thread {
 #if (INCLUDE_uxTaskPriorityGet == 1)
         /**
          *  Obtain our own priority.
+         *
+         *  @return Our priority.
          */
         UBaseType_t inline GetPriority()
         {
@@ -290,6 +322,8 @@ class Thread {
 
         /**
          *  Obtain our own priority from an ISR context.
+         *
+         *  @return Our priority.
          */
         UBaseType_t inline GetPriorityFromISR()
         {
@@ -301,14 +335,21 @@ class Thread {
 #if (INCLUDE_vTaskPrioritySet == 1)
         /**
          *  Change the priority of this thread.
+         *
+         *  @param NewPriority The thread's new priority.
          */
-        void SetPriority(UBaseType_t uxNewPriority)
+        void SetPriority(UBaseType_t NewPriority)
         {
-            vTaskPrioritySet(NULL, uxNewPriority);
+            vTaskPrioritySet(NULL, NewPriority);
         }
 #endif
 
 #if (INCLUDE_pcTaskGetTaskName == 1)
+        /**
+         *  Get the name of this thread.
+         *
+         *  @return The thread's name.
+         */
         static inline std::string Name()
         {
             std::string name = pcTaskGetTaskName(NULL);
@@ -332,6 +373,8 @@ class Thread {
         /**
          *  Adapter function that allows you to write a class
          *  specific Run() function that interfaces with FreeRTOS.
+         *  Look at the implementation of the constructors and this
+         *  code to see how the interface between C and C++ is performed.
          */
         static void TaskFunctionAdapter(void *pvParameters);
 
@@ -339,7 +382,7 @@ class Thread {
         /**
          *  Flag denoting if we've setup delay until yet.
          */
-        bool delayUntilInitialized {false};
+        bool delayUntilInitialized;
 
         /**
          *  Book keeping value for delay until.

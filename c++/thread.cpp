@@ -4,13 +4,14 @@
 using namespace rtos_cpp;
 
 
-/**
- *
- */
-Thread::Thread(   const char * const pcName,
-                    uint16_t usStackDepth,
-                    UBaseType_t uxPriority)
+Thread::Thread( const char * const pcName,
+                uint16_t usStackDepth,
+                UBaseType_t uxPriority)
 {
+#if (INCLUDE_vTaskDelayUntil == 1)
+    delayUntilInitialized = false;
+#endif
+
     if (pcName == NULL)
         pcName = "Default";
 
@@ -26,12 +27,13 @@ Thread::Thread(   const char * const pcName,
 }
 
 
-/**
- *
- */
-Thread::Thread(   uint16_t usStackDepth,
-                    UBaseType_t uxPriority)
+Thread::Thread( uint16_t usStackDepth,
+                UBaseType_t uxPriority)
 {
+#if (INCLUDE_vTaskDelayUntil == 1)
+    delayUntilInitialized = false;
+#endif
+
     BaseType_t rc = xTaskCreate(TaskFunctionAdapter,
                                 "Default",
                                 usStackDepth,
@@ -43,83 +45,9 @@ Thread::Thread(   uint16_t usStackDepth,
     }
 }
 
-#if 0
-//
-//
-//
-
-/**
- *
- */
-Thread::Thread(   const char * const pcName,
-                    uint16_t usStackDepth,
-                    UBaseType_t uxPriority,
-                    bool isPrivileged,
-                    StackType_t *puxStackBuffer,
-                    MemoryRegion_t (&xRegions)[ portNUM_CONFIGURABLE_REGIONS ])
-{
-    if (pcName == NULL)
-        pcName = "Default";
-
-    if (isPrivileged)
-        uxPriority |= portPRIVILEGE_BIT;
-
-    TaskParameters_t params =
-    {
-        TaskFunctionAdapter,
-        pcName,
-        usStackDepth,
-        this,
-        uxPriority,
-        puxStackBuffer
-    };
-
-    params.xRegions = xRegions;
-
-    BaseType_t rc = xTaskCreateRestricted(&params &handle);
-    if (rc != pdPASS) {
-        throw ThreadCreateException(rc);
-    }
-}
-
-
-/**
- *
- */
-Thread::Thread(   uint16_t usStackDepth,
-                    UBaseType_t uxPriority,
-                    bool isPrivileged,
-                    StackType_t *puxStackBuffer,
-                    MemoryRegion_t (&xRegions)[ portNUM_CONFIGURABLE_REGIONS ])
-{
-    if (isPrivileged)
-        uxPriority |= portPRIVILEGE_BIT;
-
-    TaskParameters_t params =
-    {
-        TaskFunctionAdapter,
-        "Default",
-        usStackDepth,
-        this,
-        uxPriority,
-        puxStackBuffer
-    };
-
-    params.xRegions = xRegions;
-
-    BaseType_t rc = xTaskCreateRestricted(&params &handle);
-    if (rc != pdPASS) {
-        throw ThreadCreateException(rc);
-    }
-}
-#endif
-
 
 #if (INCLUDE_vTaskDelete == 1)
 
-/**
- *
- */
 Thread::~Thread()
 {
     vTaskDelete(handle);
@@ -129,9 +57,6 @@ Thread::~Thread()
 #endif
 
 
-/**
- *
- */
 void Thread::TaskFunctionAdapter(void *pvParameters)
 {
     Thread *thread = static_cast<Thread *>(pvParameters);
@@ -150,9 +75,7 @@ void Thread::TaskFunctionAdapter(void *pvParameters)
 
 
 #if (INCLUDE_vTaskDelayUntil == 1)
-/**
- *
- */
+
 void Thread::DelayUntil(const TickType_t Period)
 {
     if (!delayUntilInitialized) {
@@ -164,9 +87,6 @@ void Thread::DelayUntil(const TickType_t Period)
 }
 
 
-/**
- *
- */
 void Thread::ResetDelayUntil()
 {
     delayUntilInitialized = false;

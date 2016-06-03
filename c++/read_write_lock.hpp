@@ -43,6 +43,11 @@ class ReadWriteLockCreateException : public std::exception {
 
 class ReadWriteLock {
 
+    /////////////////////////////////////////////////////////////////////////
+    //
+    //  Public API
+    //
+    /////////////////////////////////////////////////////////////////////////
     public:
         ReadWriteLock();
         virtual ~ReadWriteLock();
@@ -53,6 +58,12 @@ class ReadWriteLock {
         virtual void WriterLock() = 0;
         virtual void WriterUnlock() = 0;
 
+    /////////////////////////////////////////////////////////////////////////
+    //
+    //  Protected API
+    //  Not intended for use by application code.
+    //
+    /////////////////////////////////////////////////////////////////////////
     protected:
         int ReadCount;
         SemaphoreHandle_t ReadLock;
@@ -62,6 +73,11 @@ class ReadWriteLock {
 
 class ReadWriteLockPreferReader : public ReadWriteLock {
 
+    /////////////////////////////////////////////////////////////////////////
+    //
+    //  Public API
+    //
+    /////////////////////////////////////////////////////////////////////////
     public:
         virtual void ReaderLock();
         virtual void ReaderUnlock();
@@ -74,6 +90,11 @@ class ReadWriteLockPreferReader : public ReadWriteLock {
 
 class ReadWriteLockPreferWriter : public ReadWriteLock {
 
+    /////////////////////////////////////////////////////////////////////////
+    //
+    //  Public API
+    //
+    /////////////////////////////////////////////////////////////////////////
     public:
         ReadWriteLockPreferWriter();
         virtual ~ReadWriteLockPreferWriter();
@@ -84,6 +105,12 @@ class ReadWriteLockPreferWriter : public ReadWriteLock {
         virtual void WriterLock();
         virtual void WriterUnlock();
 
+    /////////////////////////////////////////////////////////////////////////
+    //
+    //  Private API
+    //  The internals of this wrapper class.
+    //
+    /////////////////////////////////////////////////////////////////////////
     private:
         int WriteCount;
         SemaphoreHandle_t WriteLock;

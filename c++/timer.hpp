@@ -58,6 +58,11 @@ class TimerCreateException  : public std::exception {
 
 class Timer {
 
+    /////////////////////////////////////////////////////////////////////////
+    //
+    //  Public API
+    //
+    /////////////////////////////////////////////////////////////////////////
     public:
         Timer(  const char * const TimerName,
                 TickType_t PeriodInTicks,
@@ -72,9 +77,24 @@ class Timer {
         static TaskHandle_t GetTimerDaemonHandle();
 #endif
 
+    /////////////////////////////////////////////////////////////////////////
+    //
+    //  Protected API
+    //  Available from inside your Thread implementation.
+    //  You should make sure that you are only calling these methods
+    //  from within your Run() method, or that your Run() method is on the
+    //  callstack.
+    //
+    /////////////////////////////////////////////////////////////////////////
     protected:
-        virtual void TimerCallback() = 0;
+        virtual Run() = 0;
 
+    /////////////////////////////////////////////////////////////////////////
+    //
+    //  Private API
+    //  The internals of this wrapper class.
+    //
+    /////////////////////////////////////////////////////////////////////////
     private:
         TimerHandle_t handle;
         static void TimerCallbackFunctionAdapter(TimerHandle_t xTimer);
