@@ -49,31 +49,60 @@ bool Timer::IsActive()
 }
 
 
-bool Timer::Start(TickType_t Timeout)
+bool Timer::Start(TickType_t CmdTimeout)
 {
-    return xTimerStart(handle, Timeout) == pdFALSE ? false : true;
+    return xTimerStart(handle, CmdTimeout) == pdFALSE ? false : true;
 }
 
 
-bool Stop(TickType_t Timeout)
+bool Timer::StartFromISR(BaseType_t *pxHigherPriorityTaskWoken)
 {
-    return xTimerStop(handle, Timeout) == pdFALSE ? false : true;
+    return xTimerStartFromISR(handle, pxHigherPriorityTaskWoken) == pdFALSE
+            ? false : true;
 }
 
 
-bool Timer::Reset(TickType_t Timeout)
+bool Stop(TickType_t CmdTimeout)
 {
-    return xTimerReset(handle, Timeout) == pdFALSE ? false : true;
+    return xTimerStop(handle, CmdTimeout) == pdFALSE ? false : true;
+}
+
+
+bool StopFromISR(BaseType_t *pxHigherPriorityTaskWoken)
+{
+    return xTimerStopFromISR(handle, pxHigherPriorityTaskWoken) == pdFALSE
+            ? false : true;
+}
+
+
+bool Timer::Reset(TickType_t CmdTimeout)
+{
+    return xTimerReset(handle, CmdTimeout) == pdFALSE ? false : true;
+}
+
+
+bool Timer::ResetFromISR(BaseType_t *pxHigherPriorityTaskWoken)
+{
+    return xTimerResetFromISR(handle, pxHigherPriorityTaskWoken) == pdFALSE
+            ? false : true;
 }
 
 
 bool Timer::SetPeriod(  TickType_t NewPeriod,
-                        TickType_t Timeout)
+                        TickType_t CmdTimeout)
 {
-    return xTimerChangePeriod(handle, NewPeriod, Timeout) == pdFALSE
+    return xTimerChangePeriod(handle, NewPeriod, CmdTimeout) == pdFALSE
             ? false : true;
 }
 
+
+bool Timer::SetPeriodFromISR(   TickType_t NewPeriod,
+                                BaseType_t *pxHigherPriorityTaskWoken)
+{
+    return xTimerChangePeriodFromISR(   handle, NewPeriod,
+                                        pxHigherPriorityTaskWoken) == pdFALSE
+            ? false : true;
+}
 
 
 #if (INCLUDE_xTimerGetTimerDaemonTaskHandle == 1)
@@ -91,3 +120,5 @@ void Timer::TimerCallbackFunctionAdapter(TimerHandle_t xTimer)
     Timer *timer = static_cast<Timer *>pvTimerGetTimerID(xTimer);
     timer->Run();
 }
+
+

@@ -1,10 +1,15 @@
 + Clean up documentation / comments.
+    - read_write_lock.hpp
+    - tasklet.hpp
 
-+ Finish timer code!!!!
+FreeRTOS Features
++ events
 
+Value Added
++ work queues
 + Fixed size Memory pools
 + Priority queues
 + monitors
 + condition variables
-+ events
-+ work queues
+
+
