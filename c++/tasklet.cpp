@@ -22,8 +22,8 @@ void Tasklet::TaskletAdapterFunction(void *reference, uint32_t parameter)
 }
 
 
-bool Tasklet::ScheduleTasklet(  uint32_t parameter,
-                                TickType_t xTicksToWait)
+bool Tasklet::Schedule( uint32_t parameter,
+                        TickType_t CmdTimeout)
 {
     BaseType_t rc;
 
@@ -36,8 +36,8 @@ bool Tasklet::ScheduleTasklet(  uint32_t parameter,
 }
 
 
-bool Tasklet::ScheduleTaskletFromISR(   uint32_t parameter,
-                                        BaseType_t *pxHigherPriorityTaskWoken)
+bool Tasklet::ScheduleFromISR(  uint32_t parameter,
+                                BaseType_t *pxHigherPriorityTaskWoken)
 {
     BaseType_t rc;
 
@@ -48,3 +48,5 @@ bool Tasklet::ScheduleTaskletFromISR(   uint32_t parameter,
 
     return rc == pdPASS : true ? false;
 }
+
+
