@@ -133,6 +133,8 @@ class MutexStandard {
     public:
         /**
          *  Create a standard, non-recursize Mutex.
+         *
+         *  @throws ThreadMutexException on failure.
          */
         MutexStandard();
 
@@ -179,6 +181,8 @@ class MutexRecursive {
     public:
         /**
          *  Create a recursize Mutex.
+         *  
+         *  @throws ThreadMutexException on failure.
          */
         MutexRecursive();
 

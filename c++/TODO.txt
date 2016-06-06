@@ -1,7 +1,3 @@
-+ Clean up documentation / comments.
-    - read_write_lock.hpp
-    - tasklet.hpp
-
 FreeRTOS Features
 + events
 

@@ -1,8 +1,3 @@
-/**
- *
- *  https://en.wikipedia.org/wiki/Readers%E2%80%93writers_problem
- */
-
 #ifndef READ_WRITE_LOCK_HPP_
 #define READ_WRITE_LOCK_HPP_
 
@@ -41,6 +36,17 @@ class ReadWriteLockCreateException : public std::exception {
 };
 
 
+/**
+ *  Abstract base class encapsulating a Reader/Writer lock.
+ *
+ *  These locks are based on mutexs and cannot be used in any way from 
+ *  ISR context. Likewise, these locks block indefinitely.
+ *
+ *  @note It is expected that an application will instantiate one of the
+ *        derived classes and use that object for synchronization. It is
+ *        not expected that a user or application will derive from these
+ *        classes.
+ */
 class ReadWriteLock {
 
     /////////////////////////////////////////////////////////////////////////
@@ -49,13 +55,38 @@ class ReadWriteLock {
     //
     /////////////////////////////////////////////////////////////////////////
     public:
+        /**
+         *  Constructor
+         *
+         *  @throws ReadWriteLockCreateException on failure.
+         */
         ReadWriteLock();
+
+        /**
+         *  Destructor
+         */
         virtual ~ReadWriteLock();
 
+        /**
+         *  Take the lock as a Reader. 
+         *  This allows multiple reader access.
+         */
         virtual void ReaderLock() = 0;
+
+        /**
+         *  Unlock the Reader. 
+         */
         virtual void ReaderUnlock() = 0;
 
+        /**
+         *  Take the lock as a Writer. 
+         *  This allows only one thread access.
+         */
         virtual void WriterLock() = 0;
+
+        /**
+         *  Unlock the Writer. 
+         */
         virtual void WriterUnlock() = 0;
 
     /////////////////////////////////////////////////////////////////////////
@@ -65,12 +96,29 @@ class ReadWriteLock {
     //
     /////////////////////////////////////////////////////////////////////////
     protected:
+        /**
+         *  How many active readers are there.
+         */
         int ReadCount;
+        
+        /**
+         *  Protect ReadCount.
+         */
         SemaphoreHandle_t ReadLock;
+
+        /**
+         *  Protect this resource from multiple writer access, or 
+         *  from Reader access when a writer is changing something.
+         */
         SemaphoreHandle_t ResourceLock;
 };
 
 
+/**
+ *  Concrete derived class that implements a Reader/Writer lock
+ *  that favors the Readers. That is, with enough aggressive readers,
+ *  a Writer may starve.
+ */
 class ReadWriteLockPreferReader : public ReadWriteLock {
 
     /////////////////////////////////////////////////////////////////////////
@@ -79,15 +127,35 @@ class ReadWriteLockPreferReader : public ReadWriteLock {
     //
     /////////////////////////////////////////////////////////////////////////
     public:
+        /**
+         *  Take the lock as a Reader. 
+         *  This allows multiple reader access.
+         */
         virtual void ReaderLock();
+
+        /**
+         *  Unlock the Reader. 
+         */
         virtual void ReaderUnlock();
 
+        /**
+         *  Take the lock as a Writer. 
+         *  This allows only one thread access.
+         */
         virtual void WriterLock();
-        virtual void WriterUnlock();
 
+        /**
+         *  Unlock the Writer. 
+         */
+        virtual void WriterUnlock();
 };
 
 
+/**
+ *  Concrete derived class that implements a Reader/Writer lock
+ *  that favors the Writers. That is, with enough aggressive writers,
+ *  a Reader may starve.
+ */
 class ReadWriteLockPreferWriter : public ReadWriteLock {
 
     /////////////////////////////////////////////////////////////////////////
@@ -96,13 +164,36 @@ class ReadWriteLockPreferWriter : public ReadWriteLock {
     //
     /////////////////////////////////////////////////////////////////////////
     public:
+        /**
+         *  Our derived constructor.
+         */
         ReadWriteLockPreferWriter();
+
+        /**
+         *  Our derived destructor.
+         */
         virtual ~ReadWriteLockPreferWriter();
 
+        /**
+         *  Take the lock as a Reader. 
+         *  This allows multiple reader access.
+         */
         virtual void ReaderLock();
+
+        /**
+         *  Unlock the Reader. 
+         */
         virtual void ReaderUnlock();
 
+        /**
+         *  Take the lock as a Writer. 
+         *  This allows only one thread access.
+         */
         virtual void WriterLock();
+
+        /**
+         *  Unlock the Writer. 
+         */
         virtual void WriterUnlock();
 
     /////////////////////////////////////////////////////////////////////////
@@ -112,11 +203,25 @@ class ReadWriteLockPreferWriter : public ReadWriteLock {
     //
     /////////////////////////////////////////////////////////////////////////
     private:
+        /**
+         *  Number of Writers waiting for the Resource Lock, including any
+         *  current Writer already holdign it.
+         */
         int WriteCount;
+
+        /**
+         *  Protect WriteCount.
+         */
         SemaphoreHandle_t WriteLock;
+
+        /**
+         *  Lock to stop reader threads from starving a Writer.
+         */
         SemaphoreHandle_t BlockReadersLock;
 };
 
 
 }
 #endif
+
+
