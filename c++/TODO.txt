@@ -9,3 +9,14 @@ Value Added
 + condition variables
 
 
+/****************************************************************************
+*   Thread 
+*  @Note
+*  + Features not implemented yet
+*    - MPU restricted threads
+*    - eTaskGetState
+*    - uxTaskGetNumberOfTasks
+*    - uxTaskGetStackHighWaterMark
+*    - Thread Local Storage
+*
+***************************************************************************/

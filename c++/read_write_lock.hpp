@@ -1,3 +1,23 @@
+/****************************************************************************
+ *
+ *  Copyright (c) 2016, Michael Becker (michael.f.becker@gmail.com)
+ *
+ *  This file is part of the FreeRTOS C++ Wrappers project.
+ *
+ *  The FreeRTOS C++ Wrappers project is free software: you can redistribute
+ *  it and/or modify it under the terms of the GNU General Public License as
+ *  published by the Free Software Foundation, version 3 of the License.
+ *
+ *  The FreeRTOS C++ Wrappers project is distributed in the hope that it will
+ *  be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with the FreeRTOS C++ Wrappers project.
+ *  If not, see <http://www.gnu.org/licenses/>.
+ *
+ ***************************************************************************/
 #ifndef READ_WRITE_LOCK_HPP_
 #define READ_WRITE_LOCK_HPP_
 
@@ -39,7 +59,7 @@ class ReadWriteLockCreateException : public std::exception {
 /**
  *  Abstract base class encapsulating a Reader/Writer lock.
  *
- *  These locks are based on mutexs and cannot be used in any way from 
+ *  These locks are based on mutexs and cannot be used in any way from
  *  ISR context. Likewise, these locks block indefinitely.
  *
  *  @note It is expected that an application will instantiate one of the
@@ -68,24 +88,24 @@ class ReadWriteLock {
         virtual ~ReadWriteLock();
 
         /**
-         *  Take the lock as a Reader. 
+         *  Take the lock as a Reader.
          *  This allows multiple reader access.
          */
         virtual void ReaderLock() = 0;
 
         /**
-         *  Unlock the Reader. 
+         *  Unlock the Reader.
          */
         virtual void ReaderUnlock() = 0;
 
         /**
-         *  Take the lock as a Writer. 
+         *  Take the lock as a Writer.
          *  This allows only one thread access.
          */
         virtual void WriterLock() = 0;
 
         /**
-         *  Unlock the Writer. 
+         *  Unlock the Writer.
          */
         virtual void WriterUnlock() = 0;
 
@@ -100,14 +120,14 @@ class ReadWriteLock {
          *  How many active readers are there.
          */
         int ReadCount;
-        
+
         /**
          *  Protect ReadCount.
          */
         SemaphoreHandle_t ReadLock;
 
         /**
-         *  Protect this resource from multiple writer access, or 
+         *  Protect this resource from multiple writer access, or
          *  from Reader access when a writer is changing something.
          */
         SemaphoreHandle_t ResourceLock;
@@ -128,24 +148,24 @@ class ReadWriteLockPreferReader : public ReadWriteLock {
     /////////////////////////////////////////////////////////////////////////
     public:
         /**
-         *  Take the lock as a Reader. 
+         *  Take the lock as a Reader.
          *  This allows multiple reader access.
          */
         virtual void ReaderLock();
 
         /**
-         *  Unlock the Reader. 
+         *  Unlock the Reader.
          */
         virtual void ReaderUnlock();
 
         /**
-         *  Take the lock as a Writer. 
+         *  Take the lock as a Writer.
          *  This allows only one thread access.
          */
         virtual void WriterLock();
 
         /**
-         *  Unlock the Writer. 
+         *  Unlock the Writer.
          */
         virtual void WriterUnlock();
 };
@@ -175,24 +195,24 @@ class ReadWriteLockPreferWriter : public ReadWriteLock {
         virtual ~ReadWriteLockPreferWriter();
 
         /**
-         *  Take the lock as a Reader. 
+         *  Take the lock as a Reader.
          *  This allows multiple reader access.
          */
         virtual void ReaderLock();
 
         /**
-         *  Unlock the Reader. 
+         *  Unlock the Reader.
          */
         virtual void ReaderUnlock();
 
         /**
-         *  Take the lock as a Writer. 
+         *  Take the lock as a Writer.
          *  This allows only one thread access.
          */
         virtual void WriterLock();
 
         /**
-         *  Unlock the Writer. 
+         *  Unlock the Writer.
          */
         virtual void WriterUnlock();
 
@@ -223,5 +243,3 @@ class ReadWriteLockPreferWriter : public ReadWriteLock {
 
 }
 #endif
-
-
