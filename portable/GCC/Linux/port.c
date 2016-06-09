@@ -71,6 +71,8 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <sys/syscall.h>
+#include <sys/types.h>
 
 /* Scheduler includes. */
 #include "FreeRTOS.h"
@@ -132,7 +134,8 @@ static void *pvInterruptEvent = NULL;
 
 /* Mutex used to protect all the simulated interrupt variables that are accessed
 by multiple threads. */
-static void *pvInterruptEventMutex = NULL;
+//static void *pvInterruptEventMutex = NULL;
+pthread_mutex_t pvInterruptEventMutex = PTHREAD_MUTEX_INITIALIZER;
 
 /* The critical nesting count for the currently executing task.  This is
 initialised to a non-zero value so interrupts do not become enabled during
@@ -267,7 +270,8 @@ TIMECAPS xTimeCaps;
 
 		configASSERT( xPortRunning );
 
-		WaitForSingleObject( pvInterruptEventMutex, INFINITE );
+		//WaitForSingleObject( pvInterruptEventMutex, INFINITE );
+        pthread_mutex_lock( &pvInterruptEventMutex);
 
 		/* The timer has expired, generate the simulated tick event. */
 		ulPendingInterrupts |= ( 1 << portINTERRUPT_TICK );
@@ -281,7 +285,8 @@ TIMECAPS xTimeCaps;
 
 		/* Give back the mutex so the simulated interrupt handler unblocks
 		and can	access the interrupt handler variables. */
-		ReleaseMutex( pvInterruptEventMutex );
+		//ReleaseMutex( pvInterruptEventMutex );
+        pthread_mutex_unlock( &pvInterruptEventMutex);
 	}
 
 	#ifdef __GNUC__
@@ -314,6 +319,7 @@ typedef void *(*pthread_start_routine_t) (void *)
 StackType_t *pxPortInitialiseStack( StackType_t *pxTopOfStack, TaskFunction_t pxCode, void *pvParameters )
 {
 int rc;
+cpu_set_t cpuset;
 xThreadState *pxThreadState = NULL;
 int8_t *pcTopOfStack = ( int8_t * ) pxTopOfStack;
 
@@ -331,8 +337,13 @@ int8_t *pcTopOfStack = ( int8_t * ) pxTopOfStack;
     rc = pthread_create( &pxThreadState->pvThread, NULL, (pthread_start_routine_t)pxCode, pvParameters);
 	configASSERT( rc == 0 );
 
-	SetThreadAffinityMask( pxThreadState->pvThread, 0x01 );
-	SetThreadPriorityBoost( pxThreadState->pvThread, TRUE );
+	//SetThreadAffinityMask( pxThreadState->pvThread, 0x01 );
+    CPU_ZERO(&cpuset);
+    CPU_SET(0, &cpuset);
+    rc = pthread_setaffinity_np(pxThreadState->pvThread, sizeof(cpu_set_t), &cpuset);
+	configASSERT( rc == 0 );
+
+	//SetThreadPriorityBoost( pxThreadState->pvThread, TRUE );
 	SetThreadPriority( pxThreadState->pvThread, THREAD_PRIORITY_IDLE );
 
 	return ( StackType_t * ) pxThreadState;
@@ -341,8 +352,9 @@ int8_t *pcTopOfStack = ( int8_t * ) pxTopOfStack;
 
 BaseType_t xPortStartScheduler( void )
 {
-int rc;    
-void *pvHandle;
+int rc;
+cpu_set_t cpuset;
+pthread_t pvHandle;
 int32_t lSuccess = pdPASS;
 xThreadState *pxThreadState;
 
@@ -352,10 +364,10 @@ xThreadState *pxThreadState;
 
 	/* Create the events and mutexes that are used to synchronise all the
 	threads. */
-	pvInterruptEventMutex = CreateMutex( NULL, FALSE, NULL );
+	//pvInterruptEventMutex = CreateMutex( NULL, FALSE, NULL );
 	pvInterruptEvent = CreateEvent( NULL, FALSE, FALSE, NULL );
 
-	if( ( pvInterruptEventMutex == NULL ) || ( pvInterruptEvent == NULL ) )
+	if( pvInterruptEvent == NULL )
 	{
 		lSuccess = pdFAIL;
 	}
@@ -363,11 +375,8 @@ xThreadState *pxThreadState;
 	/* Set the priority of this thread such that it is above the priority of
 	the threads that run tasks.  This higher priority is required to ensure
 	simulated interrupts take priority over tasks. */
-	pvHandle = GetCurrentThread();
-	if( pvHandle == NULL )
-	{
-		lSuccess = pdFAIL;
-	}
+	//pvHandle = GetCurrentThread();
+	pvHandle = pthread_self();
 
 	if( lSuccess == pdPASS )
 	{
@@ -375,9 +384,13 @@ xThreadState *pxThreadState;
 		{
 			lSuccess = pdFAIL;
 		}
-		SetThreadPriorityBoost( pvHandle, TRUE );
-		SetThreadAffinityMask( pvHandle, 0x01 );
-	}
+		//SetThreadPriorityBoost( pvHandle, TRUE );
+		//SetThreadAffinityMask( pvHandle, 0x01 );
+	    CPU_ZERO(&cpuset);
+        CPU_SET(0, &cpuset);
+        rc = pthread_setaffinity_np(pxThreadState->pvThread, sizeof(cpu_set_t), &cpuset);
+	    configASSERT( rc == 0 );
+    }
 
 	if( lSuccess == pdPASS )
 	{
@@ -385,17 +398,18 @@ xThreadState *pxThreadState;
 		tick interrupts.  The priority is set below that of the simulated
 		interrupt handler so the interrupt event mutex is used for the
 		handshake / overrun protection. */
-		pvHandle = CreateThread( NULL, 0, prvSimulatedPeripheralTimer, NULL, CREATE_SUSPENDED, NULL );
-        rc = pthread_create( &pxThreadState->pvThread, NULL, (pthread_start_routine_t)pxCode, pvParameters);
+		//pvHandle = CreateThread( NULL, 0, prvSimulatedPeripheralTimer, NULL, CREATE_SUSPENDED, NULL );
+        rc = pthread_create( &pvThread, NULL, (pthread_start_routine_t)prvSimulatedPeripheralTimer, NULL);
+        configASSERT(rc == 0);
 
-
-		if( pvHandle != NULL )
-		{
-			SetThreadPriority( pvHandle, THREAD_PRIORITY_BELOW_NORMAL );
-			SetThreadPriorityBoost( pvHandle, TRUE );
-			SetThreadAffinityMask( pvHandle, 0x01 );
-			ResumeThread( pvHandle );
-		}
+		SetThreadPriority( pvHandle, THREAD_PRIORITY_BELOW_NORMAL );
+		//SetThreadPriorityBoost( pvHandle, TRUE );
+		//SetThreadAffinityMask( pvHandle, 0x01 );
+        CPU_ZERO(&cpuset);
+        CPU_SET(0, &cpuset);
+        rc = pthread_setaffinity_np(pxThreadState->pvThread, sizeof(cpu_set_t), &cpuset);
+        configASSERT( rc == 0 );
+		ResumeThread( pvHandle );
 
 		/* Start the highest priority task by obtaining its associated thread
 		state structure, in which is stored the thread handle. */
@@ -524,6 +538,7 @@ CONTEXT xContext;
 
 void vPortDeleteThread( void *pvTaskToDelete )
 {
+int rc;
 xThreadState *pxThreadState;
 uint32_t ulErrorCode;
 
@@ -541,11 +556,14 @@ uint32_t ulErrorCode;
 	{
 		WaitForSingleObject( pvInterruptEventMutex, INFINITE );
 
-		ulErrorCode = TerminateThread( pxThreadState->pvThread, 0 );
-		configASSERT( ulErrorCode );
-
-		ulErrorCode = CloseHandle( pxThreadState->pvThread );
-		configASSERT( ulErrorCode );
+		//ulErrorCode = TerminateThread( pxThreadState->pvThread, 0 );
+		rc = pthread_cancel(&pxThreadState->pvThread);
+        configASSERT( rc == 0);
+        
+		//ulErrorCode = CloseHandle( pxThreadState->pvThread );
+		//configASSERT( ulErrorCode );
+        rc = pthread_join(&pxThreadState->pvThread, NULL);
+        configASSERT( rc == 0);
 
 		ReleaseMutex( pvInterruptEventMutex );
 	}
@@ -590,7 +608,8 @@ uint32_t ulErrorCode;
 void vPortEndScheduler( void )
 {
 	/* This function IS NOT TESTED! */
-	TerminateProcess( GetCurrentProcess(), 0 );
+	//TerminateProcess( GetCurrentProcess(), 0 );
+    exit(0);
 }
 /*-----------------------------------------------------------*/
 
@@ -641,7 +660,8 @@ void vPortEnterCritical( void )
 	{
 		/* The interrupt event mutex is held for the entire critical section,
 		effectively disabling (simulated) interrupts. */
-		WaitForSingleObject( pvInterruptEventMutex, INFINITE );
+		//WaitForSingleObject( pvInterruptEventMutex, INFINITE );
+        pthread_mutex_lock( &pvInterruptEventMutex);
 		ulCriticalNesting++;
 	}
 	else
@@ -676,7 +696,8 @@ int32_t lMutexNeedsReleasing;
 				/* Mutex will be released now, so does not require releasing
 				on function exit. */
 				lMutexNeedsReleasing = pdFALSE;
-				ReleaseMutex( pvInterruptEventMutex );
+				//ReleaseMutex( pvInterruptEventMutex );
+                pthread_mutex_unlock( &pvInterruptEventMutex);
 			}
 		}
 		else
