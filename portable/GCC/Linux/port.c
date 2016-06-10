@@ -73,6 +73,7 @@
 #include <pthread.h>
 #include <sys/syscall.h>
 #include <sys/types.h>
+#include <time.h>
 
 /* Scheduler includes. */
 #include "FreeRTOS.h"
@@ -82,32 +83,6 @@
 #define portMAX_INTERRUPTS				( ( uint32_t ) sizeof( uint32_t ) * 8UL ) /* The number of bits in an uint32_t. */
 #define portNO_CRITICAL_NESTING 		( ( uint32_t ) 0 )
 
-/*
- * Created as a high priority thread, this function uses a timer to simulate
- * a tick interrupt being generated on an embedded target.  In this Windows
- * environment the timer does not achieve anything approaching real time
- * performance though.
- */
-static unsigned long prvSimulatedPeripheralTimer( LPVOID lpParameter );
-
-/*
- * Process all the simulated interrupts - each represented by a bit in
- * ulPendingInterrupts variable.
- */
-static void prvProcessSimulatedInterrupts( void );
-
-/*
- * Interrupt handlers used by the kernel itself.  These are executed from the
- * simulated interrupt handler thread.
- */
-static uint32_t prvProcessYieldInterrupt( void );
-static uint32_t prvProcessTickInterrupt( void );
-
-/*
- * Called when the process exits to let Windows know the high timer resolution
- * is no longer required.
- */
-static int prvEndProcess( unsigned long dwCtrlType );
 
 /*-----------------------------------------------------------*/
 
@@ -130,12 +105,13 @@ static volatile uint32_t ulPendingInterrupts = 0UL;
 /* An event used to inform the simulated interrupt processing thread (a high
 priority thread that simulated interrupt processing) that an interrupt is
 pending. */
-static void *pvInterruptEvent = NULL;
+pthread_cond_t InterruptEventCondVar = PTHREAD_COND_INITIALIZER;
 
 /* Mutex used to protect all the simulated interrupt variables that are accessed
 by multiple threads. */
-//static void *pvInterruptEventMutex = NULL;
-pthread_mutex_t pvInterruptEventMutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t InterruptEventMutex = PTHREAD_MUTEX_INITIALIZER;
+
+int InterruptEvent = 0;
 
 /* The critical nesting count for the currently executing task.  This is
 initialised to a non-zero value so interrupts do not become enabled during
@@ -164,7 +140,7 @@ static BaseType_t xPortRunning = pdFALSE;
  *  @param mask we are counting zero bits in.
  *  @returns number of leading zeros
  */
-int
+static int
 count_leading_zeros(unsigned int mask)
 {
     int count = 0;
@@ -200,7 +176,6 @@ count_leading_zeros(unsigned int mask)
     return count;
 }
 
-
 /**
  *  Provides a zero based index of the first MSb set 
  *  in the given mask.
@@ -211,7 +186,7 @@ count_leading_zeros(unsigned int mask)
  *  @returns zero if no bits are set. one of there is 
  *  some bit set.
  */
-int
+static int
 first_leading_bit(  int *index,         /* [out] */
                     unsigned int mask)  /* [in]  */
 {
@@ -226,29 +201,23 @@ first_leading_bit(  int *index,         /* [out] */
     return 1;
 }
 
+
+
 /*-----------------------------------------------------------*/
 
+/*
+ * Created as a high priority thread, this function uses a timer to simulate
+ * a tick interrupt being generated on an embedded target.  In this Windows
+ * environment the timer does not achieve anything approaching real time
+ * performance though.
+ */
 static unsigned long prvSimulatedPeripheralTimer( LPVOID lpParameter )
 {
-TickType_t xMinimumWindowsBlockTime;
-TIMECAPS xTimeCaps;
+struct timespec delayPeriod;
+struct timespec remainder;
+int rc;
 
-	/* Set the timer resolution to the maximum possible. */
-	if( timeGetDevCaps( &xTimeCaps, sizeof( xTimeCaps ) ) == MMSYSERR_NOERROR )
-	{
-		xMinimumWindowsBlockTime = ( TickType_t ) xTimeCaps.wPeriodMin;
-		timeBeginPeriod( xTimeCaps.wPeriodMin );
-
-		/* Register an exit handler so the timeBeginPeriod() function can be
-		matched with a timeEndPeriod() when the application exits. */
-		SetConsoleCtrlHandler( prvEndProcess, TRUE );
-	}
-	else
-	{
-		xMinimumWindowsBlockTime = ( TickType_t ) 20;
-	}
-
-	/* Just to prevent compiler warnings. */
+    /* Just to prevent compiler warnings. */
 	( void ) lpParameter;
 
 	for( ;; )
@@ -259,19 +228,23 @@ TIMECAPS xTimeCaps;
 		time, not the time that Sleep() is called.  It is done this way to
 		prevent overruns in this very non real time simulated/emulated
 		environment. */
-		if( portTICK_PERIOD_MS < xMinimumWindowsBlockTime )
-		{
-			Sleep( xMinimumWindowsBlockTime );
-		}
-		else
-		{
-			Sleep( portTICK_PERIOD_MS );
-		}
+#define NS_IN_MS        (1000L * 1000L)
+        delayPeriod.tv_sec = 0;
+        delayPeriod.tv_nsec = portTICK_PERIOD_MS * NS_IN_MS;
+        while (1)
+        {
+            rc = nanosleep(&delayPeriod, &remainder);
+            if (rc == 0) 
+            {
+                break;
+            }
+            configASSERT(errno == EINTR);
+            delayPeriod = remainder;
+        }
 
 		configASSERT( xPortRunning );
 
-		//WaitForSingleObject( pvInterruptEventMutex, INFINITE );
-        pthread_mutex_lock( &pvInterruptEventMutex);
+        pthread_mutex_lock( &InterruptEventMutex);
 
 		/* The timer has expired, generate the simulated tick event. */
 		ulPendingInterrupts |= ( 1 << portINTERRUPT_TICK );
@@ -280,13 +253,13 @@ TIMECAPS xTimeCaps;
 		handler thread. */
 		if( ulCriticalNesting == 0 )
 		{
-			SetEvent( pvInterruptEvent );
+            InterruptEvent = 1;
+            pthread_cond_signal( &InterruptEventCondVar );
 		}
 
 		/* Give back the mutex so the simulated interrupt handler unblocks
 		and can	access the interrupt handler variables. */
-		//ReleaseMutex( pvInterruptEventMutex );
-        pthread_mutex_unlock( &pvInterruptEventMutex);
+        pthread_mutex_unlock( &InterruptEventMutex);
 	}
 
 	#ifdef __GNUC__
@@ -294,23 +267,6 @@ TIMECAPS xTimeCaps;
 		MSVC complains if you put it in. */
 		return 0;
 	#endif
-}
-/*-----------------------------------------------------------*/
-
-static int prvEndProcess( unsigned long dwCtrlType )
-{
-TIMECAPS xTimeCaps;
-
-	( void ) dwCtrlType;
-
-	if( timeGetDevCaps( &xTimeCaps, sizeof( xTimeCaps ) ) == MMSYSERR_NOERROR )
-	{
-		/* Match the call to timeBeginPeriod( xTimeCaps.wPeriodMin ) made when
-		the process started with a timeEndPeriod() as the process exits. */
-		timeEndPeriod( xTimeCaps.wPeriodMin );
-	}
-
-	return pdPASS;
 }
 /*-----------------------------------------------------------*/
 
@@ -332,124 +288,45 @@ int8_t *pcTopOfStack = ( int8_t * ) pxTopOfStack;
 	pxThreadState = ( xThreadState * ) ( pcTopOfStack - sizeof( xThreadState ) );
 
 	/* Create the thread itself. */
-	/// pxThreadState->pvThread = CreateThread( NULL, 0, ( LPTHREAD_START_ROUTINE ) pxCode, pvParameters, CREATE_SUSPENDED, NULL );
-
+    // TODO - Create suspended?
     rc = pthread_create( &pxThreadState->pvThread, NULL, (pthread_start_routine_t)pxCode, pvParameters);
 	configASSERT( rc == 0 );
 
-	//SetThreadAffinityMask( pxThreadState->pvThread, 0x01 );
     CPU_ZERO(&cpuset);
     CPU_SET(0, &cpuset);
     rc = pthread_setaffinity_np(pxThreadState->pvThread, sizeof(cpu_set_t), &cpuset);
 	configASSERT( rc == 0 );
 
-	//SetThreadPriorityBoost( pxThreadState->pvThread, TRUE );
 	SetThreadPriority( pxThreadState->pvThread, THREAD_PRIORITY_IDLE );
 
 	return ( StackType_t * ) pxThreadState;
 }
+
 /*-----------------------------------------------------------*/
-
-BaseType_t xPortStartScheduler( void )
+/*
+ * Install an interrupt handler to be called by the simulated interrupt handler
+ * thread.  The interrupt number must be above any used by the kernel itself
+ * (at the time of writing the kernel was using interrupt numbers 0, 1, and 2
+ * as defined above).  The number must also be lower than 32.
+ *
+ * Interrupt handler functions must return a non-zero value if executing the
+ * handler resulted in a task switch being required.
+ */
+void vPortSetInterruptHandler( uint32_t ulInterruptNumber, uint32_t (*pvHandler)( void ) )
 {
-int rc;
-cpu_set_t cpuset;
-pthread_t pvHandle;
-int32_t lSuccess = pdPASS;
-xThreadState *pxThreadState;
-
-	/* Install the interrupt handlers used by the scheduler itself. */
-	vPortSetInterruptHandler( portINTERRUPT_YIELD, prvProcessYieldInterrupt );
-	vPortSetInterruptHandler( portINTERRUPT_TICK, prvProcessTickInterrupt );
-
-	/* Create the events and mutexes that are used to synchronise all the
-	threads. */
-	//pvInterruptEventMutex = CreateMutex( NULL, FALSE, NULL );
-	pvInterruptEvent = CreateEvent( NULL, FALSE, FALSE, NULL );
-
-	if( pvInterruptEvent == NULL )
+	if( ulInterruptNumber < portMAX_INTERRUPTS )
 	{
-		lSuccess = pdFAIL;
+        pthread_mutex_lock( &InterruptEventMutex);
+		ulIsrHandler[ ulInterruptNumber ] = pvHandler;
+        pthread_mutex_unlock( &InterruptEventMutex);
 	}
-
-	/* Set the priority of this thread such that it is above the priority of
-	the threads that run tasks.  This higher priority is required to ensure
-	simulated interrupts take priority over tasks. */
-	//pvHandle = GetCurrentThread();
-	pvHandle = pthread_self();
-
-	if( lSuccess == pdPASS )
-	{
-		if( SetThreadPriority( pvHandle, THREAD_PRIORITY_NORMAL ) == 0 )
-		{
-			lSuccess = pdFAIL;
-		}
-		//SetThreadPriorityBoost( pvHandle, TRUE );
-		//SetThreadAffinityMask( pvHandle, 0x01 );
-	    CPU_ZERO(&cpuset);
-        CPU_SET(0, &cpuset);
-        rc = pthread_setaffinity_np(pxThreadState->pvThread, sizeof(cpu_set_t), &cpuset);
-	    configASSERT( rc == 0 );
-    }
-
-	if( lSuccess == pdPASS )
-	{
-		/* Start the thread that simulates the timer peripheral to generate
-		tick interrupts.  The priority is set below that of the simulated
-		interrupt handler so the interrupt event mutex is used for the
-		handshake / overrun protection. */
-		//pvHandle = CreateThread( NULL, 0, prvSimulatedPeripheralTimer, NULL, CREATE_SUSPENDED, NULL );
-        rc = pthread_create( &pvThread, NULL, (pthread_start_routine_t)prvSimulatedPeripheralTimer, NULL);
-        configASSERT(rc == 0);
-
-		SetThreadPriority( pvHandle, THREAD_PRIORITY_BELOW_NORMAL );
-		//SetThreadPriorityBoost( pvHandle, TRUE );
-		//SetThreadAffinityMask( pvHandle, 0x01 );
-        CPU_ZERO(&cpuset);
-        CPU_SET(0, &cpuset);
-        rc = pthread_setaffinity_np(pxThreadState->pvThread, sizeof(cpu_set_t), &cpuset);
-        configASSERT( rc == 0 );
-		ResumeThread( pvHandle );
-
-		/* Start the highest priority task by obtaining its associated thread
-		state structure, in which is stored the thread handle. */
-		pxThreadState = ( xThreadState * ) *( ( size_t * ) pxCurrentTCB );
-		ulCriticalNesting = portNO_CRITICAL_NESTING;
-
-		/* Bump up the priority of the thread that is going to run, in the
-		hope that this will assist in getting the Windows thread scheduler to
-		behave as an embedded engineer might expect. */
-		ResumeThread( pxThreadState->pvThread );
-
-		/* Handle all simulated interrupts - including yield requests and
-		simulated ticks. */
-		prvProcessSimulatedInterrupts();
-	}
-
-	/* Would not expect to return from prvProcessSimulatedInterrupts(), so should
-	not get here. */
-	return 0;
 }
 /*-----------------------------------------------------------*/
 
-static uint32_t prvProcessYieldInterrupt( void )
-{
-	return pdTRUE;
-}
-/*-----------------------------------------------------------*/
-
-static uint32_t prvProcessTickInterrupt( void )
-{
-uint32_t ulSwitchRequired;
-
-	/* Process the tick itself. */
-	configASSERT( xPortRunning );
-	ulSwitchRequired = ( uint32_t ) xTaskIncrementTick();
-
-	return ulSwitchRequired;
-}
-/*-----------------------------------------------------------*/
-
+/*
+ * Process all the simulated interrupts - each represented by a bit in
+ * ulPendingInterrupts variable.
+ */
 static void prvProcessSimulatedInterrupts( void )
 {
 uint32_t ulSwitchRequired, i;
@@ -457,22 +334,25 @@ xThreadState *pxThreadState;
 void *pvObjectList[ 2 ];
 CONTEXT xContext;
 
-	/* Going to block on the mutex that ensured exclusive access to the simulated
-	interrupt objects, and the event that signals that a simulated interrupt
-	should be processed. */
-	pvObjectList[ 0 ] = pvInterruptEventMutex;
-	pvObjectList[ 1 ] = pvInterruptEvent;
-
 	/* Create a pending tick to ensure the first task is started as soon as
 	this thread pends. */
 	ulPendingInterrupts |= ( 1 << portINTERRUPT_TICK );
-	SetEvent( pvInterruptEvent );
+
+    pthread_mutex_lock( &InterruptEventMutex);
+    InterruptEvent = 1;
+    pthread_cond_signal( &InterruptEventCondVar );
+    pthread_mutex_unlock( &InterruptEventMutex);
 
 	xPortRunning = pdTRUE;
+    
+    pthread_mutex_lock( &InterruptEventMutex);
 
 	for(;;)
 	{
-		WaitForMultipleObjects( sizeof( pvObjectList ) / sizeof( void * ), pvObjectList, TRUE, INFINITE );
+        while ( InterruptEvent != 1 )
+            pthread_cond_wait( &InterruptEventCondVar, &InterruptEventMutex );
+
+        InterruptEvent = 0;
 
 		/* Used to indicate whether the simulated interrupt processing has
 		necessitated a context switch to another task/thread. */
@@ -530,9 +410,95 @@ CONTEXT xContext;
 				ResumeThread( pxThreadState->pvThread );
 			}
 		}
-
-		ReleaseMutex( pvInterruptEventMutex );
 	}
+}
+
+/*-----------------------------------------------------------*/
+/*
+ * Interrupt handlers used by the kernel itself.  These are executed from the
+ * simulated interrupt handler thread.
+ */
+static uint32_t prvProcessYieldInterrupt( void )
+{
+	return pdTRUE;
+}
+
+/*-----------------------------------------------------------*/
+static uint32_t prvProcessTickInterrupt( void )
+{
+uint32_t ulSwitchRequired;
+
+	/* Process the tick itself. */
+	configASSERT( xPortRunning );
+	ulSwitchRequired = ( uint32_t ) xTaskIncrementTick();
+
+	return ulSwitchRequired;
+}
+
+/*-----------------------------------------------------------*/
+BaseType_t xPortStartScheduler( void )
+{
+int rc;
+cpu_set_t cpuset;
+pthread_t pvHandle;
+int32_t lSuccess = pdPASS;
+xThreadState *pxThreadState;
+
+	/* Install the interrupt handlers used by the scheduler itself. */
+	vPortSetInterruptHandler( portINTERRUPT_YIELD, prvProcessYieldInterrupt );
+	vPortSetInterruptHandler( portINTERRUPT_TICK, prvProcessTickInterrupt );
+
+	/* Set the priority of this thread such that it is above the priority of
+	the threads that run tasks.  This higher priority is required to ensure
+	simulated interrupts take priority over tasks. */
+	pvHandle = pthread_self();
+
+	if( lSuccess == pdPASS )
+	{
+		if( SetThreadPriority( pvHandle, THREAD_PRIORITY_NORMAL ) == 0 )
+		{
+			lSuccess = pdFAIL;
+		}
+	    CPU_ZERO(&cpuset);
+        CPU_SET(0, &cpuset);
+        rc = pthread_setaffinity_np(pxThreadState->pvThread, sizeof(cpu_set_t), &cpuset);
+	    configASSERT( rc == 0 );
+    }
+
+	if( lSuccess == pdPASS )
+	{
+		/* Start the thread that simulates the timer peripheral to generate
+		tick interrupts.  The priority is set below that of the simulated
+		interrupt handler so the interrupt event mutex is used for the
+		handshake / overrun protection. */
+        rc = pthread_create( &pvThread, NULL, (pthread_start_routine_t)prvSimulatedPeripheralTimer, NULL);
+        configASSERT(rc == 0);
+
+		SetThreadPriority( pvHandle, THREAD_PRIORITY_BELOW_NORMAL );
+        CPU_ZERO(&cpuset);
+        CPU_SET(0, &cpuset);
+        rc = pthread_setaffinity_np(pxThreadState->pvThread, sizeof(cpu_set_t), &cpuset);
+        configASSERT( rc == 0 );
+		ResumeThread( pvHandle );
+
+		/* Start the highest priority task by obtaining its associated thread
+		state structure, in which is stored the thread handle. */
+		pxThreadState = ( xThreadState * ) *( ( size_t * ) pxCurrentTCB );
+		ulCriticalNesting = portNO_CRITICAL_NESTING;
+
+		/* Bump up the priority of the thread that is going to run, in the
+		hope that this will assist in getting the Windows thread scheduler to
+		behave as an embedded engineer might expect. */
+		ResumeThread( pxThreadState->pvThread );
+
+		/* Handle all simulated interrupts - including yield requests and
+		simulated ticks. */
+		prvProcessSimulatedInterrupts();
+	}
+
+	/* Would not expect to return from prvProcessSimulatedInterrupts(), so should
+	not get here. */
+	return 0;
 }
 /*-----------------------------------------------------------*/
 
@@ -554,18 +520,15 @@ uint32_t ulErrorCode;
 	different task. */
 	if( pxThreadState->pvThread != NULL )
 	{
-		WaitForSingleObject( pvInterruptEventMutex, INFINITE );
+        pthread_mutex_lock( &InterruptEventMutex);
 
-		//ulErrorCode = TerminateThread( pxThreadState->pvThread, 0 );
 		rc = pthread_cancel(&pxThreadState->pvThread);
         configASSERT( rc == 0);
         
-		//ulErrorCode = CloseHandle( pxThreadState->pvThread );
-		//configASSERT( ulErrorCode );
         rc = pthread_join(&pxThreadState->pvThread, NULL);
         configASSERT( rc == 0);
 
-		ReleaseMutex( pvInterruptEventMutex );
+        pthread_mutex_unlock( &InterruptEventMutex);
 	}
 }
 /*-----------------------------------------------------------*/
@@ -601,14 +564,13 @@ uint32_t ulErrorCode;
 	ulErrorCode = CloseHandle( pvThread );
 	configASSERT( ulErrorCode );
 
-	ExitThread( 0 );
+    pthread_exit(NULL);
 }
 /*-----------------------------------------------------------*/
 
 void vPortEndScheduler( void )
 {
 	/* This function IS NOT TESTED! */
-	//TerminateProcess( GetCurrentProcess(), 0 );
     exit(0);
 }
 /*-----------------------------------------------------------*/
@@ -617,10 +579,10 @@ void vPortGenerateSimulatedInterrupt( uint32_t ulInterruptNumber )
 {
 	configASSERT( xPortRunning );
 
-	if( ( ulInterruptNumber < portMAX_INTERRUPTS ) && ( pvInterruptEventMutex != NULL ) )
+	if( ulInterruptNumber < portMAX_INTERRUPTS )
 	{
 		/* Yield interrupts are processed even when critical nesting is non-zero. */
-		WaitForSingleObject( pvInterruptEventMutex, INFINITE );
+        pthread_mutex_lock( &InterruptEventMutex);
 		ulPendingInterrupts |= ( 1 << ulInterruptNumber );
 
 		/* The simulated interrupt is now held pending, but don't actually process it
@@ -628,30 +590,14 @@ void vPortGenerateSimulatedInterrupt( uint32_t ulInterruptNumber )
 		be in a critical section as calls to wait for mutexes are accumulative. */
 		if( ulCriticalNesting == 0 )
 		{
-			SetEvent( pvInterruptEvent );
+            InterruptEvent = 1;
+			pthread_cond_signal( &InterruptEventCondVar );
 		}
 
-		ReleaseMutex( pvInterruptEventMutex );
+        pthread_mutex_unlock( &InterruptEventMutex);
 	}
 }
-/*-----------------------------------------------------------*/
 
-void vPortSetInterruptHandler( uint32_t ulInterruptNumber, uint32_t (*pvHandler)( void ) )
-{
-	if( ulInterruptNumber < portMAX_INTERRUPTS )
-	{
-		if( pvInterruptEventMutex != NULL )
-		{
-			WaitForSingleObject( pvInterruptEventMutex, INFINITE );
-			ulIsrHandler[ ulInterruptNumber ] = pvHandler;
-			ReleaseMutex( pvInterruptEventMutex );
-		}
-		else
-		{
-			ulIsrHandler[ ulInterruptNumber ] = pvHandler;
-		}
-	}
-}
 /*-----------------------------------------------------------*/
 
 void vPortEnterCritical( void )
@@ -660,8 +606,7 @@ void vPortEnterCritical( void )
 	{
 		/* The interrupt event mutex is held for the entire critical section,
 		effectively disabling (simulated) interrupts. */
-		//WaitForSingleObject( pvInterruptEventMutex, INFINITE );
-        pthread_mutex_lock( &pvInterruptEventMutex);
+        pthread_mutex_lock( &InterruptEventMutex);
 		ulCriticalNesting++;
 	}
 	else
@@ -691,13 +636,13 @@ int32_t lMutexNeedsReleasing;
 			if( ulPendingInterrupts != 0UL )
 			{
 				configASSERT( xPortRunning );
-				SetEvent( pvInterruptEvent );
+                InterruptEvent = 1;
+			    pthread_cond_signal( &InterruptEventCondVar );
 
 				/* Mutex will be released now, so does not require releasing
 				on function exit. */
 				lMutexNeedsReleasing = pdFALSE;
-				//ReleaseMutex( pvInterruptEventMutex );
-                pthread_mutex_unlock( &pvInterruptEventMutex);
+                pthread_mutex_unlock( &InterruptEventMutex);
 			}
 		}
 		else
@@ -708,13 +653,10 @@ int32_t lMutexNeedsReleasing;
 		}
 	}
 
-	if( pvInterruptEventMutex != NULL )
+	if( lMutexNeedsReleasing == pdTRUE )
 	{
-		if( lMutexNeedsReleasing == pdTRUE )
-		{
-			configASSERT( xPortRunning );
-			ReleaseMutex( pvInterruptEventMutex );
-		}
+		configASSERT( xPortRunning );
+        pthread_mutex_unlock( &InterruptEventMutex);
 	}
 }
 /*-----------------------------------------------------------*/
