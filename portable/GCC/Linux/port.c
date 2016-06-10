@@ -93,8 +93,11 @@ the only thing it will ever hold.  The structure indirectly maps the task handle
 to a thread handle. */
 typedef struct
 {
-	/* Handle of the thread that executes the task. */
-	pthread_t pvThread;
+	pthread_t       pvThread;
+    pid             tid;
+    void            *parameter;
+    TaskFunction_t  pxCode;
+    int             niceValue;
 
 } xThreadState;
 
@@ -132,6 +135,29 @@ extern void *pxCurrentTCB;
 
 /* Used to ensure nothing is processed during the startup sequence. */
 static BaseType_t xPortRunning = pdFALSE;
+
+
+pid_t gettid()
+{
+    pid_t tid = syscall (SYS_gettid);
+    return tid;
+}
+
+
+void* ThreadStartWrapper(void* parameter)
+{
+    xThreadState *threadState = (xThreadState *)parameter;
+    
+    threadState->tid = gettid();
+
+    pthread_detach(pthread_self());
+
+    nice(threadState->niceValue);
+
+    threadState->pxCode(threadState->parameter);
+
+    pthread_exit(0);
+}
 
 
 /**
@@ -211,7 +237,7 @@ first_leading_bit(  int *index,         /* [out] */
  * environment the timer does not achieve anything approaching real time
  * performance though.
  */
-static unsigned long prvSimulatedPeripheralTimer( LPVOID lpParameter )
+static unsigned long prvSimulatedPeripheralTimer( void* lpParameter )
 {
 struct timespec delayPeriod;
 struct timespec remainder;
@@ -269,8 +295,6 @@ int rc;
 	#endif
 }
 /*-----------------------------------------------------------*/
-
-typedef void *(*pthread_start_routine_t) (void *)
 
 StackType_t *pxPortInitialiseStack( StackType_t *pxTopOfStack, TaskFunction_t pxCode, void *pvParameters )
 {
