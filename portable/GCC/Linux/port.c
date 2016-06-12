@@ -137,18 +137,11 @@ extern void *pxCurrentTCB;
 static BaseType_t xPortRunning = pdFALSE;
 
 
-pid_t gettid()
-{
-    pid_t tid = syscall (SYS_gettid);
-    return tid;
-}
-
-
 void* ThreadStartWrapper(void* parameter)
 {
     xThreadState *threadState = (xThreadState *)parameter;
     
-    threadState->tid = gettid();
+    threadState->tid = syscall(SYS_gettid);
 
     pthread_detach(pthread_self());
 
@@ -157,6 +150,30 @@ void* ThreadStartWrapper(void* parameter)
     threadState->pxCode(threadState->parameter);
 
     pthread_exit(0);
+}
+
+/**
+ *  Replacement for Windows Sleep() function.
+ */
+void ms_sleep(int ms)
+{
+    struct timespec delayPeriod;
+    struct timespec remainder;
+    int rc;
+    
+#define NS_IN_MS        (1000L * 1000L)
+    delayPeriod.tv_sec = 0;
+    delayPeriod.tv_nsec = ms * NS_IN_MS;
+    while (1)
+    {
+        rc = nanosleep(&delayPeriod, &remainder);
+        if (rc == 0) 
+        {
+            break;
+        }
+        configASSERT(errno == EINTR);
+        delayPeriod = remainder;
+    }
 }
 
 
@@ -239,10 +256,6 @@ first_leading_bit(  int *index,         /* [out] */
  */
 static unsigned long prvSimulatedPeripheralTimer( void* lpParameter )
 {
-struct timespec delayPeriod;
-struct timespec remainder;
-int rc;
-
     /* Just to prevent compiler warnings. */
 	( void ) lpParameter;
 
@@ -254,19 +267,7 @@ int rc;
 		time, not the time that Sleep() is called.  It is done this way to
 		prevent overruns in this very non real time simulated/emulated
 		environment. */
-#define NS_IN_MS        (1000L * 1000L)
-        delayPeriod.tv_sec = 0;
-        delayPeriod.tv_nsec = portTICK_PERIOD_MS * NS_IN_MS;
-        while (1)
-        {
-            rc = nanosleep(&delayPeriod, &remainder);
-            if (rc == 0) 
-            {
-                break;
-            }
-            configASSERT(errno == EINTR);
-            delayPeriod = remainder;
-        }
+        ms_sleep(portTICK_PERIOD_MS);
 
 		configASSERT( xPortRunning );
 
