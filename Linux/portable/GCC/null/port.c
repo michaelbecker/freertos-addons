@@ -111,7 +111,7 @@ void vPortDeleteThread( void *pvTaskToDelete )
 void vPortCloseRunningThread( void *pvTaskToDelete, volatile BaseType_t *pxPendYield )
 {
     (void)pvTaskToDelete;
-    (void)pxPendYield;`
+    (void)pxPendYield;
 }
 
 
@@ -134,4 +134,5 @@ void vPortEnterCritical( void )
 void vPortExitCritical( void )
 {
 }
+
 

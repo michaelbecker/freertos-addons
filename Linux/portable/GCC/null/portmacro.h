@@ -154,7 +154,7 @@ void vPortExitCritical( void );
 
         int first_leading_bit(int *index, unsigned int mask);
         /* Clean implementation of _BitScanReverse() */
-        #define portGET_HIGHEST_PRIORITY( uxTopPriority, uxReadyPriorities ) 
+        #define portGET_HIGHEST_PRIORITY( uxTopPriority, uxReadyPriorities )    uxTopPriority = 0;
 
 	#else
 		/* BitScanReverse returns the bit position of the most significant '1'
@@ -184,6 +184,8 @@ void vPortExitCritical( void );
  * two bits being used for the Yield and Tick interrupts respectively.
 */
 void vPortGenerateSimulatedInterrupt( uint32_t ulInterruptNumber );
+
+void vPortCloseRunningThread( void *pvTaskToDelete, volatile BaseType_t *pxPendYield );
 
 #endif
 
