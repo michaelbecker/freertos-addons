@@ -2,6 +2,7 @@
 FREERTOS_SRC_DIR=../../../../FreeRTOS/Source
 FREERTOS_INC_DIR=../../../../FreeRTOS/Source/include
 PORTABLE_SRC_DIR=../../portable/GCC/null
+PORTABLE_SRC_MEM_MANG_DIR=../../../../FreeRTOS/Source/portable/MemMang
 FREERTOS_CPP_SRC_DIR=../../../c++/Source/
 FREERTOS_CPP_INC_DIR=../../../c++/Source/include
 
@@ -9,7 +10,11 @@ FREERTOS_CPP_INC_DIR=../../../c++/Source/include
 CC = gcc
 CXX = g++
 
-CFLAGS += -Wall -Werror 
+CFLAGS += -Wall -Werror -Wextra -Wpedantic
+CXXFLAGS += -Wall -Werror -Wextra -Wpedantic
+LDFLAGS += -Wall -Werror -Wextra -Wpedantic
+
+
 
 INCLUDE_DIRS +=	-I. \
 				-I${FREERTOS_INC_DIR} \
@@ -19,7 +24,8 @@ INCLUDE_DIRS +=	-I. \
 
 VPATH += ${FREERTOS_SRC_DIR} \
 		 ${FREERTOS_CPP_SRC_DIR} \
-		 ${PORTABLE_SRC_DIR}
+		 ${PORTABLE_SRC_DIR} \
+		 ${PORTABLE_SRC_MEM_MANG_DIR} \
 
 
 TARGET = null_Test
@@ -38,6 +44,8 @@ FREERTOS_SRC= \
 			  tasks.c \
 			  timers.c \
 			  port.c \
+			  heap_3.c \
+			  croutine.c \
 
 
 FREERTOS_CPP_SRC= \
@@ -63,7 +71,8 @@ ${FREERTOS_CPP_OJB}: %.o: %.cpp
 	${CXX} ${INCLUDE_DIRS} ${CXXFLAGS} -c $< -o $@
 
 $(TARGET):	${FREERTOS_OJB} ${FREERTOS_CPP_OJB} ${OBJ}
-	${CXX} ${LDFLAGS} ${LD_EXE_FLAGS} -o $@ ${OBJ} ${FREERTOS_CPP_OJB} ${FREERTOS_OJB} ${LIBS} 
+	${CXX} ${LDFLAGS} ${LD_EXE_FLAGS} -o $@ ${FREERTOS_CPP_OJB} ${FREERTOS_OJB} ${OBJ} ${LIBS} 
+
 
 #$(TARGET):	${FREERTOS_OJB}
 #		${CXX} ${INCLUDE_DIRS} ${CPPFLAGS} ${CPP_EXE_FLAGS} -c $? 

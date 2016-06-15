@@ -71,6 +71,10 @@
 #ifndef FREERTOS_CONFIG_H
 #define FREERTOS_CONFIG_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*-----------------------------------------------------------
  * Application specific definitions.
  *
@@ -156,5 +160,10 @@ extern void vAssertCalled( unsigned long ulLine, const char * const pcFileName )
 #define TRACE_ENTER_CRITICAL_SECTION() portENTER_CRITICAL()
 #define TRACE_EXIT_CRITICAL_SECTION() portEXIT_CRITICAL()
 /*#include "trcKernelPort.h" */
+
+#ifdef __cplusplus
+}
+#endif
+
 
 #endif /* FREERTOS_CONFIG_H */

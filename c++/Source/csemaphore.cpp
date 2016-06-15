@@ -64,6 +64,11 @@ bool Semaphore::GiveFromISR(BaseType_t *pxHigherPriorityTaskWoken)
 }
 
 
+Semaphore::Semaphore()
+{
+}
+
+
 Semaphore::~Semaphore()
 {
     vSemaphoreDelete(handle);

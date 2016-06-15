@@ -117,7 +117,7 @@ class Mutex {
         SemaphoreHandle_t handle;
 
         /**
-         *  The constructor should not exist for this class.
+         *  This constructor should not be public.
          */
         Mutex();
 };
