@@ -116,7 +116,7 @@ class Tasklet {
          *  Look at the implementation of the constructors and this
          *  code to see how the interface between C and C++ is performed.
          */
-        void TaskletAdapterFunction(void *ref, uint32_t parameter);
+        static void TaskletAdapterFunction(void *ref, uint32_t parameter);
 
 };
 

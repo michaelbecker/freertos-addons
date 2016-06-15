@@ -25,6 +25,8 @@
 #include <string>
 #include "FreeRTOS.h"
 #include "semphr.h"
+// TODO - explore replacing sprintf with stringstream
+#include <cstdio>
 
 
 namespace cpp_freertos {
@@ -146,18 +148,11 @@ class Semaphore {
          */
         SemaphoreHandle_t handle;
 
-    /////////////////////////////////////////////////////////////////////////
-    //
-    //  Private API
-    //  The internals of this wrapper class.
-    //
-    /////////////////////////////////////////////////////////////////////////
-    private:
         /**
          *  We do not want a Semaphore ctor. This class should never be
          *  directly created, this is a base class only.
          */
-        Semaphore() = delete;
+        Semaphore();
 };
 
 

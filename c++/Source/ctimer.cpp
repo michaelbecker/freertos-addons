@@ -21,7 +21,7 @@
 #include "timer.hpp"
 
 
-using namespace rtos_cpp;
+using namespace cpp_freertos;
 
 
 Timer::Timer(   const char * const TimerName,
@@ -82,13 +82,13 @@ bool Timer::StartFromISR(BaseType_t *pxHigherPriorityTaskWoken)
 }
 
 
-bool Stop(TickType_t CmdTimeout)
+bool Timer::Stop(TickType_t CmdTimeout)
 {
     return xTimerStop(handle, CmdTimeout) == pdFALSE ? false : true;
 }
 
 
-bool StopFromISR(BaseType_t *pxHigherPriorityTaskWoken)
+bool Timer::StopFromISR(BaseType_t *pxHigherPriorityTaskWoken)
 {
     return xTimerStopFromISR(handle, pxHigherPriorityTaskWoken) == pdFALSE
             ? false : true;
@@ -137,6 +137,6 @@ TaskHandle_t Timer::GetTimerDaemonHandle()
 
 void Timer::TimerCallbackFunctionAdapter(TimerHandle_t xTimer)
 {
-    Timer *timer = static_cast<Timer *>pvTimerGetTimerID(xTimer);
+    Timer *timer = static_cast<Timer *>(pvTimerGetTimerID(xTimer));
     timer->Run();
 }

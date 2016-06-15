@@ -21,7 +21,7 @@
 #include "thread.hpp"
 
 
-using namespace rtos_cpp;
+using namespace cpp_freertos;
 
 
 Thread::Thread( const char * const pcName,
@@ -31,9 +31,6 @@ Thread::Thread( const char * const pcName,
 #if (INCLUDE_vTaskDelayUntil == 1)
     delayUntilInitialized = false;
 #endif
-
-    if (pcName == NULL)
-        pcName = "Default";
 
     BaseType_t rc = xTaskCreate(TaskFunctionAdapter,
                                 pcName,
@@ -71,7 +68,7 @@ Thread::Thread( uint16_t usStackDepth,
 Thread::~Thread()
 {
     vTaskDelete(handle);
-    handle = -1;
+    handle = (TaskHandle_t)-1;
 }
 
 #endif
@@ -81,7 +78,7 @@ void Thread::TaskFunctionAdapter(void *pvParameters)
 {
     Thread *thread = static_cast<Thread *>(pvParameters);
 
-    thread->run();
+    thread->Run();
 
 #if (INCLUDE_vTaskDelete == 1)
 

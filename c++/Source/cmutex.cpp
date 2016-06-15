@@ -21,7 +21,7 @@
 #include "mutex.hpp"
 
 
-using namespace rtos_cpp;
+using namespace cpp_freertos;
 
 
 Mutex::~Mutex()

@@ -21,7 +21,7 @@
 #include "read_write_lock.hpp"
 
 
-using namespace rtos_cpp;
+using namespace cpp_freertos;
 
 
 ReadWriteLock::ReadWriteLock()

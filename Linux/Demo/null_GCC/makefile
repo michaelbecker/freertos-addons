@@ -41,26 +41,29 @@ FREERTOS_SRC= \
 
 
 FREERTOS_CPP_SRC= \
-				  mutex.cpp \
-				  queue.cpp \
-				  read_write_lock.cpp \
-				  semaphore.cpp \
-				  tasklet.cpp \
-				  thread.cpp \
-				  timer.cpp
+				  cmutex.cpp \
+				  cqueue.cpp \
+				  cread_write_lock.cpp \
+				  csemaphore.cpp \
+				  ctasklet.cpp \
+				  cthread.cpp \
+				  ctimer.cpp
 
 
 OBJ = ${SRC:.cpp=.o} 
+${OBJ}: %.o: %.cpp
+	${CXX} ${INCLUDE_DIRS} ${CXXFLAGS} -c $< -o $@
 
 FREERTOS_OJB = ${FREERTOS_SRC:.c=.o} 
-
 ${FREERTOS_OJB}: %.o: %.c
-	${CC} ${INCLUDE_DIRS} ${CFLAGS} -c $< -o $@
+	${CC} -I. -I${FREERTOS_INC_DIR} -I${PORTABLE_SRC_DIR} ${CFLAGS} -c $< -o $@
 
 FREERTOS_CPP_OJB = ${FREERTOS_CPP_SRC:.cpp=.o} 
+${FREERTOS_CPP_OJB}: %.o: %.cpp
+	${CXX} ${INCLUDE_DIRS} ${CXXFLAGS} -c $< -o $@
 
 $(TARGET):	${FREERTOS_OJB} ${FREERTOS_CPP_OJB} ${OBJ}
-
+	${CXX} ${LDFLAGS} ${LD_EXE_FLAGS} -o $@ ${OBJ} ${FREERTOS_CPP_OJB} ${FREERTOS_OJB} ${LIBS} 
 
 #$(TARGET):	${FREERTOS_OJB}
 #		${CXX} ${INCLUDE_DIRS} ${CPPFLAGS} ${CPP_EXE_FLAGS} -c $? 

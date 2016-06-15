@@ -22,6 +22,14 @@
 #define READ_WRITE_LOCK_HPP_
 
 
+#include <exception>
+#include <string>
+#include "FreeRTOS.h"
+#include "semphr.h"
+// TODO - explore replacing sprintf with stringstream
+#include <cstdio>
+
+
 namespace cpp_freertos {
 
 

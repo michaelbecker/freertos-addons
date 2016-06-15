@@ -25,7 +25,8 @@
 #include <string>
 #include "FreeRTOS.h"
 #include "semphr.h"
-
+// TODO - explore replacing sprintf with stringstream
+#include <cstdio>
 
 namespace cpp_freertos {
 
@@ -88,7 +89,7 @@ class Mutex {
          *  @param Timeout How long to wait to get the Lock until giving up.
          *  @return true if the Lock was acquired, false if it timed out.
          */
-        bool Lock(TickType_t Timeout) = 0;
+        virtual bool Lock(TickType_t Timeout = portMAX_DELAY) = 0;
 
         /**
          *  Unlock the Mutex.
@@ -96,7 +97,7 @@ class Mutex {
          *  @return true if the Lock was released, false if it failed. (Hint,
          *           if it fails, did you call Lock() first?)
          */
-        bool Unlock() = 0;
+        virtual bool Unlock() = 0;
 
         /**
          *  Our destructor
@@ -115,17 +116,10 @@ class Mutex {
          */
         SemaphoreHandle_t handle;
 
-    /////////////////////////////////////////////////////////////////////////
-    //
-    //  Private API
-    //
-    /////////////////////////////////////////////////////////////////////////
-    private:
         /**
          *  The constructor should not exist for this class.
          */
-        Mutex() = delete;
-
+        Mutex();
 };
 
 
@@ -140,7 +134,7 @@ class Mutex {
  *        should typically use this type of Mutex, unless you have a strong
  *        need for a Recursive Mutex.
  */
-class MutexStandard {
+class MutexStandard : public Mutex {
 
     /////////////////////////////////////////////////////////////////////////
     //
@@ -161,7 +155,7 @@ class MutexStandard {
          *  @param Timeout How long to wait to get the Lock until giving up.
          *  @return true if the Lock was acquired, false if it timed out.
          */
-        bool Lock(TickType_t Timeout = portMAX_DELAY);
+        virtual bool Lock(TickType_t Timeout = portMAX_DELAY);
 
         /**
          *  Unlock the Mutex.
@@ -169,7 +163,7 @@ class MutexStandard {
          *  @return true if the Lock was released, false if it failed. (Hint,
          *           if it fails, did you call Lock() first?)
          */
-        bool Unlock();
+        virtual bool Unlock();
 };
 
 
@@ -188,7 +182,7 @@ class MutexStandard {
  *        should be sure that you actually need this type of synchronization
  *        before using it.
  */
-class MutexRecursive {
+class MutexRecursive : public Mutex {
 
     /////////////////////////////////////////////////////////////////////////
     //
@@ -209,7 +203,7 @@ class MutexRecursive {
          *  @param Timeout How long to wait to get the Lock until giving up.
          *  @return true if the Lock was acquired, false if it timed out.
          */
-        bool Lock(TickType_t Timeout = portMAX_DELAY);
+        virtual bool Lock(TickType_t Timeout = portMAX_DELAY);
 
         /**
          *  Unlock the Mutex.
@@ -217,7 +211,7 @@ class MutexRecursive {
          *  @return true if the Lock was released, false if it failed. (Hint,
          *           if it fails, did you call Lock() first?)
          */
-        bool Unlock();
+        virtual bool Unlock();
 };
 
 #endif
@@ -265,7 +259,7 @@ class LockGuard {
         /**
          *  We do not want a copy constructor.
          */
-        LockGuard(const LockGuard&) = delete;
+        LockGuard(const LockGuard&);
 
         /**
          *  Reference to the Mutex we locked, so it can be unlocked

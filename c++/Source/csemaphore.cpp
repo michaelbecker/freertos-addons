@@ -21,7 +21,7 @@
 #include "semaphore.hpp"
 
 
-using namespace rtos_cpp;
+using namespace cpp_freertos;
 
 
 bool Semaphore::Take(TickType_t xBlockTime)

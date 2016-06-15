@@ -21,7 +21,7 @@
 #include "queue.hpp"
 
 
-using namespace rtos_cpp;
+using namespace cpp_freertos;
 
 
 Queue::Queue(UBaseType_t maxItems, UBaseType_t itemSize)
@@ -183,7 +183,7 @@ bool BinaryQueue::Enqueue(void *item)
 }
 
 
-bool BinaryQueue::EnqueueFromISR(const void *item, BaseType_t *pxHigherPriorityTaskWoken)
+bool BinaryQueue::EnqueueFromISR(void *item, BaseType_t *pxHigherPriorityTaskWoken)
 {
     (void)xQueueOverwriteFromISR(handle, item, pxHigherPriorityTaskWoken);
     return true;

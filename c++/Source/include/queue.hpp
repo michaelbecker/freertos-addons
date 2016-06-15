@@ -26,6 +26,8 @@
 #include <string>
 #include "FreeRTOS.h"
 #include "queue.h"
+// TODO - explore replacing sprintf with stringstream
+#include <cstdio>
 
 
 namespace cpp_freertos {

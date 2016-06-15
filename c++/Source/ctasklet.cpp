@@ -21,7 +21,7 @@
 #include "tasklet.hpp"
 
 
-using namespace rtos_cpp;
+using namespace cpp_freertos;
 
 
 Tasklet::Tasklet()
@@ -38,7 +38,7 @@ void Tasklet::TaskletAdapterFunction(void *reference, uint32_t parameter)
 {
     Tasklet *tasklet = static_cast<Tasklet *>(reference);
 
-    tasklet->run(parameter);
+    tasklet->Run(parameter);
 }
 
 
@@ -50,9 +50,9 @@ bool Tasklet::Schedule( uint32_t parameter,
     rc = xTimerPendFunctionCall(TaskletAdapterFunction,
                                 this,
                                 parameter,
-                                xTicksToWait);
+                                CmdTimeout);
 
-    return rc == pdPASS : true ? false;
+    return rc == pdPASS ? true : false;
 }
 
 
@@ -66,5 +66,5 @@ bool Tasklet::ScheduleFromISR(  uint32_t parameter,
                                         parameter,
                                         pxHigherPriorityTaskWoken);
 
-    return rc == pdPASS : true ? false;
+    return rc == pdPASS ? true : false;
 }

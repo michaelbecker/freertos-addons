@@ -26,6 +26,8 @@
 #include <string>
 #include "FreeRTOS.h"
 #include "timers.h"
+// TODO - explore replacing sprintf with stringstream
+#include <cstdio>
 
 
 namespace cpp_freertos {
@@ -40,10 +42,9 @@ class TimerCreateException  : public std::exception {
         /**
          *  Create the exception.
          */
-        TimerCreateException(BaseType_t error)
+        TimerCreateException()
         {
-            errorCode = error;
-            sprintf(errorString, "Timer Constructor Failed %d", errorCode);
+            sprintf(errorString, "Timer Constructor Failed");
         }
 
         /**
@@ -55,20 +56,7 @@ class TimerCreateException  : public std::exception {
             return errorString;
         }
 
-        /**
-         *  Get the FreeRTOS error code.
-         */
-        BaseType_t getErrorCode()
-        {
-            return errorCode;
-        }
-
     private:
-        /**
-         *  Save the FreeRTOS return code code from xTaskCreate().
-         */
-        BaseType_t errorCode;
-
         /**
          *  A text string representing what failed.
          */

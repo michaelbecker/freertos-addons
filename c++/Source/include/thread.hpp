@@ -25,6 +25,8 @@
 #include <string>
 #include "FreeRTOS.h"
 #include "task.h"
+// TODO - explore replacing sprintf with stringstream
+#include <cstdio>
 
 
 namespace cpp_freertos {
@@ -42,7 +44,7 @@ class ThreadCreateException  : public std::exception {
         ThreadCreateException(BaseType_t error)
         {
             errorCode = error;
-            sprintf(errorString, "Thread Constructor Failed %d", errorCode);
+            sprintf(errorString, "Thread Constructor Failed %d", (int)errorCode);
         }
 
         /**
@@ -231,7 +233,7 @@ class Thread {
          *  @param NewPriority The thread's new priority.
          */
         static inline void SetPriority( Thread& thread,
-                                        UBaseType_t NewPriority);
+                                        UBaseType_t NewPriority)
         {
             vTaskPrioritySet(thread.GetHandle(), NewPriority);
         }
