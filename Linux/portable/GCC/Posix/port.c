@@ -1,10 +1,17 @@
 /*
  *  Copyright (C) 2016 Michael Becker (michael.f.becker@gmail.com
  *  Modified from code from William Davy (william.davy@wittenstein.co.uk)
- *  TODO - Modifications...
+ *
+ *  Modifications (not exhaustive):
+ *  ---------------------------------------------
+ *  + Updated to work with FreeRTOS v8.2.3
+ *
+ *  + Updated code that works with pthreads to 
+ *    treat pthread_t data as opaque data structures,
+ *    as specified in the POSIX standard. Likewise, 
+ *    cannot initialize them to NULL, not portable.
  *
  */
-
 /*
     Copyright (C) 2009 William Davy - william.davy@wittenstein.co.uk
     Contributed to FreeRTOS.org V5.3.0.
@@ -75,6 +82,7 @@
 #include <sys/syscall.h>
 #include <sys/types.h>
 #include <assert.h>
+#include <string.h>
 
 /* Scheduler includes. */
 #include "FreeRTOS.h"
@@ -150,7 +158,6 @@ first_leading_bit(  int *index,         /* [out] */
 }
 
 
-#define MAX_NUMBER_OF_TASKS ( _POSIX_THREAD_THREADS_MAX )
 
 
 /* Parameters to pass to the newly created pthread. */
@@ -162,21 +169,28 @@ typedef struct XPARAMS
 
 
 /* Each task maintains its own interrupt status in the critical nesting variable. */
-typedef struct THREAD_SUSPENSIONS
+typedef struct ThreadState_t
 {
     pthread_t hThread;
+    int PthreadValid;    /* Treated as a boolean */
+
     xTaskHandle hTask;
     unsigned portBASE_TYPE uxCriticalNesting;
+
+    xParams Parameters;
+
 } xThreadState;
 
 
+#define MAX_NUMBER_OF_TASKS ( _POSIX_THREAD_THREADS_MAX )
+static xThreadState pxThreads[MAX_NUMBER_OF_TASKS];
 
-static xThreadState *pxThreads;
 static pthread_once_t hSigSetupThread = PTHREAD_ONCE_INIT;
+
 static pthread_mutex_t xSuspendResumeThreadMutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t xSingleThreadMutex = PTHREAD_MUTEX_INITIALIZER;
-static pthread_t hMainThread = ( pthread_t )NULL;
 
+static pthread_t hMainThread;
 
 static volatile portBASE_TYPE xSentinel = 0;
 static volatile portBASE_TYPE xSchedulerEnd = pdFALSE;
@@ -187,15 +201,18 @@ static volatile portLONG lIndexOfLastAddedTask = 0;
 static volatile unsigned portBASE_TYPE uxCriticalNesting;
 
 
+/**
+ *  pthread cleanup routine, always executed on pthread exit.
+ */
 static void prvDeleteThread( void *xThreadId )
 {
     int i;
 
     for (i = 0; i < MAX_NUMBER_OF_TASKS; i++)
     {
-        if ( pxThreads[i].hThread == (pthread_t)xThreadId )
+        if ( pthread_equal(pxThreads[i].hThread, (pthread_t)xThreadId) )
         {
-            pxThreads[i].hThread = (pthread_t)NULL;
+            pxThreads[i].PthreadValid = 0;
             pxThreads[i].hTask = (xTaskHandle)NULL;
             if ( pxThreads[i].uxCriticalNesting > 0 )
             {
@@ -209,6 +226,9 @@ static void prvDeleteThread( void *xThreadId )
 }
 
 
+/**
+ *  Sends SIG_SUSPEND to target thread.
+ */
 static void prvSuspendThread( pthread_t xThreadId )
 {
     pthread_mutex_lock( &xSuspendResumeThreadMutex );
@@ -224,12 +244,14 @@ static void prvSuspendThread( pthread_t xThreadId )
 }
 
 
+/**
+ *  Actual pthreads code, wrapper around FreeRTOS task.
+ */
 static void *prvWaitForStart( void * pvParams )
 {
     xParams * pxParams = ( xParams * )pvParams;
     pdTASK_CODE pvCode = pxParams->pxCode;
     void * pParams = pxParams->pvParams;
-    vPortFree( pvParams );
 
     pthread_cleanup_push( prvDeleteThread, (void *)pthread_self() );
 
@@ -238,14 +260,20 @@ static void *prvWaitForStart( void * pvParams )
 
     pvCode( pParams );
 
+    /* make sure we execute prvDeleteThread */
     pthread_cleanup_pop( 1 );
+
     return (void *)NULL;
 }
 
 
+/**
+ *  Signal handler for SIG_SUSPEND
+ */
 static void prvSuspendSignalHandler(int sig)
 {
     sigset_t xSignals;
+    int rc;
 
     /* Only interested in the resume signal. */
     sigemptyset( &xSignals );
@@ -253,16 +281,11 @@ static void prvSuspendSignalHandler(int sig)
     xSentinel = 1;
 
     /* Unlock the Single thread mutex to allow the resumed task to continue. */
-    if ( 0 != pthread_mutex_unlock( &xSingleThreadMutex ) )
-    {
-        printf( "Releasing someone else's lock.\n" );
-    }
+    pthread_mutex_unlock(&xSingleThreadMutex);
 
     /* Wait on the resume signal. */
-    if ( 0 != sigwait( &xSignals, &sig ) )
-    {
-        printf( "SSH: Sw %d\n", sig );
-    }
+    rc = sigwait(&xSignals, &sig);
+    assert(rc == 0);
 
     /* Will resume here when the SIG_RESUME signal is received. */
     /* Need to set the interrupts based on the task's critical nesting. */
@@ -277,45 +300,50 @@ static void prvSuspendSignalHandler(int sig)
 }
 
 
+/**
+ *  Signal handler for SIG_RESUME.
+ */
 static void prvResumeSignalHandler(int sig)
 {
     (void)sig;
 
     /* Yield the Scheduler to ensure that the yielding thread completes. */
-    if ( 0 == pthread_mutex_lock( &xSingleThreadMutex ) )
-    {
-        (void)pthread_mutex_unlock( &xSingleThreadMutex );
-    }
+    pthread_mutex_lock(&xSingleThreadMutex);
+
+    pthread_mutex_unlock(&xSingleThreadMutex);
 }
 
 
+/**
+ *  Sends SIG_RESUME to target thread.
+ */
 static void prvResumeThread( pthread_t xThreadId )
 {
-    if ( 0 == pthread_mutex_lock( &xSuspendResumeThreadMutex ) )
+    pthread_mutex_lock(&xSuspendResumeThreadMutex);
+
+    if ( pthread_self() != xThreadId )
     {
-        if ( pthread_self() != xThreadId )
-        {
-            pthread_kill( xThreadId, SIG_RESUME );
-        }
-        pthread_mutex_unlock( &xSuspendResumeThreadMutex );
+        pthread_kill( xThreadId, SIG_RESUME );
     }
+
+    pthread_mutex_unlock( &xSuspendResumeThreadMutex );
 }
 
 
-static pthread_t prvGetThreadHandle( xTaskHandle hTask )
+static void prvGetThreadHandle(xTaskHandle hTask, pthread_t *hThread)
 {
-    pthread_t hThread = ( pthread_t )NULL;
     int i;
     
     for (i = 0; i < MAX_NUMBER_OF_TASKS; i++)
     {
         if (pxThreads[i].hTask == hTask)
         {
-            hThread = pxThreads[i].hThread;
-            break;
+            *hThread = pxThreads[i].hThread;
+            return;
         }
     }
-    return hThread;
+
+    assert(!"Failed finding pthread for task mapping!");
 }
 
 
@@ -325,12 +353,14 @@ static void prvSetTaskCriticalNesting( pthread_t xThreadId, unsigned portBASE_TY
 
     for (i = 0; i < MAX_NUMBER_OF_TASKS; i++)
     {
-        if ( pxThreads[i].hThread == xThreadId )
+        if ( pthread_equal(pxThreads[i].hThread, xThreadId) )
         {
             pxThreads[i].uxCriticalNesting = uxNesting;
-            break;
+            return;
         }
     }
+
+    assert(!"Failed finding pthread for task mapping!");
 }
 
 
@@ -341,16 +371,20 @@ static unsigned portBASE_TYPE prvGetTaskCriticalNesting( pthread_t xThreadId )
 
     for (i = 0; i < MAX_NUMBER_OF_TASKS; i++)
     {
-        if ( pxThreads[i].hThread == xThreadId )
+        if ( pthread_equal(pxThreads[i].hThread, xThreadId) )
         {
             uxNesting = pxThreads[i].uxCriticalNesting;
-            break;
+            return uxNesting;
         }
     }
-    return uxNesting;
+    
+    assert(!"Failed finding pthread for task mapping!");
 }
 
 
+/**
+ *  Signal handler for SIG_TICK.
+ */
 static void vPortSystemTickHandler( int sig )
 {
     pthread_t xTaskToSuspend;
@@ -364,13 +398,13 @@ static void vPortSystemTickHandler( int sig )
         {
             xServicingTick = pdTRUE;
 
-            xTaskToSuspend = prvGetThreadHandle( xTaskGetCurrentTaskHandle() );
+            prvGetThreadHandle(xTaskGetCurrentTaskHandle(), &xTaskToSuspend);
 
             /* Select Next Task. */
 #if ( configUSE_PREEMPTION == 1 )
             vTaskSwitchContext();
 #endif
-            xTaskToResume = prvGetThreadHandle( xTaskGetCurrentTaskHandle() );
+            prvGetThreadHandle(xTaskGetCurrentTaskHandle(), &xTaskToResume);
 
             /* The only thread that can process this tick is the running thread. */
             if ( xTaskToSuspend != xTaskToResume )
@@ -386,7 +420,7 @@ static void vPortSystemTickHandler( int sig )
             else
             {
                 /* Release the lock as we are Resuming. */
-                (void)pthread_mutex_unlock( &xSingleThreadMutex );
+                pthread_mutex_unlock( &xSingleThreadMutex );
             }
             xServicingTick = pdFALSE;
         }
@@ -402,6 +436,9 @@ static void vPortSystemTickHandler( int sig )
 }
 
 
+/**
+ *  Only run once!
+ */
 static void prvSetupSignalsAndSchedulerPolicy( void )
 {
     /* The following code would allow for configuring the scheduling of this task as a Real-time task.
@@ -415,16 +452,8 @@ static void prvSetupSignalsAndSchedulerPolicy( void )
     iResult = pthread_setschedparam( pthread_self(), iPolicy, &iSchedulerPriority );        */
 
     struct sigaction sigsuspendself, sigresume, sigtick;
-    int i;
 
-    pxThreads = ( xThreadState *)pvPortMalloc( sizeof( xThreadState ) * MAX_NUMBER_OF_TASKS );
-    
-    for (i = 0; i < MAX_NUMBER_OF_TASKS; i++)
-    {
-        pxThreads[i].hThread = (pthread_t)NULL;
-        pxThreads[i].hTask = (xTaskHandle)NULL;
-        pxThreads[i].uxCriticalNesting = 0;
-    }
+    memset(pxThreads, 0, sizeof(pxThreads));
 
     sigsuspendself.sa_flags = 0;
     sigsuspendself.sa_handler = prvSuspendSignalHandler;
@@ -451,28 +480,11 @@ static void prvSetupSignalsAndSchedulerPolicy( void )
         printf( "Problem installing SIG_TICK\n" );
     }
     printf( "Running as PID: %d\n", getpid() );
-}
 
-
-static portLONG prvGetFreeThreadState( void )
-{
-    int i;
-    for (i = 0; i < MAX_NUMBER_OF_TASKS; i++ )
-    {
-        if ( pxThreads[i].hThread == (pthread_t)NULL )
-        {
-            break;
-        }
-    }
-
-    if (MAX_NUMBER_OF_TASKS == i)
-    {
-        printf( "No more free threads, please increase the maximum.\n" );
-        i = 0;
-        vPortEndScheduler();
-    }
-
-    return i;
+    /*
+     *  Also save the first thread as the main thread.
+     */
+    hMainThread = pthread_self();
 }
 
 
@@ -482,66 +494,61 @@ static portLONG prvGetFreeThreadState( void )
 portSTACK_TYPE *pxPortInitialiseStack( portSTACK_TYPE *pxTopOfStack, pdTASK_CODE pxCode, void *pvParameters )
 {
     int rc;
+    int i;
     pthread_attr_t xThreadAttributes;
     
-    /* Should actually keep this struct on the stack. */
-    xParams *pxThisThreadParams = pvPortMalloc( sizeof( xParams ) );
-
-    (void)pthread_once( &hSigSetupThread, prvSetupSignalsAndSchedulerPolicy );
-
-    if ( (pthread_t)NULL == hMainThread )
-    {
-        hMainThread = pthread_self();
-    }
+    pthread_once( &hSigSetupThread, prvSetupSignalsAndSchedulerPolicy );
 
     /* No need to join the threads. */
     pthread_attr_init( &xThreadAttributes );
     pthread_attr_setdetachstate( &xThreadAttributes, PTHREAD_CREATE_DETACHED );
 
-    /* Add the task parameters. */
-    pxThisThreadParams->pxCode = pxCode;
-    pxThisThreadParams->pvParams = pvParameters;
-
     vPortEnterCritical();
 
-    lIndexOfLastAddedTask = prvGetFreeThreadState();
-
-    /* Create the new pThread. */
-    if ( 0 == pthread_mutex_lock( &xSingleThreadMutex ) )
+    for (i = 0; i < MAX_NUMBER_OF_TASKS; i++ )
     {
-        xSentinel = 0;
-
-        rc = pthread_create(&( pxThreads[ lIndexOfLastAddedTask ].hThread ), 
-                            &xThreadAttributes, 
-                            prvWaitForStart, 
-                            (void *)pxThisThreadParams 
-                            );
-        if (rc != 0)
+        if (pxThreads[i].PthreadValid == 0)
         {
-            /* Thread create failed, signal the failure */
-            pxTopOfStack = 0;
+            lIndexOfLastAddedTask = i;
+            break;
         }
-
-        /* Wait until the task suspends. */
-        (void)pthread_mutex_unlock( &xSingleThreadMutex );
-        while ( xSentinel == 0 );
-        vPortExitCritical();
     }
 
+    /* No more free threads, please increase the maximum. */
+    assert(i < MAX_NUMBER_OF_TASKS);
+
+
+    /* Add the task parameters. */
+    pxThreads[lIndexOfLastAddedTask].Parameters.pxCode = pxCode;
+    pxThreads[lIndexOfLastAddedTask].Parameters.pvParams = pvParameters;
+
+    /* Create the new pThread. */
+    pthread_mutex_lock(&xSingleThreadMutex);
+
+    xSentinel = 0;
+
+    rc = pthread_create(&( pxThreads[ lIndexOfLastAddedTask ].hThread ), 
+                        &xThreadAttributes, 
+                        prvWaitForStart, 
+                        (void *)&pxThreads[lIndexOfLastAddedTask].Parameters
+                        );
+    if (rc != 0)
+    {
+        /* Thread create failed, signal the failure */
+        pxTopOfStack = 0;
+    }
+    else 
+    {
+        pxThreads[lIndexOfLastAddedTask].PthreadValid = 1;
+    }
+
+    /* Wait until the task suspends. */
+    pthread_mutex_unlock( &xSingleThreadMutex );
+
+    while ( xSentinel == 0 );
+    vPortExitCritical();
+
     return pxTopOfStack;
-}
-
-
-static void vPortStartFirstTask( void )
-{
-    /* Initialise the critical nesting count ready for the first task. */
-    uxCriticalNesting = 0;
-
-    /* Start the first task. */
-    vPortEnableInterrupts();
-
-    /* Start the first task. */
-    prvResumeThread( prvGetThreadHandle( xTaskGetCurrentTaskHandle() ) );
 }
 
 
@@ -549,7 +556,7 @@ static void vPortStartFirstTask( void )
  * Setup the systick timer to generate the tick interrupts at the required
  * frequency.
  */
-void prvSetupTimerInterrupt( void )
+static void prvSetupTimerInterrupt( void )
 {
     int rc;
     struct itimerval itimer, oitimer;
@@ -583,6 +590,7 @@ portBASE_TYPE xPortStartScheduler( void )
     sigset_t xSignalToBlock;
     sigset_t xSignalsBlocked;
     int i;
+    pthread_t FirstThread;
 
     /* Establish the signals to block before they are needed. */
     sigfillset( &xSignalToBlock );
@@ -600,7 +608,16 @@ portBASE_TYPE xPortStartScheduler( void )
     prvSetupTimerInterrupt();
 
     /* Start the first task. Will not return unless all threads are killed. */
-    vPortStartFirstTask();
+    /* Initialise the critical nesting count ready for the first task. */
+    uxCriticalNesting = 0;
+
+    vPortEnableInterrupts();
+
+    prvGetThreadHandle( xTaskGetCurrentTaskHandle(), &FirstThread);
+
+    /* Start the first task. */
+    prvResumeThread(FirstThread);
+
 
     /* This is the end signal we are looking for. */
     sigemptyset( &xSignals );
@@ -618,7 +635,6 @@ portBASE_TYPE xPortStartScheduler( void )
     /* Cleanup the mutexes */
     pthread_mutex_destroy( &xSuspendResumeThreadMutex );
     pthread_mutex_destroy( &xSingleThreadMutex );
-    vPortFree( (void *)pxThreads );
 
     /* Should not get here! */
     return 0;
@@ -627,19 +643,22 @@ portBASE_TYPE xPortStartScheduler( void )
 
 void vPortEndScheduler( void )
 {
-    portBASE_TYPE xNumberOfThreads;
-    for ( xNumberOfThreads = 0; xNumberOfThreads < MAX_NUMBER_OF_TASKS; xNumberOfThreads++ )
+    portBASE_TYPE i;
+
+    for (i = 0; i < MAX_NUMBER_OF_TASKS; i++)
     {
-        if ( ( pthread_t )NULL != pxThreads[ xNumberOfThreads ].hThread )
+        if ( pxThreads[i].PthreadValid )
         {
             /* Kill all of the threads, they are in the detached state. */
-            pthread_cancel( pxThreads[ xNumberOfThreads ].hThread );
+            pthread_cancel(pxThreads[i].hThread );
+            pxThreads[i].PthreadValid = 0;
         }
     }
 
     /* Signal the scheduler to exit its loop. */
     xSchedulerEnd = pdTRUE;
-    (void)pthread_kill( hMainThread, SIG_RESUME );
+
+    pthread_kill( hMainThread, SIG_RESUME );
 }
 
 
@@ -687,27 +706,27 @@ void vPortYield( void )
     pthread_t xTaskToSuspend;
     pthread_t xTaskToResume;
 
-    if ( 0 == pthread_mutex_lock( &xSingleThreadMutex ) )
+    pthread_mutex_lock(&xSingleThreadMutex);
+
+    prvGetThreadHandle(xTaskGetCurrentTaskHandle(), &xTaskToSuspend);
+
+    vTaskSwitchContext();
+
+    prvGetThreadHandle(xTaskGetCurrentTaskHandle(), &xTaskToResume);
+
+    if ( xTaskToSuspend != xTaskToResume )
     {
-        xTaskToSuspend = prvGetThreadHandle( xTaskGetCurrentTaskHandle() );
-
-        vTaskSwitchContext();
-
-        xTaskToResume = prvGetThreadHandle( xTaskGetCurrentTaskHandle() );
-        if ( xTaskToSuspend != xTaskToResume )
-        {
-            /* Remember and switch the critical nesting. */
-            prvSetTaskCriticalNesting( xTaskToSuspend, uxCriticalNesting );
-            uxCriticalNesting = prvGetTaskCriticalNesting( xTaskToResume );
-            /* Switch tasks. */
-            prvResumeThread( xTaskToResume );
-            prvSuspendThread( xTaskToSuspend );
-        }
-        else
-        {
-            /* Yielding to self */
-            (void)pthread_mutex_unlock( &xSingleThreadMutex );
-        }
+        /* Remember and switch the critical nesting. */
+        prvSetTaskCriticalNesting( xTaskToSuspend, uxCriticalNesting );
+        uxCriticalNesting = prvGetTaskCriticalNesting( xTaskToResume );
+        /* Switch tasks. */
+        prvResumeThread( xTaskToResume );
+        prvSuspendThread( xTaskToSuspend );
+    }
+    else
+    {
+        /* Yielding to self */
+        pthread_mutex_unlock( &xSingleThreadMutex );
     }
 }
 
@@ -737,49 +756,50 @@ void vPortClearInterruptMask( portBASE_TYPE xMask )
     xInterruptsEnabled = xMask;
 }
 
-
+/**
+ *  Public API used in tasks.c
+ */
 void vPortForciblyEndThread( void *pxTaskToDelete )
 {
     xTaskHandle hTaskToDelete = ( xTaskHandle )pxTaskToDelete;
     pthread_t xTaskToDelete;
     pthread_t xTaskToResume;
 
-    if ( 0 == pthread_mutex_lock( &xSingleThreadMutex ) )
+    pthread_mutex_lock(&xSingleThreadMutex);
+
+    prvGetThreadHandle(hTaskToDelete, &xTaskToDelete);
+    prvGetThreadHandle(xTaskGetCurrentTaskHandle(), &xTaskToResume);
+
+    if ( xTaskToResume == xTaskToDelete )
     {
-        xTaskToDelete = prvGetThreadHandle( hTaskToDelete );
-        xTaskToResume = prvGetThreadHandle( xTaskGetCurrentTaskHandle() );
+        /* This is a suicidal thread, need to select a different task to run. */
+        vTaskSwitchContext();
+        prvGetThreadHandle(xTaskGetCurrentTaskHandle(), &xTaskToResume);
+    }
 
-        if ( xTaskToResume == xTaskToDelete )
+    if ( pthread_self() != xTaskToDelete )
+    {
+        /* Cancelling a thread that is not me. */
+        if ( xTaskToDelete != ( pthread_t )NULL )
         {
-            /* This is a suicidal thread, need to select a different task to run. */
-            vTaskSwitchContext();
-            xTaskToResume = prvGetThreadHandle( xTaskGetCurrentTaskHandle() );
-        }
-
-        if ( pthread_self() != xTaskToDelete )
-        {
-            /* Cancelling a thread that is not me. */
-            if ( xTaskToDelete != ( pthread_t )NULL )
-            {
-                /* Send a signal to wake the task so that it definitely cancels. */
-                pthread_testcancel();
-                pthread_cancel( xTaskToDelete );
-                /* Pthread Clean-up function will note the cancellation. */
-            }
-            (void)pthread_mutex_unlock( &xSingleThreadMutex );
-        }
-        else
-        {
-            /* Resume the other thread. */
-            prvResumeThread( xTaskToResume );
+            /* Send a signal to wake the task so that it definitely cancels. */
+            pthread_testcancel();
+            pthread_cancel( xTaskToDelete );
             /* Pthread Clean-up function will note the cancellation. */
-            /* Release the execution. */
-            uxCriticalNesting = 0;
-            vPortEnableInterrupts();
-            (void)pthread_mutex_unlock( &xSingleThreadMutex );
-            /* Commit suicide */
-            pthread_exit( (void *)1 );
         }
+        pthread_mutex_unlock( &xSingleThreadMutex );
+    }
+    else
+    {
+        /* Resume the other thread. */
+        prvResumeThread( xTaskToResume );
+        /* Pthread Clean-up function will note the cancellation. */
+        /* Release the execution. */
+        uxCriticalNesting = 0;
+        vPortEnableInterrupts();
+        pthread_mutex_unlock( &xSingleThreadMutex );
+        /* Commit suicide */
+        pthread_exit( (void *)1 );
     }
 }
 
@@ -792,11 +812,11 @@ void vPortAddTaskHandle( void *pxTaskHandle )
 
     for (i = 0; i < MAX_NUMBER_OF_TASKS; i++)
     {
-        if ( pxThreads[i].hThread == pxThreads[ lIndexOfLastAddedTask ].hThread )
+        if ( pthread_equal(pxThreads[i].hThread, pxThreads[lIndexOfLastAddedTask].hThread))
         {
             if ( pxThreads[i].hTask != pxThreads[ lIndexOfLastAddedTask ].hTask )
             {
-                pxThreads[i].hThread = ( pthread_t )NULL;
+                pxThreads[i].PthreadValid = 0;
                 pxThreads[i].hTask = NULL;
                 pxThreads[i].uxCriticalNesting = 0;
             }
