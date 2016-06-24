@@ -10,9 +10,9 @@ FREERTOS_CPP_INC_DIR=../../../c++/Source/include
 CC = gcc
 CXX = g++
 
-CFLAGS += -Wall -Werror -Wextra -Wpedantic -pthread
-CXXFLAGS += -Wall -Werror -Wextra -Wpedantic -pthread
-LDFLAGS += -Wall -Werror -Wextra -Wpedantic -pthread
+CFLAGS += -Wall -Werror -Wextra -Wpedantic -pthread -O0 -g
+CXXFLAGS += -Wall -Werror -Wextra -Wpedantic -pthread -O0 -g
+LDFLAGS += -Wall -Werror -Wextra -Wpedantic -pthread -O0 -g
 
 
 

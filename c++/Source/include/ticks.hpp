@@ -75,6 +75,17 @@ class Ticks {
         {
             return milliseconds / portTICK_PERIOD_MS;
         }
+
+        /**
+         *  Convert from seconds to ticks.
+         *
+         *  @param milliseconds milliseconds to convert.
+         *  @return ticks
+         */
+        static inline TickType_t SecondsToTicks(TickType_t seconds)
+        {
+            return (seconds * 1000) / portTICK_PERIOD_MS;
+        }
 };
 
 
