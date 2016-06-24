@@ -95,74 +95,6 @@
 #include "portmacro.h"
 
 
-/**
- *  Provides a count of the leading zeros in an integer.
- *
- *  @param mask we are counting zero bits in.
- *  @returns number of leading zeros
- */
-int
-count_leading_zeros(unsigned int mask)
-{
-    int count = 0;
-
-    if (mask == 0){
-        return 32;
-    }
-
-    if (mask <= 0x0000FFFF) {
-        count += 16;
-        mask <<= 16;
-    }
-
-    if (mask <= 0x00FFFFFF) {
-        count += 8;
-        mask <<= 8;
-    }
-
-    if (mask <= 0x0FFFFFFF) {
-        count += 4;
-        mask <<= 4;
-    }
-
-    if (mask <= 0x3FFFFFFF) {
-        count += 2;
-        mask <<= 2;
-    }
-
-    if (mask <= 0x7FFFFFFF) {
-        count += 1;
-    }
-
-    return count;
-}
-
-/**
- *  Provides a zero based index of the first MSb set 
- *  in the given mask.
- *
- *  @param index Pointer where we will return the zero based 
- *  index of the first MSb set.
- *  @param mask where we are searching.
- *  @returns zero if no bits are set. one of there is 
- *  some bit set.
- */
-int
-first_leading_bit(  int *index,         /* [out] */
-                    unsigned int mask)  /* [in]  */
-{
-    int num_leading_zeros = count_leading_zeros(mask);
-
-    if (num_leading_zeros == 32){  
-        return 0;
-    }
-
-    *index = 31 - num_leading_zeros;
-
-    return 1;
-}
-
-
 /* Each task maintains its own interrupt status in the critical nesting variable. */
 typedef struct ThreadState_t_
 {
@@ -247,7 +179,8 @@ static void SuspendSignalHandler(int sig)
     xSentinel = 1;
 
     /* Unlock the Single thread mutex to allow the resumed task to continue. */
-    pthread_mutex_unlock(&xSingleThreadMutex);
+    rc = pthread_mutex_unlock(&xSingleThreadMutex);
+    assert(rc == 0);
 
     /* Wait on the resume signal. */
     rc = sigwait(&xSignals, &sig);
@@ -274,9 +207,9 @@ static void ResumeSignalHandler(int sig)
     (void)sig;
 
     /* Yield the Scheduler to ensure that the yielding thread completes. */
-    pthread_mutex_lock(&xSingleThreadMutex);
-
-    pthread_mutex_unlock(&xSingleThreadMutex);
+    if (pthread_mutex_lock(&xSingleThreadMutex) == 0) {
+        pthread_mutex_unlock(&xSingleThreadMutex);
+    }
 }
 
 
@@ -285,7 +218,10 @@ static void ResumeSignalHandler(int sig)
  */
 static void ResumeThread( pthread_t Thread )
 {
-    pthread_mutex_lock(&xSuspendResumeThreadMutex);
+    int rc;
+
+    rc = pthread_mutex_lock(&xSuspendResumeThreadMutex);
+    assert(rc == 0);
 
     if ( !pthread_equal(pthread_self(), Thread))
     {
@@ -518,7 +454,8 @@ portSTACK_TYPE *pxPortInitialiseStack( portSTACK_TYPE *pxTopOfStack, pdTASK_CODE
     pxThreads[lIndexOfLastAddedTask].pvParams = pvParameters;
 
     /* Create the new pThread. */
-    pthread_mutex_lock(&xSingleThreadMutex);
+    rc = pthread_mutex_lock(&xSingleThreadMutex);
+    assert(rc == 0);
 
     xSentinel = 0;
 
@@ -562,19 +499,26 @@ static void prvSetupTimerInterrupt( void )
 {
     int rc;
     struct itimerval itimer, oitimer;
-    portTickType xMicroSeconds = portTICK_RATE_MICROSECONDS;
+    suseconds_t MicroSeconds = (suseconds_t)(portTICK_RATE_MICROSECONDS % 1000000);
+    time_t Seconds = portTICK_RATE_MICROSECONDS / 1000000;
 
     /* Initialise the structure with the current timer information. */
     rc = getitimer( TIMER_TYPE, &itimer);
     assert(rc == 0);
 
     /* Set the interval between timer events. */
-    itimer.it_interval.tv_sec = 0;
-    itimer.it_interval.tv_usec = xMicroSeconds;
+    itimer.it_interval.tv_sec = Seconds;
+    itimer.it_interval.tv_usec = MicroSeconds;
 
     /* Set the current count-down. */
-    itimer.it_value.tv_sec = 0;
-    itimer.it_value.tv_usec = xMicroSeconds;
+    itimer.it_value.tv_sec = Seconds;
+    itimer.it_value.tv_usec = MicroSeconds;
+
+    printf("Timer Setup:\n");
+    printf("  Interval: %ld seconds, %ld useconds\n", 
+            itimer.it_interval.tv_sec, itimer.it_interval.tv_usec);
+    printf("  Current: %ld seconds, %ld useconds\n", 
+            itimer.it_value.tv_sec, itimer.it_value.tv_usec);
 
     /* Set-up the timer interrupt. */
     rc = setitimer( TIMER_TYPE, &itimer, &oitimer );
@@ -699,10 +643,12 @@ void vPortExitCritical( void )
 
 void vPortYield( void )
 {
+    int rc;
     pthread_t ThreadToSuspend;
     pthread_t ThreadToResume;
 
-    pthread_mutex_lock(&xSingleThreadMutex);
+    rc = pthread_mutex_lock(&xSingleThreadMutex);
+    assert(rc == 0);
 
     LookupThread(xTaskGetCurrentTaskHandle(), &ThreadToSuspend);
 

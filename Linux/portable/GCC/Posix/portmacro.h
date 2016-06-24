@@ -144,35 +144,12 @@ extern void vPortExitCritical( void );
 
 
 #ifndef configUSE_PORT_OPTIMISED_TASK_SELECTION
-	#define configUSE_PORT_OPTIMISED_TASK_SELECTION 1
+	#define configUSE_PORT_OPTIMISED_TASK_SELECTION 0
 #endif
 
 #if configUSE_PORT_OPTIMISED_TASK_SELECTION == 1
-
-	/* Check the configuration. */
-	#if( configMAX_PRIORITIES > 32 )
-		#error configUSE_PORT_OPTIMISED_TASK_SELECTION can only be set to 1 when configMAX_PRIORITIES is less than or equal to 32.  It is very rare that a system requires more than 10 to 15 difference priorities as tasks that share a priority will time slice.
-	#endif
-
-	/* Store/clear the ready priorities in a bit map. */
-	#define portRECORD_READY_PRIORITY( uxPriority, uxReadyPriorities ) ( uxReadyPriorities ) |= ( 1UL << ( uxPriority ) )
-	#define portRESET_READY_PRIORITY( uxPriority, uxReadyPriorities ) ( uxReadyPriorities ) &= ~( 1UL << ( uxPriority ) )
-
-
-	/*-----------------------------------------------------------*/
-
-	#ifdef __GNUC__
-
-		/* returns the bit position of the most significant '1' in the word.*/
-        int first_leading_bit(int *index, unsigned int mask);
-        /* Clean implementation of _BitScanReverse() */
-        #define portGET_HIGHEST_PRIORITY( uxTopPriority, uxReadyPriorities ) first_leading_bit( ((int *)&( uxTopPriority )), ( uxReadyPriorities ) )
-
-	#else
-        #error This is a Linux sim port. __GNUC__ should be defined.
-	#endif /* __GNUC__ */
-
-#endif /* taskRECORD_READY_PRIORITY */
+#error We are not supporting configUSE_PORT_OPTIMISED_TASK_SELECTION in the Linux Simulator.
+#endif 
 
 
 /* Task function macros as described on the FreeRTOS.org WEB site. */
@@ -193,12 +170,12 @@ extern void vPortAddTaskHandle( void *pxTaskHandle );
 #define SIG_SUSPEND					SIGUSR1
 #define SIG_RESUME					SIGUSR2
 
-/* Enable the following hash defines to make use of the real-time tick where time progresses at real-time. */
+/* Enable the following hash defines to make use of the real-time tick where time progresses at real-time. 
 #define SIG_TICK					SIGALRM
-#define TIMER_TYPE					ITIMER_REAL
-/* Enable the following hash defines to make use of the process tick where time progresses only when the process is executing.
+#define TIMER_TYPE					ITIMER_REAL */
+/* Enable the following hash defines to make use of the process tick where time progresses only when the process is executing. */
 #define SIG_TICK					SIGVTALRM
-#define TIMER_TYPE					ITIMER_VIRTUAL		*/
+#define TIMER_TYPE					ITIMER_VIRTUAL
 /* Enable the following hash defines to make use of the profile tick where time progresses when the process or system calls are executing.
 #define SIG_TICK					SIGPROF
 #define TIMER_TYPE					ITIMER_PROF */
