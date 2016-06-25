@@ -10,6 +10,7 @@ using namespace cpp_freertos;
 using namespace std;
 
 
+
 class TestThread : public Thread {
 
     public:
@@ -22,12 +23,17 @@ class TestThread : public Thread {
 
     protected:
         virtual void Run() {
+            int iterationCount = 0;
             cout << "Starting thread " << id << endl;
             while (true) {
                 TickType_t ticks = Ticks::SecondsToTicks(DelayInSeconds);
                 if (ticks)
                     Delay(ticks);
                 cout << "Running thread " << id << endl;
+                if (++iterationCount > 10) {
+                    cout << "Thread " << id << " ending scheduler" << endl;
+                    EndScheduler();
+                }
             }
         };
 
@@ -41,9 +47,9 @@ int main (void)
 {
     cout << "Running tests of FreeRTOS C++ wrappers" << endl;
 
-    TestThread thread0(0, 1);
-    //TestThread thread1(1, 1);
-    //TestThread thread2(2, 3);
+    TestThread thread0(1, 1);
+    TestThread thread1(2, 2);
+    TestThread thread2(3, 3);
 
     Thread::StartScheduler();
 
@@ -82,9 +88,12 @@ void vApplicationTickHook(void)
 }
 
 
+volatile int IdleCount = 0;
+
 extern "C" void vApplicationIdleHook(void);
 void vApplicationIdleHook(void)
 {
+    IdleCount++;
 }
 
 

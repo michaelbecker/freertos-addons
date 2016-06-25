@@ -304,6 +304,11 @@ static void TickSignalHandler( int sig )
         {
             xServicingTick = pdTRUE;
 
+            /*
+             *  Required call for newer FreeRTOS kernels
+             */
+            xTaskIncrementTick();
+
             LookupThread(xTaskGetCurrentTaskHandle(), &ThreadToSuspend);
 
             /* Select Next Task. */
