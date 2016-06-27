@@ -24,8 +24,23 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
+#if ( configUSE_TICK_HOOK == 1 )
+#include <list>
+extern "C" void vApplicationTickHook();
+#endif
+
 
 namespace cpp_freertos {
+
+
+#if ( configUSE_TICK_HOOK == 1 )
+
+/**
+ *  Declare the type of the Tick Hook functions.
+ */
+typedef void (*ApplicationTickHookFcn)();
+
+#endif
 
 
 /**
@@ -86,8 +101,51 @@ class Ticks {
         {
             return (seconds * 1000) / portTICK_PERIOD_MS;
         }
+
+#if ( configUSE_TICK_HOOK == 1 )
+        /**
+         *
+         */
+        static void RegisterTickHook(ApplicationTickHookFcn *fcn)
+        {
+            taskENTER_CRITICAL();
+
+            TickHooks.push_front(fcn);
+
+            taskEXIT_CRITICAL();
+        }
+
+        /**
+         *
+         */
+        static void UnregisterTickHook(ApplicationTickHookFcn *fcn)
+        {
+            taskENTER_CRITICAL();
+
+            TickHooks.remove(fcn);
+
+            taskEXIT_CRITICAL();
+        }
+#endif
+
+    private:
+
+#if ( configUSE_TICK_HOOK == 1 )
+        /**
+         *
+         */
+        static std::list<ApplicationTickHookFcn *>TickHooks;
+
+    /**
+     *
+     */
+    friend void ::vApplicationTickHook();
+
+#endif
+
 };
 
 
 }
 #endif
+

@@ -81,12 +81,6 @@ void vConfigureTimerForRunTimeStats(void)
     return;
 }
 
-extern "C" void vApplicationTickHook(void);
-void vApplicationTickHook(void)
-{
-    return;
-}
-
 
 volatile int IdleCount = 0;
 

@@ -55,7 +55,8 @@ FREERTOS_CPP_SRC= \
 				  csemaphore.cpp \
 				  ctasklet.cpp \
 				  cthread.cpp \
-				  ctimer.cpp
+				  ctimer.cpp \
+				  cticks.cpp
 
 
 OBJ = ${SRC:.cpp=.o} 
