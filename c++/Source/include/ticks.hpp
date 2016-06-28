@@ -104,7 +104,10 @@ class Ticks {
 
 #if ( configUSE_TICK_HOOK == 1 )
         /**
+         *  Register a tick hook callback. All tick hook callbacks will be 
+         *  executed every time the system tick is executed.
          *
+         *  @param fcn A function pointer to your callback. 
          */
         static void RegisterTickHook(ApplicationTickHookFcn *fcn)
         {
@@ -116,7 +119,11 @@ class Ticks {
         }
 
         /**
+         *  Unregister a tick hook callback previously registered 
+         *  with RegisterTickHook().
          *
+         *  @param fcn A function pointer to your callback that you want 
+         *  to de-register. 
          */
         static void UnregisterTickHook(ApplicationTickHookFcn *fcn)
         {
@@ -132,12 +139,15 @@ class Ticks {
 
 #if ( configUSE_TICK_HOOK == 1 )
         /**
-         *
+         *  List of Tick Hook callbacks that are executed 
+         *  with every tick.
          */
         static std::list<ApplicationTickHookFcn *>TickHooks;
 
     /**
-     *
+     *  Allow the global vApplicationTickHook() function access
+     *  to the internals of this class. This simplifies the overall
+     *  design.
      */
     friend void ::vApplicationTickHook();
 
