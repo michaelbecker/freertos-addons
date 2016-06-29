@@ -82,15 +82,6 @@ void vConfigureTimerForRunTimeStats(void)
 }
 
 
-volatile int IdleCount = 0;
-
-extern "C" void vApplicationIdleHook(void);
-void vApplicationIdleHook(void)
-{
-    IdleCount++;
-}
-
-
 extern "C" void vApplicationMallocFailedHook(void);
 void vApplicationMallocFailedHook(void)
 {
