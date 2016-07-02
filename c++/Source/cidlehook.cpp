@@ -29,32 +29,50 @@ using namespace cpp_freertos;
 
 list<IdleHook *> IdleHook::Callbacks;
 
-extern "C" void vApplicationIdleHook(void);
-
 
 IdleHook::IdleHook()
-    : Cleanup(false)
+    : Cleanup(false), Enabled(true)
+{
+}
+
+
+void IdleHook::Register()
 {
     vTaskSuspendAll();
-
-    Callbacks.push_front(fcn);
-
+    Callbacks.push_front(this);
     xTaskResumeAll();
 }
 
 
-IdleHook::MarkForDelete()
+void IdleHook::MarkForDelete()
 {
     vTaskSuspendAll();
-
     Cleanup = true;
-
     xTaskResumeAll();
 }
 
 
 IdleHook::~IdleHook()
 {
+    vTaskSuspendAll();
+    Callbacks.remove(this);
+    TaskResumeAll();
+}
+
+
+void IdleHook::Disable()
+{
+    vTaskSuspendAll();
+    Enabled = false;
+    xTaskResumeAll();
+}
+
+
+void IdleHook::Enable()
+{
+    vTaskSuspendAll();
+    Enabled = true;
+    xTaskResumeAll();
 }
 
 
@@ -63,28 +81,29 @@ IdleHook::~IdleHook()
  */
 void vApplicationIdleHook(void)
 {
-    list<IdleHook *>local_callbacks;
-    
-    /*
-     *  Making a copy of the list protects the list when 
-     *  hooks are added to it. Using the Cleanup flag 
-     *  protects when items are removed from it.
-     */
+    //
+    //  Making a copy of the list protects the list when 
+    //  hooks are added to it. Using the Cleanup flag 
+    //  protects when items are removed from it.
+    //
     vTaskSuspendAll();
-    local_callbacks = IdleHook::Callbacks;
+    list<IdleHook *>local_callbacks = IdleHook::Callbacks;
     xTaskResumeAll();
     
     for (list<IdleHook *>::iterator it = local_callbacks.begin();
          it != local_callbacks.end();
-         it++) {
+         ++it) {
 
         IdleHook *idleHookObject = *it;
 
+        //
+        //  If a user asked for this to be deleted, free it
+        //  and remove it from the list.
+        //
         if (idleHookObject->Cleanup) {
             delete idleHookObject;
-            IdleHook::Callbacks.remove(idleHookObject);
         }
-        else {
+        else if (idleHookObject->Enabled){
             idleHookObject->Run();
         }
     }

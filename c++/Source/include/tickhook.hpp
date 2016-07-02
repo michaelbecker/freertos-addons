@@ -18,36 +18,31 @@
  *  If not, see <http://www.gnu.org/licenses/>.
  *
  ***************************************************************************/
-#ifndef IDLEHOOK_HPP_
-#define IDLEHOOK_HPP_
+#ifndef TICK_HOOK_HPP_
+#define TICK_HOOK_HPP_
 
-#if ( configUSE_IDLE_HOOK == 1 )
+#if ( configUSE_TICK_HOOK == 1 )
 
 #include "FreeRTOS.h"
 #include "task.h"
 #include <list>
 
-
-/**
- *  FreeRTOS expects this function to exist and requires it to be 
- *  named as such with the following signature.
- */
-extern "C" void vApplicationIdleHook();
+extern "C" void vApplicationTickHook();
 
 
 namespace cpp_freertos {
 
 
 /**
- *  Wrapper class for Idle hooks, functions you want to run within 
- *  the idle task. 
+ *  Wrapper class for Tick hooks, functions you want to run within 
+ *  the tick ISR. 
  *
  *  This is an abstract base class.
- *  To use this, you need to subclass it. All of your Idle functions 
+ *  To use this, you need to subclass it. All of your tick functions 
  *  should be derived from this class. Then implement the virtual Run
  *  function. 
  */    
-class IdleHook {
+class TickHook {
 
     /////////////////////////////////////////////////////////////////////////
     //
@@ -59,28 +54,22 @@ class IdleHook {
         /**
          *  Constructor.
          */
-        IdleHook();
+        TickHook();
+
+        /**
+         *  Destructor
+         */
+        virtual ~TickHook();
 
         /**
          *  After this is called your Run routine will execute in the 
-         *  idle task. This registration cannot be done in the constructor.
+         *  Tick ISR. This registration cannot be done in the constructor.
          */
         void Register();
-
+        
         /**
-         *  You cannot directly call the destructor given the 
-         *  design of the idle task. Therefore, to remove an 
-         *  idle hook, we mark it for removal and let the idle
-         *  task delete it when it gets to it. After you call 
-         *  this routine, you no longer own the object and 
-         *  cannot access it anymore. It will be asynchronously 
-         *  deleted.
-         */
-        void MarkForDelete();
-
-        /**
-         *  Disable the Idle hook from running, without removing it 
-         *  from the Idle Hook list.
+         *  Disable the tick hook from running, without removing it 
+         *  from the tick hook list.
          */
         void Disable();
 
@@ -89,6 +78,7 @@ class IdleHook {
          *  if you haven't called Disable.
          */
         void Enable();
+        
 
     /////////////////////////////////////////////////////////////////////////
     //
@@ -98,12 +88,11 @@ class IdleHook {
     /////////////////////////////////////////////////////////////////////////
     protected:
         /**
-         *  Implementation of your actual Idle code.
+         *  Implementation of your actual Tick Hook code.
          *  You must override this function.
-		 *  NOTE: YOUR RUN METHOD MUST NOT, UNDER ANY CIRCUMSTANCES,
-		 *  CALL A FUNCTION THAT MIGHT BLOCK.
          */
         virtual void Run() = 0;
+
 
     /////////////////////////////////////////////////////////////////////////
     //
@@ -113,37 +102,27 @@ class IdleHook {
     /////////////////////////////////////////////////////////////////////////
     private:
         /**
-         *  List of Idle Hook callbacks that are executed in the 
-         *  idle task.
+         *  List of Tick Hook callbacks that are executed in the 
+         *  Tick ISR.
          */
-        static std::list<IdleHook *>Callbacks;
+        static std::list<TickHook *>Callbacks;
 
         /**
-         *  Request by a user to delete?
-         */
-        bool Cleanup;
-
-        /**
-         *  Should the idle hook run this?
+         *  Should the tick hook run?
          */
         bool Enabled;
 
-        /**
-         *  Destructor is private.
-         */
-        virtual ~IdleHook();
-
     /**
-     *  Allow the global vApplicationIdleHook() function access
+     *  Allow the global vApplicationTickHook() function access
      *  to the internals of this class. This simplifies the overall
      *  design.
      */
-    friend void ::vApplicationIdleHook();
+    friend void ::vApplicationTickHook();
 };
 
 
-}
 
+}
 #endif
 #endif
 

@@ -1,3 +1,6 @@
+WIP
++ Rename cticks.cpp to ctickhook.cpp
+
 FreeRTOS Features
 + events
 
@@ -7,7 +10,6 @@ Value Added
 + Priority queues
 + monitors
 + condition variables
-+ Idle hooks
 
 
 /****************************************************************************

@@ -49,12 +49,14 @@ FREERTOS_SRC= \
 
 
 FREERTOS_CPP_SRC= \
+				  cidlehook.cpp \
 				  cmutex.cpp \
 				  cqueue.cpp \
 				  cread_write_lock.cpp \
 				  csemaphore.cpp \
 				  ctasklet.cpp \
 				  cthread.cpp \
+				  cticks.cpp \
 				  ctimer.cpp
 
 

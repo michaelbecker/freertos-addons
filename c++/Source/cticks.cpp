@@ -18,16 +18,15 @@
  *  If not, see <http://www.gnu.org/licenses/>.
  *
  ***************************************************************************/
-#include "ticks.hpp"
+#include "tickhook.hpp"
 
+#if ( configUSE_TICK_HOOK == 1 )
 
 using namespace std;
 using namespace cpp_freertos;
 
 
-#if ( configUSE_TICK_HOOK == 1 )
-
-list<ApplicationTickHookFcn *> Ticks::TickHooks;
+list<TickHook *> TickHook::Callbacks;
 
 /**
  *  FreeRTOS expects this function to exist and requires it to be 
@@ -35,17 +34,59 @@ list<ApplicationTickHookFcn *> Ticks::TickHooks;
  */
 extern "C" void vApplicationTickHook(void);
 
+
+TickHook::TickHook()
+    : Enabled(true)
+{
+}
+
+
+TickHook::~TickHook()
+{
+    taskENTER_CRITICAL();
+    Callbacks.remove(this);
+    taskEXIT_CRITICAL();
+}
+
+
+void TickHook::Register()
+{
+    taskENTER_CRITICAL();
+    Callbacks.push_front(this);
+    taskEXIT_CRITICAL();
+}
+
+
+void TickHook::Disable()
+{
+    taskENTER_CRITICAL();
+    Enabled = false;
+    taskEXIT_CRITICAL();
+}
+
+
+void TickHook::Enable()
+{
+    taskENTER_CRITICAL();
+    Enabled = true;
+    taskEXIT_CRITICAL();
+}
+
+
 /**
  *  We are a friend of the Tick class, which makes this much simplier.
  */
 void vApplicationTickHook(void)
 {
-    for (list<ApplicationTickHookFcn *>::iterator it = Ticks::TickHooks.begin();
-         it != Ticks::TickHooks.end();
-         it++) {
+    for (list<TickHook *>::iterator it = Ticks::Callbacks.begin();
+         it != Ticks::Callbacks.end();
+         ++it) {
 
-        ApplicationTickHookFcn *fcn = *it;
-        (*fcn)();
+        TickHook *tickHookObject = *it;
+
+        if (tickHookObject->Enabled){
+            tickHookObject->Run();
+        }
     }
 }
 

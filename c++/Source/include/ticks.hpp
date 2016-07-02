@@ -24,23 +24,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#if ( configUSE_TICK_HOOK == 1 )
-#include <list>
-extern "C" void vApplicationTickHook();
-#endif
-
 
 namespace cpp_freertos {
-
-
-#if ( configUSE_TICK_HOOK == 1 )
-
-/**
- *  Declare the type of the Tick Hook functions.
- */
-typedef void (*ApplicationTickHookFcn)();
-
-#endif
 
 
 /**
@@ -101,58 +86,6 @@ class Ticks {
         {
             return (seconds * 1000) / portTICK_PERIOD_MS;
         }
-
-#if ( configUSE_TICK_HOOK == 1 )
-        /**
-         *  Register a tick hook callback. All tick hook callbacks will be 
-         *  executed every time the system tick is executed.
-         *
-         *  @param fcn A function pointer to your callback. 
-         */
-        static void RegisterTickHook(ApplicationTickHookFcn *fcn)
-        {
-            taskENTER_CRITICAL();
-
-            TickHooks.push_front(fcn);
-
-            taskEXIT_CRITICAL();
-        }
-
-        /**
-         *  Unregister a tick hook callback previously registered 
-         *  with RegisterTickHook().
-         *
-         *  @param fcn A function pointer to your callback that you want 
-         *  to de-register. 
-         */
-        static void UnregisterTickHook(ApplicationTickHookFcn *fcn)
-        {
-            taskENTER_CRITICAL();
-
-            TickHooks.remove(fcn);
-
-            taskEXIT_CRITICAL();
-        }
-#endif
-
-    private:
-
-#if ( configUSE_TICK_HOOK == 1 )
-        /**
-         *  List of Tick Hook callbacks that are executed 
-         *  with every tick.
-         */
-        static std::list<ApplicationTickHookFcn *>TickHooks;
-
-    /**
-     *  Allow the global vApplicationTickHook() function access
-     *  to the internals of this class. This simplifies the overall
-     *  design.
-     */
-    friend void ::vApplicationTickHook();
-
-#endif
-
 };
 
 
