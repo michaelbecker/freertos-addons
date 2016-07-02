@@ -21,17 +21,19 @@
 #ifndef TICK_HOOK_HPP_
 #define TICK_HOOK_HPP_
 
-#if ( configUSE_TICK_HOOK == 1 )
-
 #include "FreeRTOS.h"
 #include "task.h"
 #include <list>
-#error DO WE GET HERE?
+
+#if ( configUSE_TICK_HOOK == 1 )
+
+/**
+ *  FreeRTOS expects this function to exist and requires it to be 
+ *  named as such with the following signature.
+ */
 extern "C" void vApplicationTickHook(void);
 
-
 namespace cpp_freertos {
-
 
 /**
  *  Wrapper class for Tick hooks, functions you want to run within 

@@ -56,7 +56,7 @@ IdleHook::~IdleHook()
 {
     vTaskSuspendAll();
     Callbacks.remove(this);
-    TaskResumeAll();
+    xTaskResumeAll();
 }
 
 

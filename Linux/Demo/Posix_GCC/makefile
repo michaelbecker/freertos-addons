@@ -49,6 +49,7 @@ FREERTOS_SRC= \
 
 
 FREERTOS_CPP_SRC= \
+				  cidlehook.cpp \
 				  cmutex.cpp \
 				  cqueue.cpp \
 				  cread_write_lock.cpp \

@@ -28,12 +28,6 @@ using namespace cpp_freertos;
 
 list<TickHook *> TickHook::Callbacks;
 
-/**
- *  FreeRTOS expects this function to exist and requires it to be 
- *  named as such with the following signature.
- */
-extern "C" void vApplicationTickHook(void);
-
 
 TickHook::TickHook()
     : Enabled(true)
@@ -78,8 +72,8 @@ void TickHook::Enable()
  */
 void vApplicationTickHook(void)
 {
-    for (list<TickHook *>::iterator it = Ticks::Callbacks.begin();
-         it != Ticks::Callbacks.end();
+    for (list<TickHook *>::iterator it = TickHook::Callbacks.begin();
+         it != TickHook::Callbacks.end();
          ++it) {
 
         TickHook *tickHookObject = *it;

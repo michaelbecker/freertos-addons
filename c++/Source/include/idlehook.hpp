@@ -21,19 +21,17 @@
 #ifndef IDLEHOOK_HPP_
 #define IDLEHOOK_HPP_
 
-#if ( configUSE_IDLE_HOOK == 1 )
-
 #include "FreeRTOS.h"
 #include "task.h"
 #include <list>
 
+#if ( configUSE_IDLE_HOOK == 1 )
 
 /**
  *  FreeRTOS expects this function to exist and requires it to be 
  *  named as such with the following signature.
  */
 extern "C" void vApplicationIdleHook();
-
 
 namespace cpp_freertos {
 
