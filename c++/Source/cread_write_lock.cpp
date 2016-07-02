@@ -86,7 +86,8 @@ void ReadWriteLockPreferReader::WriterUnlock()
 
 
 ReadWriteLockPreferWriter::ReadWriteLockPreferWriter()
-    : ReadWriteLock()
+    : ReadWriteLock(),
+      WriteCount(0)
 {
     WriteLock = xSemaphoreCreateMutex();
     if (WriteLock == NULL) {

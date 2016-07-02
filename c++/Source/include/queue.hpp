@@ -50,7 +50,7 @@ class QueueCreateException : public std::exception {
         /**
          *  Create the exception.
          */
-        QueueCreateException(const char *info)
+        explicit QueueCreateException(const char *info)
         {
             snprintf(errorString, sizeof(errorString),
                         "Queue Constructor Failed %s", info);
@@ -294,7 +294,7 @@ class BinaryQueue : public Queue {
          *  @param itemSize Size of an item in a queue.
          *  @note FreeRTOS queues use a memcpy / fixed size scheme for queues.
          */
-        BinaryQueue(UBaseType_t itemSize);
+        explicit BinaryQueue(UBaseType_t itemSize);
 
          /**
           *  Add an item to the queue.

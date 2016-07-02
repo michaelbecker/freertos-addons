@@ -41,7 +41,7 @@ class ThreadCreateException  : public std::exception {
         /**
          *  Create the exception.
          */
-        ThreadCreateException(BaseType_t error)
+        explicit ThreadCreateException(BaseType_t error)
         {
             errorCode = error;
             sprintf(errorString, "Thread Constructor Failed %d", (int)errorCode);

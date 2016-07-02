@@ -49,7 +49,7 @@ class SemaphoreCreateException : public std::exception {
         /**
          *  Create the exception.
          */
-        SemaphoreCreateException(const char *info)
+        explicit SemaphoreCreateException(const char *info)
         {
             snprintf(errorString, sizeof(errorString),
                         "Semaphore Constructor Failed %s", info);
@@ -174,7 +174,7 @@ class BinarySemaphore : public Semaphore {
          *  @throws SemaphoreCreateException on failure.
          *  @return Instance of a BinarySemaphore.
          */
-        BinarySemaphore(bool set = false);
+        explicit BinarySemaphore(bool set = false);
 };
 
 
