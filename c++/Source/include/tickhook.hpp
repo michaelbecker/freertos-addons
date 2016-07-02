@@ -26,8 +26,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include <list>
-
-extern "C" void vApplicationTickHook();
+#error DO WE GET HERE?
+extern "C" void vApplicationTickHook(void);
 
 
 namespace cpp_freertos {

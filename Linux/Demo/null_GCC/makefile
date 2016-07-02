@@ -56,7 +56,7 @@ FREERTOS_CPP_SRC= \
 				  csemaphore.cpp \
 				  ctasklet.cpp \
 				  cthread.cpp \
-				  cticks.cpp \
+				  ctickhook.cpp \
 				  ctimer.cpp
 
 

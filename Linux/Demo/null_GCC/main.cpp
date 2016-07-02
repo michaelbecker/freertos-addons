@@ -25,18 +25,6 @@ void vConfigureTimerForRunTimeStats(void)
     return;
 }
 
-extern "C" void vApplicationTickHook(void);
-void vApplicationTickHook(void)
-{
-    return;
-}
-
-
-extern "C" void vApplicationIdleHook(void);
-void vApplicationIdleHook(void)
-{
-}
-
 
 extern "C" void vApplicationMallocFailedHook(void);
 void vApplicationMallocFailedHook(void)
