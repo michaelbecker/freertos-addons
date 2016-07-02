@@ -1,7 +1,7 @@
 
 FREERTOS_SRC_DIR=../../../../FreeRTOS/Source
 FREERTOS_INC_DIR=../../../../FreeRTOS/Source/include
-PORTABLE_SRC_DIR=../../portable/GCC/Posix
+PORTABLE_SRC_DIR=../../portable/GCC/Linux
 PORTABLE_SRC_MEM_MANG_DIR=../../../../FreeRTOS/Source/portable/MemMang
 FREERTOS_CPP_SRC_DIR=../../../c++/Source/
 FREERTOS_CPP_INC_DIR=../../../c++/Source/include
@@ -28,7 +28,7 @@ VPATH += ${FREERTOS_SRC_DIR} \
 		 ${PORTABLE_SRC_MEM_MANG_DIR} \
 
 
-TARGET = Posix_Test
+TARGET = Linux_Test
 
 default: all
 
