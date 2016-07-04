@@ -236,7 +236,7 @@ static void ResumeThread( pthread_t Thread )
  *  Utility function to lookup a pthread_t based on 
  *  a FreeRTOS Task Handle.
  */
-static void LookupThread(xTaskHandle hTask, pthread_t *Thread)
+static int LookupThread(xTaskHandle hTask, pthread_t *Thread)
 {
     int i;
     
@@ -245,11 +245,11 @@ static void LookupThread(xTaskHandle hTask, pthread_t *Thread)
         if (pxThreads[i].hTask == hTask)
         {
             *Thread = pxThreads[i].Thread;
-            return;
+            return 1;
         }
     }
 
-    assert(!"Failed finding pthread for task mapping!");
+    return 0;
 }
 
 
@@ -295,6 +295,7 @@ static void TickSignalHandler( int sig )
 {
     pthread_t ThreadToSuspend;
     pthread_t ThreadToResume;
+    int success;
 
     (void)sig;
 
@@ -309,13 +310,15 @@ static void TickSignalHandler( int sig )
              */
             xTaskIncrementTick();
 
-            LookupThread(xTaskGetCurrentTaskHandle(), &ThreadToSuspend);
+            success = LookupThread(xTaskGetCurrentTaskHandle(), &ThreadToSuspend);
+            assert(success);
 
             /* Select Next Task. */
 #if ( configUSE_PREEMPTION == 1 )
             vTaskSwitchContext();
 #endif
-            LookupThread(xTaskGetCurrentTaskHandle(), &ThreadToResume);
+            success = LookupThread(xTaskGetCurrentTaskHandle(), &ThreadToResume);
+            assert(success);
 
             /* The only thread that can process this tick is the running thread. */
             if ( !pthread_equal(ThreadToSuspend, ThreadToResume) )
@@ -541,6 +544,7 @@ portBASE_TYPE xPortStartScheduler( void )
     sigset_t xSignalToBlock;
     sigset_t xSignalsBlocked;
     pthread_t FirstThread;
+    int success;
 
     /* Establish the signals to block before they are needed. */
     sigfillset( &xSignalToBlock );
@@ -558,7 +562,8 @@ portBASE_TYPE xPortStartScheduler( void )
 
     vPortEnableInterrupts();
 
-    LookupThread( xTaskGetCurrentTaskHandle(), &FirstThread);
+    success = LookupThread( xTaskGetCurrentTaskHandle(), &FirstThread);
+    assert(success);
 
     /* Start the first task. */
     ResumeThread(FirstThread);
@@ -651,15 +656,18 @@ void vPortYield( void )
     int rc;
     pthread_t ThreadToSuspend;
     pthread_t ThreadToResume;
+    int success;
 
     rc = pthread_mutex_lock(&xSingleThreadMutex);
     assert(rc == 0);
 
-    LookupThread(xTaskGetCurrentTaskHandle(), &ThreadToSuspend);
+    success = LookupThread(xTaskGetCurrentTaskHandle(), &ThreadToSuspend);
+    assert(success);
 
     vTaskSwitchContext();
 
-    LookupThread(xTaskGetCurrentTaskHandle(), &ThreadToResume);
+    success = LookupThread(xTaskGetCurrentTaskHandle(), &ThreadToResume);
+    assert(success);
 
     if ( !pthread_equal(ThreadToSuspend, ThreadToResume) )
     {
@@ -712,10 +720,13 @@ void vPortForciblyEndThread( void *pxTaskToDelete )
     xTaskHandle hTaskToDelete = ( xTaskHandle )pxTaskToDelete;
     pthread_t ThreadToDelete;
     pthread_t ThreadToResume;
+    int success;
 
     pthread_mutex_lock(&xSingleThreadMutex);
 
-    LookupThread(hTaskToDelete, &ThreadToDelete);
+    success = LookupThread(hTaskToDelete, &ThreadToDelete);
+    (void)success;
+
     LookupThread(xTaskGetCurrentTaskHandle(), &ThreadToResume);
 
     if ( pthread_equal(ThreadToResume, ThreadToDelete) )

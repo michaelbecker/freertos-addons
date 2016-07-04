@@ -48,7 +48,7 @@ VPATH += ${FREERTOS_SRC_DIR} \
 		 ${PORTABLE_SRC_MEM_MANG_DIR} \
 
 
-TARGET = Linux_Test
+TARGET = Linux_g++_simple_tasks
 
 default: all
 

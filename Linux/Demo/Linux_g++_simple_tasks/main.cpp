@@ -34,6 +34,7 @@ using namespace std;
 class TestThread : public Thread {
 
     public:
+
         TestThread(int i, int delayInSeconds)
            : Thread("TestThread", 100, 1), 
              id (i), 
@@ -42,18 +43,19 @@ class TestThread : public Thread {
         };
 
     protected:
+
         virtual void Run() {
-            int iterationCount = 0;
+
             cout << "Starting thread " << id << endl;
+            
             while (true) {
+            
                 TickType_t ticks = Ticks::SecondsToTicks(DelayInSeconds);
+            
                 if (ticks)
                     Delay(ticks);
+            
                 cout << "Running thread " << id << endl;
-                if (++iterationCount > 10) {
-                    cout << "Thread " << id << " ending scheduler" << endl;
-                    EndScheduler();
-                }
             }
         };
 
@@ -65,7 +67,8 @@ class TestThread : public Thread {
 
 int main (void)
 {
-    cout << "Running tests of FreeRTOS C++ wrappers" << endl;
+    cout << "Testing FreeRTOS C++ wrappers" << endl;
+    cout << "Simple Tasks" << endl;
 
     TestThread thread0(1, 1);
     TestThread thread1(2, 2);
@@ -87,7 +90,7 @@ int main (void)
 void vAssertCalled( unsigned long ulLine, const char * const pcFileName )
 {
     printf("ASSERT: %s : %d\n", pcFileName, (int)ulLine);
-    while (1);
+    while(1);
 }
 
 
@@ -107,4 +110,5 @@ void vApplicationMallocFailedHook(void)
 {
 	while(1);
 }
+
 
