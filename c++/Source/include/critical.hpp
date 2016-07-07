@@ -44,7 +44,7 @@ class CriticalSection {
         /**
          *  Disable context switches as well as maskable interrupts.
          */
-        static inline void EnterCritical()
+        static inline void Enter()
         {
             taskENTER_CRITICAL();
         }
@@ -52,7 +52,7 @@ class CriticalSection {
         /**
          *  Re-enable context switches.
          */
-        static inline void ExitCritical()
+        static inline void Exit()
         {
             taskEXIT_CRITICAL();
         }
@@ -61,7 +61,7 @@ class CriticalSection {
          *  Disable context switches as well as maskable interrupts
          *  from an interrupt context.
          */
-        static inline void EnterCriticalFromISR()
+        static inline void EnterFromISR()
         {
             taskENTER_CRITICAL_FROM_ISR();
         }
@@ -69,7 +69,7 @@ class CriticalSection {
         /**
          *  Re-enable context switches from an interrupt context.
          */
-        static inline void ExitCriticalFromISR();
+        static inline void ExitFromISR();
         {
             taskEXIT_CRITICAL_FROM_ISR();
         }
@@ -93,7 +93,7 @@ class CriticalSection {
         /**
          *  Suspend the scheduler without disabling interrupts.
          */
-        static inline void SuspendAll()
+        static inline void SuspendScheduler()
         {
             vTaskSuspendAll();
         }
@@ -101,7 +101,7 @@ class CriticalSection {
         /**
          *  Re-enable the scheduler.
          */
-        static inline void ResumeAll()
+        static inline void ResumeScheduler()
         {
             xTaskResumeAll();
         }
