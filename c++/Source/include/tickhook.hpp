@@ -43,6 +43,10 @@ namespace cpp_freertos {
  *  To use this, you need to subclass it. All of your tick functions 
  *  should be derived from this class. Then implement the virtual Run
  *  function. 
+ *
+ *  You can register multiple hooks with this class. The order of 
+ *  execution should not be assumed. All tick hooks will execute 
+ *  every tick.
  */    
 class TickHook {
 
@@ -65,7 +69,9 @@ class TickHook {
 
         /**
          *  After this is called your Run routine will execute in the 
-         *  Tick ISR. This registration cannot be done in the constructor.
+         *  Tick ISR. This registration cannot be done in the base class 
+         *  constructor. Once your object is fully constructed, you "may"
+         *  call this in your derived class's constructor.
          */
         void Register();
         

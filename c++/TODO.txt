@@ -9,6 +9,7 @@ Value Added
 + Priority queues
 + monitors
 + condition variables
++ tick hooks - round robin hooks, one per tick
 
 
 /****************************************************************************
