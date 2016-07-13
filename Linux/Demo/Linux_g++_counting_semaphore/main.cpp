@@ -32,12 +32,12 @@ using namespace std;
 
 
 
-class SignalingThread : public Thread {
+class Producer : public Thread {
 
     public:
 
-        SignalingThread(Semaphore &sem)
-           : Thread("SignalingThread", 100, 1), Sem(sem)
+        Producer(Semaphore &sem)
+           : Thread("Producer", 100, 1), Sem(sem)
         {
         };
 
@@ -47,7 +47,7 @@ class SignalingThread : public Thread {
 
             int SignaledCount = 0;
 
-            cout << "[S] Starting Signaling thread " << endl;
+            cout << "[P] Starting Producer thread " << endl;
             
             TickType_t DelayInSeconds = 1; 
 
@@ -56,8 +56,11 @@ class SignalingThread : public Thread {
                 TickType_t ticks = Ticks::SecondsToTicks(DelayInSeconds);
                 Delay(ticks);
                 SignaledCount++;
-                cout << "[S] Signaling " << SignaledCount << " times" << endl;
-                Sem.Give();
+                cout << "[P] Signaling work" << SignaledCount << " times" << endl;
+                bool Success = Sem.Give();
+                if (!Success) {
+                    cout << "[P] Failed giving semaphore!" << endl;
+                }
             }
         };
 
@@ -66,12 +69,12 @@ class SignalingThread : public Thread {
 };
 
 
-class WaitingThread : public Thread {
+class Consumer : public Thread {
 
     public:
 
-        WaitingThread(Semaphore &sem)
-           : Thread("WaitingThread", 100, 1), Sem(sem)
+        Consumer(Semaphore &sem)
+           : Thread("Consumer", 100, 1), Sem(sem)
         {
         };
 
@@ -82,12 +85,15 @@ class WaitingThread : public Thread {
             int SignaledCount = 0;
             
             while (true) {
-                Sem.Take();
+                bool Success = Sem.Take();
+                if (!Success) {
+                    cout << "[C] Failed taking semaphore!" << endl;
+                }
                 SignaledCount++;
-                cout << "[W] Got Signal " << SignaledCount << " times" << endl;
+                cout << "[C] Consumer got work " << SignaledCount << " times" << endl;
 
                 if ((SignaledCount % 5) == 0) {
-                    cout << "[W] Simulating long work" << endl;
+                    cout << "[C] Simulating long work" << endl;
                     Delay(Ticks::SecondsToTicks(5));
                 }
             }
@@ -101,11 +107,12 @@ class WaitingThread : public Thread {
 int main (void)
 {
     cout << "Testing FreeRTOS C++ wrappers" << endl;
-    cout << "Binary Semaphore" << endl;
+    cout << "Counting Semaphore" << endl;
 
-    BinarySemaphore Sem;
-    SignalingThread sthd(Sem);
-    WaitingThread wthr(Sem);
+    // Set inital count lower to generate Sem,Give() failures
+    CountingSemaphore Sem (10, 0);
+    Producer sthd(Sem);
+    Consumer wthr(Sem);
 
     Thread::StartScheduler();
 

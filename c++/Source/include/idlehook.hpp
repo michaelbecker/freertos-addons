@@ -103,6 +103,15 @@ class IdleHook {
          */
         virtual void Run() = 0;
 
+        /**
+         *  Destructor. DO NOT DIRECTLY CALL DELETE ON THESE OBJECTS!
+         *  The destructor must be protected to allow you to instantiate 
+         *  your subclasses. But, see the documentation for MarkForDelete().
+         *  If you directly call "delete YourIdleHookCLass;", you risk 
+         *  crashing. Don't do it.
+         */
+        virtual ~IdleHook();
+
     /////////////////////////////////////////////////////////////////////////
     //
     //  Private API
@@ -125,11 +134,6 @@ class IdleHook {
          *  Should the idle hook run this?
          */
         bool Enabled;
-
-        /**
-         *  Destructor is private.
-         */
-        virtual ~IdleHook();
 
     /**
      *  Allow the global vApplicationIdleHook() function access

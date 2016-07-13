@@ -24,7 +24,7 @@
 #include "task.h"
 #include "thread.hpp"
 #include "ticks.hpp"
-#include "semaphore.hpp"
+#include "read_write_lock.hpp"
 
 
 using namespace cpp_freertos;
@@ -32,12 +32,15 @@ using namespace std;
 
 
 
-class SignalingThread : public Thread {
+class ReaderThread : public Thread {
 
     public:
 
-        SignalingThread(Semaphore &sem)
-           : Thread("SignalingThread", 100, 1), Sem(sem)
+        ReaderThread(int i, int delayInSeconds, ReadWriteLock &lock)
+           : Thread("ReaderThread", 100, 1), 
+             id (i), 
+             DelayInSeconds(delayInSeconds),
+             Lock(lock)
         {
         };
 
@@ -45,33 +48,34 @@ class SignalingThread : public Thread {
 
         virtual void Run() {
 
-            int SignaledCount = 0;
-
-            cout << "[S] Starting Signaling thread " << endl;
-            
-            TickType_t DelayInSeconds = 1; 
-
             while (true) {
             
-                TickType_t ticks = Ticks::SecondsToTicks(DelayInSeconds);
-                Delay(ticks);
-                SignaledCount++;
-                cout << "[S] Signaling " << SignaledCount << " times" << endl;
-                Sem.Give();
+                Delay(Ticks::SecondsToTicks(DelayInSeconds));
+
+                Lock.ReaderLock();
+                cout << "[ R "<< id << " ] Starting Read" << endl;
+                Delay(Ticks::SecondsToTicks(3));
+                cout << "[ R "<< id << " ] Ending Read" << endl;
+                Lock.ReaderUnlock();
             }
         };
 
     private:
-        Semaphore &Sem;
+        int id;
+        int DelayInSeconds;
+        ReadWriteLock &Lock;
 };
 
 
-class WaitingThread : public Thread {
+class WriterThread : public Thread {
 
     public:
 
-        WaitingThread(Semaphore &sem)
-           : Thread("WaitingThread", 100, 1), Sem(sem)
+        WriterThread(int i, int delayInSeconds, ReadWriteLock &lock)
+           : Thread("WriterThread", 100, 1), 
+             id (i), 
+             DelayInSeconds(delayInSeconds),
+             Lock(lock)
         {
         };
 
@@ -79,33 +83,41 @@ class WaitingThread : public Thread {
 
         virtual void Run() {
 
-            int SignaledCount = 0;
-            
             while (true) {
-                Sem.Take();
-                SignaledCount++;
-                cout << "[W] Got Signal " << SignaledCount << " times" << endl;
+            
+                Delay(Ticks::SecondsToTicks(DelayInSeconds));
 
-                if ((SignaledCount % 5) == 0) {
-                    cout << "[W] Simulating long work" << endl;
-                    Delay(Ticks::SecondsToTicks(5));
-                }
+                Lock.WriterLock();
+                cout << "[ W "<< id << " ] Starting Write" << endl;
+                Delay(Ticks::SecondsToTicks(2));
+                cout << "[ W "<< id << " ] Ending Write" << endl;
+                Lock.WriterUnlock();
             }
         };
 
     private:
-        Semaphore &Sem;
+        int id;
+        int DelayInSeconds;
+        ReadWriteLock &Lock;
 };
 
 
 int main (void)
 {
     cout << "Testing FreeRTOS C++ wrappers" << endl;
-    cout << "Binary Semaphore" << endl;
+    cout << "ReadWriteLockPreferReader" << endl;
 
-    BinarySemaphore Sem;
-    SignalingThread sthd(Sem);
-    WaitingThread wthr(Sem);
+    ReadWriteLockPreferReader Lock;
+
+    ReaderThread r1(1, 1, Lock);
+    ReaderThread r2(2, 1, Lock);
+    ReaderThread r3(3, 1, Lock);
+    ReaderThread r4(4, 5, Lock);
+    ReaderThread r5(5, 5, Lock);
+
+    WriterThread w1(10, 2, Lock);
+    WriterThread w2(11, 3, Lock);
+
 
     Thread::StartScheduler();
 
