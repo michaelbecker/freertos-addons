@@ -4,6 +4,7 @@ FreeRTOS Features
 + events
 
 Value Added
++ In Timers, add OnStop / OnStart / mutex sync with these methods?
 + work queues
 + Fixed size Memory pools
 + Priority queues
