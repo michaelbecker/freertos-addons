@@ -128,11 +128,11 @@ class Mutex {
  *  By default calls to Lock these objects block forever, but this can be
  *  changed by simply passing in a argument to the Lock() method.
  *  These objects are not recursively acquirable. Calling Lock() twice from
- *  the same Thread / Task will deadlock.
+ *  the same Thread (i.e. task) will deadlock.
  *
- *  @note Standard Mutexes use less resources than Recursive Mutexes. You
+ *  @note Standard mutexes use less resources than recursive mutexes. You
  *        should typically use this type of Mutex, unless you have a strong
- *        need for a Recursive Mutex.
+ *        need for a MutexRecursive mutex.
  */
 class MutexStandard : public Mutex {
 
@@ -175,10 +175,10 @@ class MutexStandard : public Mutex {
  *  By default calls to Lock these objects block forever, but this can be
  *  changed by simply passing in a argument to the Lock() method.
  *  These objects are recursively acquirable. Calling Lock() twice from
- *  the same Thread / Task works fine. The caller just needs to be sure to
+ *  the same Thread (i.e. task) works fine. The caller just needs to be sure to
  *  call Unlock() as many times as Lock().
  *
- *  @note Recursive Mutexes use more resources than Standard Mutexes. You
+ *  @note Recursive mutexes use more resources than standard mutexes. You
  *        should be sure that you actually need this type of synchronization
  *        before using it.
  */
@@ -221,7 +221,7 @@ class MutexRecursive : public Mutex {
  *  Synchronization helper class that leverages the C++ language to help
  *  prevent deadlocks.
  *  This is a C++11 feature that allows Mutex Locking and Unlocking to behave
- *  following RAII style. The constructor of this helper object locks the
+ *  following an RAII style. The constructor of this helper object locks the
  *  Mutex. The destructor unlocks the Mutex. Since C++ guarantees that an
  *  object's desctuctor is always called when it goes out of scope, calls to
  *  Unlock become unnecessary and are in fact guaranteed as long as correct
@@ -239,7 +239,7 @@ class LockGuard {
          *  Create a LockGuard with a specific Mutex.
          *
          *  @post The Mutex will be locked.
-         *  @note There is no timeout for the Lock().
+         *  @note There is an infinite timeout for acquiring the Lock.
          */
         explicit LockGuard(Mutex& m);
 

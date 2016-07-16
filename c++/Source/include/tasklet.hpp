@@ -26,9 +26,52 @@
 #include <string>
 #include "FreeRTOS.h"
 #include "timers.h"
+#include "semphr.h"
+// TODO - explore replacing sprintf with stringstream
+#include <cstdio>
 
 
 namespace cpp_freertos {
+
+
+/**
+ *  This is the exception that is thrown if a Tasklet constructor fails.
+ */
+class TaskletCreateException : public std::exception {
+
+    public:
+        /**
+         *  Create the exception.
+         */
+        TaskletCreateException()
+        {
+            sprintf(errorString, "Tasklet Constructor Failed");
+        }
+
+        /**
+         *  Create the exception.
+         */
+        explicit TaskletCreateException(const char *info)
+        {
+            snprintf(errorString, sizeof(errorString),
+                        "Tasklet Constructor Failed %s", info);
+        }
+
+        /**
+         *  Get what happened as a string.
+         *  We are overriding the base implementation here.
+         */
+        virtual const char *what() const throw()
+        {
+            return errorString;
+        }
+
+    private:
+        /**
+         *  A text string representing what failed.
+         */
+        char errorString[80];
+};
 
 
 /**
@@ -51,11 +94,15 @@ class Tasklet {
     public:
         /**
          *  Constructor
+         *  @note Do not construct inside an ISR! This includes creating 
+         *  local instances of this object.
          */
         Tasklet();
 
         /**
          *  Destructor
+         *  @note Do not delete inside an ISR! This includes the automatic 
+         *  deletion of local instances of this object when leaving scope.
          */
         virtual ~Tasklet();
 
@@ -103,6 +150,12 @@ class Tasklet {
          */
         virtual void Run(uint32_t parameter) = 0;
 
+        /**
+         *  You must call this in your dtor, to synchronize between 
+         *  being called and being deleted.
+         */
+        void CheckForSafeDelete();
+
     /////////////////////////////////////////////////////////////////////////
     //
     //  Private API
@@ -118,6 +171,10 @@ class Tasklet {
          */
         static void TaskletAdapterFunction(void *ref, uint32_t parameter);
 
+        /**
+         *  Protect against accidental deletion before we were executed.
+         */
+        SemaphoreHandle_t DtorLock;
 };
 
 }

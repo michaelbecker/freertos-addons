@@ -103,7 +103,6 @@ class Timer {
          *  activate them via Start, Reset, etc.
          *
          *  @throws TimerCreateException
-         *  @param TimerName Name of the timer for debug.
          *  @param PeriodInTicks When does the timer expire and run your Run()
          *         method.
          *  @param Periodic true if the timer expires every PeriodInTicks.
@@ -212,9 +211,9 @@ class Timer {
 #if (INCLUDE_xTimerGetTimerDaemonTaskHandle == 1)
         /**
          *  If you need it, obtain the task handle of the FreeRTOS
-         *  task / thread that is running the timers.
+         *  task that is running the timers.
          *
-         *  @return Task handle of the FreeRTOS Timer thread.
+         *  @return Task handle of the FreeRTOS timer task.
          */
         static TaskHandle_t GetTimerDaemonHandle();
 #endif

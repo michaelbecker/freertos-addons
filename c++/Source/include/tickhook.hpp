@@ -72,6 +72,9 @@ class TickHook {
          *  Tick ISR. This registration cannot be done in the base class 
          *  constructor. Once your object is fully constructed, you "may"
          *  call this in your derived class's constructor.
+         *  @note Immedately after you call this function, your TickHook
+         *  Run() method will run, perhaps before you even return from this 
+         *  call. You "must" be ready to run before you call Register().
          */
         void Register();
         

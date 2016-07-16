@@ -26,6 +26,13 @@ using namespace cpp_freertos;
 
 Tasklet::Tasklet()
 {
+    DtorLock = xSemaphoreCreateBinary();
+
+    if (DtorLock == NULL) {
+        throw TaskletCreateException("Create DtorLock Failed");
+    }
+
+    xSemaphoreGive(DtorLock);
 }
 
 
@@ -34,11 +41,18 @@ Tasklet::~Tasklet()
 }
 
 
+void Tasklet::CheckForSafeDelete()
+{
+    xSemaphoreTake(DtorLock, portMAX_DELAY);
+    vSemaphoreDelete(DtorLock);
+}
+
+
 void Tasklet::TaskletAdapterFunction(void *reference, uint32_t parameter)
 {
     Tasklet *tasklet = static_cast<Tasklet *>(reference);
-
     tasklet->Run(parameter);
+    xSemaphoreGive(tasklet->DtorLock);
 }
 
 
@@ -47,12 +61,20 @@ bool Tasklet::Schedule( uint32_t parameter,
 {
     BaseType_t rc;
 
+    xSemaphoreTake(DtorLock, portMAX_DELAY);
+
     rc = xTimerPendFunctionCall(TaskletAdapterFunction,
                                 this,
                                 parameter,
                                 CmdTimeout);
 
-    return rc == pdPASS ? true : false;
+    if (rc == pdPASS) {
+        return true;
+    }
+    else {
+        xSemaphoreGive(DtorLock);
+        return false;
+    }
 }
 
 
@@ -61,10 +83,23 @@ bool Tasklet::ScheduleFromISR(  uint32_t parameter,
 {
     BaseType_t rc;
 
+    rc = xSemaphoreTakeFromISR(DtorLock, pxHigherPriorityTaskWoken);
+
+    if (rc != pdTRUE) {
+        return false;
+    }
+    
     rc = xTimerPendFunctionCallFromISR( TaskletAdapterFunction,
                                         this,
                                         parameter,
                                         pxHigherPriorityTaskWoken);
 
-    return rc == pdPASS ? true : false;
+    if (rc == pdPASS) {
+        return true;
+    }
+    else {
+        xSemaphoreGive(DtorLock);
+        return false;
+    }
 }
+

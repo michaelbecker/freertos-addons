@@ -1986,19 +1986,19 @@ INCLUDE_FILE_PATTERNS  =
 # recursively expanded use the := operator instead of the = operator.
 # This tag requires that the tag ENABLE_PREPROCESSING is set to YES.
 
-PREDEFINED             = "configUSE_IDLE_HOOK = 1" \
-                         "configUSE_RECURSIVE_MUTEXES = 1" \
-                         "INCLUDE_vTaskDelete = 1" \
-                         "INCLUDE_vTaskSuspend = 1" \
-                         "INCLUDE_xTaskResumeFromISR = 1" \
-                         "INCLUDE_uxTaskPriorityGet = 1" \
-                         "INCLUDE_vTaskPrioritySet = 1" \
-                         "INCLUDE_pcTaskGetTaskName = 1" \
-                         "INCLUDE_vTaskSuspend = 1" \
-                         "INCLUDE_vTaskDelay = 1" \
-                         "INCLUDE_vTaskDelayUntil = 1" \
-                         "configUSE_TICK_HOOK = 1" \
-                         "INCLUDE_xTimerGetTimerDaemonTaskHandle = 1"
+PREDEFINED             = "configUSE_IDLE_HOOK=1" \
+                         "configUSE_RECURSIVE_MUTEXES=1" \
+                         "INCLUDE_vTaskDelete=1" \
+                         "INCLUDE_vTaskSuspend=1" \
+                         "INCLUDE_xTaskResumeFromISR=1" \
+                         "INCLUDE_uxTaskPriorityGet=1" \
+                         "INCLUDE_vTaskPrioritySet=1" \
+                         "INCLUDE_pcTaskGetTaskName=1" \
+                         "INCLUDE_vTaskSuspend=1" \
+                         "INCLUDE_vTaskDelay=1" \
+                         "INCLUDE_vTaskDelayUntil=1" \
+                         "configUSE_TICK_HOOK=1" \
+                         "INCLUDE_xTimerGetTimerDaemonTaskHandle=1"
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this
 # tag can be used to specify a list of macro names that should be expanded. The

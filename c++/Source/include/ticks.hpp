@@ -79,7 +79,7 @@ class Ticks {
         /**
          *  Convert from seconds to ticks.
          *
-         *  @param milliseconds milliseconds to convert.
+         *  @param seconds seconds to convert.
          *  @return ticks
          */
         static inline TickType_t SecondsToTicks(TickType_t seconds)
