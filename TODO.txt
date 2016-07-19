@@ -1,3 +1,31 @@
+WIP
++ review doxygen documentation
+
+FreeRTOS Features
++ events
+
+Value Added
++ In Timers, add OnStop / OnStart / mutex sync with these methods?
++ work queues
++ Fixed size Memory pools
++ Priority queues
++ monitors
++ condition variables
++ tick hooks - round robin hooks, one per tick
+
+
+/****************************************************************************
+*   Thread 
+*  @Note
+*  + Features not implemented yet
+*    - MPU restricted threads
+*    - eTaskGetState
+*    - uxTaskGetNumberOfTasks
+*    - uxTaskGetStackHighWaterMark
+*    - Thread Local Storage
+*
+***************************************************************************/
+
 + Need more demos / test code.
 + Test / Debug EndScheduler
 
