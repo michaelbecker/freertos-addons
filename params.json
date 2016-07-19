@@ -1,0 +1,6 @@
+{
+  "name": "Freertos-addons",
+  "tagline": "Extra features to FreeRTOS",
+  "body": "# freertos-addons\r\nAfter working with FreeRTOS for over 6 years now, I've decided to start adding the little features and implementations that I wish would have been there. \r\n\r\n# Features\r\n+ C++ Wrappers - a collection of C++ wrappers encapsulating FreeRTOS functionality, allowing you to write your RTOS application in C++ while still using FreeRTOS. This wrapper layer does all the integration work for you.\r\n+ Updated Linux port - an update of the Linux / POSIX port of FreeRTOS that functions with FreeRTOS v8.x.x and v9.x.x\r\n\r\n  ",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
