@@ -6,7 +6,8 @@
  *
  *  The FreeRTOS C++ Wrappers project is free software: you can redistribute
  *  it and/or modify it under the terms of the GNU General Public License as
- *  published by the Free Software Foundation, version 3 of the License.
+ *  published by the Free Software Foundation, either version 2
+ *  of the License, or (at your option) any later version.
  *
  *  The FreeRTOS C++ Wrappers project is distributed in the hope that it will
  *  be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,9 +25,9 @@
 using namespace cpp_freertos;
 
 
-WorkItem::WorkItem(bool autoFree)
+WorkItem::WorkItem(bool freeAfterComplete)
+    : FreeItemAfterCompleted(freeAfterComplete)
 {
-    AutoFree = autoFree;
 }
 
 
@@ -37,7 +38,7 @@ WorkItem::~WorkItem()
 
 bool WorkItem::FreeAfterRun()
 {
-    return AutoFree;
+    return FreeItemAfterCompleted;
 }
 
 
@@ -46,8 +47,13 @@ WorkQueue::WorkQueue(   const char * const Name,
                         UBaseType_t Priority,
                         UBaseType_t maxWorkItems)
 {
-    WorkerThread = new CWorkerThread(Name, StackDepth, Priority);
+    //
+    //  Build the Queue first, since the Thread is going to access 
+    //  it as soon as it can, maybe before we leave this ctor.
+    //
     WorkItemQueue = new Queue(maxWorkItems, sizeof(WorkItem *));
+    ThreadComplete = new BinarySemaphore();
+    WorkerThread = new CWorkerThread(Name, StackDepth, Priority, this);
 }
 
 
@@ -55,16 +61,39 @@ WorkQueue::WorkQueue(   uint16_t StackDepth,
                         UBaseType_t Priority,
                         UBaseType_t maxWorkItems)
 {
-    WorkerThread = new CWorkerThread(StackDepth, Priority);
+    //
+    //  Build the Queue first, since the Thread is going to access 
+    //  it as soon as it can, maybe before we leave this ctor.
+    //
     WorkItemQueue = new Queue(maxWorkItems, sizeof(WorkItem *));
+    ThreadComplete = new BinarySemaphore();
+    WorkerThread = new CWorkerThread(StackDepth, Priority, this);
 }
 
 
 WorkQueue::~WorkQueue()
 {
+    //
+    //  This dtor is tricky, because of the multiple objects in 
+    //  play, and the multithreaded nature of this specific object.
+    //
+    //  First empty the queue.
+    //
     WorkItemQueue->Flush();
+    //
+    //  Send a message that it's time to cleanup.
+    //
     WorkItemQueue->Enqueue(NULL);
+    //
+    //  Wait until the thread has run enough to signal that it's done.
+    //
+    ThreadComplete->Take();
+    //
+    //  Then delete the queue and thread. Order doesn't matter here.
+    //
     delete WorkItemQueue;
+    delete WorkerThread;
+    delete ThreadComplete;
 }
 
 
@@ -76,15 +105,17 @@ bool WorkQueue::QueueWork(WorkItem *work)
 
 WorkQueue::CWorkerThread::CWorkerThread(const char * const Name,
                                         uint16_t StackDepth,
-                                        UBaseType_t Priority)
-    : Thread(Name, StackDepth, Priority)
+                                        UBaseType_t Priority,
+                                        WorkQueue *Parent)
+    : Thread(Name, StackDepth, Priority), ParentWorkQueue(Parent)
 {
 }
 
 
 WorkQueue::CWorkerThread::CWorkerThread(uint16_t StackDepth,
-                                        UBaseType_t Priority)
-    : Thread(StackDepth, Priority)
+                                        UBaseType_t Priority,
+                                        WorkQueue *Parent)
+    : Thread(StackDepth, Priority), ParentWorkQueue(Parent)
 {
 }
 
@@ -95,17 +126,40 @@ void WorkQueue::CWorkerThread::Run()
 
         WorkItem *work;
 
-        bool success = WorkItemQueue.Dequeue(&work);
+        //
+        //  Wait forever for work.
+        //
+        ParentWorkQueue->WorkItemQueue->Dequeue(&work);
 
-        if (success && !work) {
+        //
+        //  If we dequeue a NULL item, its our sign to exit.
+        //  We are being deconstructed.
+        //
+        if (work == NULL) {
+            //
+            //  Exit the task loop.
+            //
             break;
         }
 
+        //
+        //  Else we have an item, run it.
+        //
         work->Run();
+
+        //
+        //  If this was a dynamic, fire and forget item and we were 
+        //  requested to clean it up, do so.
+        //
         if (work->FreeAfterRun()) {
             delete work;
         }
     }
+
+    //
+    //  Signal the dtor that the thread is exiting.
+    //
+    ParentWorkQueue->ThreadComplete->Give();
 }
 
 

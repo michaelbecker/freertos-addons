@@ -94,7 +94,7 @@ class Queue {
          *  Our constructor.
          *
          *  @throws QueueCreateException
-         *  @param maxItems Maximum number of items thsi queue can hold.
+         *  @param maxItems Maximum number of items this queue can hold.
          *  @param itemSize Size of an item in a queue.
          *  @note FreeRTOS queues use a memcpy / fixed size scheme for queues.
          */
