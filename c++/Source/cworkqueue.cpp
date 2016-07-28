@@ -120,6 +120,11 @@ WorkQueue::CWorkerThread::CWorkerThread(uint16_t StackDepth,
 }
 
 
+WorkQueue::CWorkerThread::~CWorkerThread()
+{
+}
+
+
 void WorkQueue::CWorkerThread::Run()
 {
     while (true) {

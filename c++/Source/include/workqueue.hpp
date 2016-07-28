@@ -183,8 +183,10 @@ class WorkQueue {
                                 UBaseType_t Priority,
                                 WorkQueue *Parent);
 
+                virtual ~CWorkerThread();
+
             protected:
-                void Run();
+                virtual void Run();
 
             private:
                 const WorkQueue *ParentWorkQueue;
