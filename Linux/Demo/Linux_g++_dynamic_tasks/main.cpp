@@ -25,7 +25,6 @@
 #include "task.h"
 #include "thread.hpp"
 #include "ticks.hpp"
-#include "tickhook.hpp"
 
 
 using namespace cpp_freertos;
@@ -33,38 +32,68 @@ using namespace std;
 
 
 
-
-class MyTickHook : public TickHook {
+class DynamicThread : public Thread {
 
     public:
-        MyTickHook(int id) : TickHook(), Id(id), Cnt(0)
+
+        DynamicThread(string name, int delayInSeconds)
+           : Thread(name, 100, 1), 
+             DelayInSeconds(delayInSeconds)
         {
-            Register();
+            cout  << GetName() << " ctor" << endl;
+        };
+
+        ~DynamicThread()
+        {
+            cout << GetName() << " dtor" << endl;
+        }
+
+        virtual void Cleanup()
+        {
+            delete this;
         }
 
     protected:
-        void Run() {
 
-            if (++Cnt > 1000) {
-                cout << "Running TickHook # " << Id << endl;
-                Cnt = 0;
+        virtual void Run() {
+
+            cout  << GetName() << " starting" << endl;
+            
+            int count = 0;
+
+            while (true) {
+            
+                Delay(Ticks::SecondsToTicks(DelayInSeconds));
+                cout << GetName() << " running " << count <<  endl;
+
+                //
+                //  Just leave the loop. The wrapper code will 
+                //  handle calling the dtor.
+                //
+                if (++count > 3) {
+                    break;
+                }
             }
-        }
+        };
 
     private:
-        int Id;
-        int Cnt;
+        int DelayInSeconds;
 };
 
 
-class MyThread : public Thread {
+
+class RootThread : public Thread {
 
     public:
 
-        MyThread(MyTickHook &h1, MyTickHook &h2, MyTickHook &h3)
-           : Thread("MyThread", 100, 1),
-             Hook1(h1), Hook2(h2), Hook3(h3)
+        RootThread(string name, int delayInSeconds)
+           : Thread(name, 100, 3), 
+             DelayInSeconds(delayInSeconds)
         {
+            //
+            //  Now that construction is completed, we
+            //  can safely start the thread.
+            //  
             Start();
         };
 
@@ -72,64 +101,55 @@ class MyThread : public Thread {
 
         virtual void Run() {
 
-            int DelayInSeconds = 3;
-            int Count = 0;
-
-            cout << "Starting thread" << endl;
+            cout << "Starting thread " << GetName() << endl;
             
+            int count = 0;
+            string threadName;
+            DynamicThread *dt;
+            int threadCnt = 0;
+
             while (true) {
             
-                TickType_t ticks = Ticks::SecondsToTicks(DelayInSeconds);
-                Delay(ticks);
+                Delay(Ticks::SecondsToTicks(DelayInSeconds));
 
-                switch (Count % 6) {
+                count++;
+
+                switch (count) {
                     case 0:
-                        cout << "Disabling Hook 1" << endl;
-                        Hook1.Disable();
-                        break;
                     case 1:
-                        cout << "Disabling Hook 2" << endl;
-                        Hook2.Disable();
-                        break;
                     case 2:
-                        cout << "Disabling Hook 3" << endl;
-                        Hook3.Disable();
                         break;
-                    case 3:
-                        cout << "Enabling Hook 2" << endl;
-                        Hook2.Enable();
+
+                    case 3: {
+                        char nameBuf[10];
+                        sprintf(nameBuf, "dy%d", ++threadCnt);
+                        cout << GetName() << " Creating " << nameBuf << endl;
+                        dt = new DynamicThread(nameBuf, 1);
+                        }
                         break;
+
                     case 4:
-                        cout << "Enabling Hook 1" << endl;
-                        Hook1.Enable();
-                        break;
-                    case 5:
-                        cout << "Enabling Hook 3" << endl;
-                        Hook3.Enable();
+                        cout << GetName() << " Starting " << threadName << endl;
+                        dt->Start();
+
+                    default:
+                        count = 0;
                         break;
                 }
-
-                Count++;
             }
         };
 
     private:
-        MyTickHook &Hook1;
-        MyTickHook &Hook2;
-        MyTickHook &Hook3;
+        int DelayInSeconds;
 };
 
 
 int main (void)
 {
     cout << "Testing FreeRTOS C++ wrappers" << endl;
-    cout << "Simple Tasks" << endl;
+    cout << "Dynamic Tasks" << endl;
 
-    MyTickHook hook1(1);
-    MyTickHook hook2(2);
-    MyTickHook hook3(3);
-
-    MyThread thr(hook1, hook2, hook3);
+    RootThread rootThread("RT", 1);
 
     Thread::StartScheduler();
 

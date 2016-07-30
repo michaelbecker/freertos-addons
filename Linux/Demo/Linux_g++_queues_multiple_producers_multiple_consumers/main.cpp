@@ -43,6 +43,7 @@ class ProducerThread : public Thread {
              BurstAmount(burstAmount),
              MessageQueue(q)
         {
+            Start();
         };
 
     protected:
@@ -81,6 +82,7 @@ class ConsumerThread : public Thread {
              DelayInSeconds(delayInSeconds),
              MessageQueue(q)
         {
+            Start();
         };
 
     protected:

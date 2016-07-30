@@ -64,6 +64,7 @@ class MyThread : public Thread {
         MyThread()
            : Thread("MyThread", 100, 1)
         {
+            Start();
         };
 
     protected:

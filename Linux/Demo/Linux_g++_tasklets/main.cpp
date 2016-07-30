@@ -65,6 +65,7 @@ class TestThread : public Thread {
         TestThread()
            : Thread("Thread", 100, 1)
         {
+            Start();
         };
 
     protected:

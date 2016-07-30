@@ -43,6 +43,7 @@ class ReaderThread : public Thread {
              DelayInSeconds(delayInSeconds),
              Lock(lock)
         {
+            Start();
         };
 
     protected:
@@ -78,6 +79,7 @@ class WriterThread : public Thread {
              DelayInSeconds(delayInSeconds),
              Lock(lock)
         {
+            Start();
         };
 
     protected:

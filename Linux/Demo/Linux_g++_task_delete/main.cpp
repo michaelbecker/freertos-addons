@@ -41,6 +41,7 @@ class TestThread : public Thread {
              id (i), 
              DelayInSeconds(delayInSeconds)
         {
+            Start();
         };
 
         ~TestThread() {
@@ -158,6 +159,13 @@ int main (void)
     TestThreadForever *threadB = new TestThreadForever(6, 6);
     TestThreadKiller Killer(threadA, threadB);
     
+    //
+    //  Try variations of Start outside of the ctor.
+    //  
+    threadA->Start();
+    threadB->Start();
+    Killer.Start();
+
     Thread::StartScheduler();
 
     //

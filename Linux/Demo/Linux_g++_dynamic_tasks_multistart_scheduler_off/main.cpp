@@ -32,15 +32,18 @@ using namespace std;
 
 
 
-class TestThread : public Thread {
+class RootThread : public Thread {
 
     public:
 
-        TestThread(int i, int delayInSeconds)
-           : Thread(100, 1), 
-             id (i), 
+        RootThread(string name, int delayInSeconds)
+           : Thread(name, 100, 3), 
              DelayInSeconds(delayInSeconds)
         {
+            //
+            //  Now that construction is completed, we
+            //  can safely start the thread.
+            //  
             Start();
         };
 
@@ -48,21 +51,16 @@ class TestThread : public Thread {
 
         virtual void Run() {
 
-            cout << "Starting thread " << id << endl;
-            
+            cout << "Starting thread " << GetName() << endl;
+
             while (true) {
             
-                TickType_t ticks = Ticks::SecondsToTicks(DelayInSeconds);
-            
-                if (ticks)
-                    Delay(ticks);
-            
-                cout << "Running thread " << id << endl;
+                Delay(Ticks::SecondsToTicks(DelayInSeconds));
+                cout << GetName() << " running" << endl;
             }
         };
 
     private:
-        int id;
         int DelayInSeconds;
 };
 
@@ -70,11 +68,15 @@ class TestThread : public Thread {
 int main (void)
 {
     cout << "Testing FreeRTOS C++ wrappers" << endl;
-    cout << "Simple Tasks" << endl;
+    cout << "Error test - dynamic Tasks - multiple start calls" << endl;
 
-    TestThread thread0(1, 1);
-    TestThread thread1(2, 2);
-    TestThread thread2(3, 3);
+    RootThread rootThread("RT", 1);
+
+    bool success = rootThread.Start();
+    if (success)
+        cout << "Start called twice ok!! This is bad!" << endl;
+    else 
+        cout << "Second Start called failed. This is correct behavior." << endl;
 
     Thread::StartScheduler();
 

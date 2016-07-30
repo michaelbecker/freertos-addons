@@ -40,6 +40,7 @@ class SignalingThread : public Thread {
         SignalingThread(Semaphore &sem)
            : Thread("SignalingThread", 100, 1), Sem(sem)
         {
+            Start();
         };
 
     protected:
@@ -74,6 +75,7 @@ class WaitingThread : public Thread {
         WaitingThread(Semaphore &sem)
            : Thread("WaitingThread", 100, 1), Sem(sem)
         {
+            Start();
         };
 
     protected:
