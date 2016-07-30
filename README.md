@@ -18,6 +18,9 @@ After working with FreeRTOS for over 6 years now, I've decided to start adding f
 
 ## Releases
 
+### Version 1.0.2 - (WIP)
+Fixing a major bug in Thread creation.
+
 ### Version 1.0.1
 Changed license from GPLv3 to GPLv2 (or later) to accomodate FreeRTOS's modified GPLv2 license.
 See https://www.gnu.org/licenses/gpl-faq.html#AllCompatibility for more information.
