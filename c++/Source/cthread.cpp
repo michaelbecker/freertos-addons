@@ -25,42 +25,82 @@
 using namespace cpp_freertos;
 
 
-Thread::Thread( const char * const pcName,
+volatile bool Thread::SchedulerActive = false;
+MutexStandard Thread::StartGuardLock;
+
+
+Thread::Thread( const std::string pcName,
                 uint16_t usStackDepth,
                 UBaseType_t uxPriority)
+    :   Name(pcName), 
+        StackDepth(usStackDepth), 
+        Priority(uxPriority),
+        ThreadStarted(false)
 {
 #if (INCLUDE_vTaskDelayUntil == 1)
     delayUntilInitialized = false;
 #endif
-
-    BaseType_t rc = xTaskCreate(TaskFunctionAdapter,
-                                pcName,
-                                usStackDepth,
-                                this,
-                                uxPriority,
-                                &handle);
-    if (rc != pdPASS) {
-        throw ThreadCreateException(rc);
-    }
 }
 
 
 Thread::Thread( uint16_t usStackDepth,
                 UBaseType_t uxPriority)
+    :   Name("Default"), 
+        StackDepth(usStackDepth), 
+        Priority(uxPriority),
+        ThreadStarted(false)
 {
 #if (INCLUDE_vTaskDelayUntil == 1)
     delayUntilInitialized = false;
 #endif
+}
+
+
+bool Thread::Start()
+{
+    //
+    //  If the Scheduler is on, we need to lock before checking
+    //  the ThreadStarted variable. We'll leverage the LockGuard 
+    //  pattern, so we can create the guard and just forget it. 
+    //  Leaving scope, including the return, will automatically 
+    //  unlock it.
+    //
+    if (SchedulerActive) {
+
+        LockGuard guard (StartGuardLock);
+
+        if (ThreadStarted)
+            return false;
+        else 
+            ThreadStarted = true;
+    }
+    //
+    //  If the Scheduler isn't running, just check it.
+    //
+    else {
+
+        if (ThreadStarted)
+            return false;
+        else 
+            ThreadStarted = true;
+    }
 
     BaseType_t rc = xTaskCreate(TaskFunctionAdapter,
-                                "Default",
-                                usStackDepth,
+                                Name.c_str(),
+                                StackDepth,
                                 this,
-                                uxPriority,
+                                Priority,
                                 &handle);
-    if (rc != pdPASS) {
-        throw ThreadCreateException(rc);
-    }
+
+    return rc != pdPASS ? false : true;
+}
+
+
+//
+//  Deliberately empty. If this is needed, it will be overloaded.
+//
+void Thread::Cleanup()
+{
 }
 
 
@@ -80,6 +120,8 @@ void Thread::TaskFunctionAdapter(void *pvParameters)
     Thread *thread = static_cast<Thread *>(pvParameters);
 
     thread->Run();
+
+    thread->Cleanup();
 
 #if (INCLUDE_vTaskDelete == 1)
 

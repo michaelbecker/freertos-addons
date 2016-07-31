@@ -43,6 +43,7 @@ class TestThread : public Thread {
              DelayInMs(delayInMs),
              Lock(lock)
         {
+            Start();
         };
 
     protected:

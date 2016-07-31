@@ -26,56 +26,9 @@
 #include <string>
 #include "FreeRTOS.h"
 #include "task.h"
-// TODO - explore replacing sprintf with stringstream
-#include <cstdio>
-
+#include "mutex.hpp"
 
 namespace cpp_freertos {
-
-
-/**
- *  This is the exception that is thrown if a Thread constructor fails.
- */
-class ThreadCreateException  : public std::exception {
-
-    public:
-        /**
-         *  Create the exception.
-         */
-        explicit ThreadCreateException(BaseType_t error)
-        {
-            errorCode = error;
-            sprintf(errorString, "Thread Constructor Failed %d", (int)errorCode);
-        }
-
-        /**
-         *  Get what happened as a string.
-         *  We are overriding the base implementation here.
-         */
-        virtual const char *what() const throw()
-        {
-            return errorString;
-        }
-
-        /**
-         *  Get the FreeRTOS error code.
-         */
-        BaseType_t getErrorCode()
-        {
-            return errorCode;
-        }
-
-    private:
-        /**
-         *  Save the FreeRTOS return code code from xTaskCreate().
-         */
-        BaseType_t errorCode;
-
-        /**
-         *  A text string representing what failed.
-         */
-        char errorString[40];
-};
 
 
 /**
@@ -99,25 +52,40 @@ class Thread {
         /**
          *  Constructor to create a named thread.
          *
-         *  @throws ThreadCreateException on failure.
          *  @param Name Name of the thread. Only useful for debugging.
          *  @param StackDepth Number of "words" allocated for the Thread stack.
          *  @param Priority FreeRTOS priority of this Thread.
          */
-        Thread( const char * const Name,
+        Thread( const std::string Name,
                 uint16_t StackDepth,
                 UBaseType_t Priority);
 
         /**
          *  Constructor to create an unnamed thread.
          *
-         *  @throws ThreadCreateException on failure.
          *  @param StackDepth Number of "words" allocated for the Thread stack.
          *  @param Priority FreeRTOS priority of this Thread.
          */
         Thread( uint16_t StackDepth,
                 UBaseType_t Priority);
 
+        /**
+         *  Starts a thread.
+         *
+         *  This is the API call that actually starts the thread running. 
+         *  It creates a backing FreeRTOS task. By separating object creation 
+         *  from starting the Thread, it solves the pure virtual fuction call 
+         *  failure case. If we attempt to automatically call xTaskCreate 
+         *  from the base class constructor, in certain conditions the task 
+         *  starts to run "before" the derived class is constructed! So we 
+         *  don't do that anymore.
+         *
+         *  This may be called from your ctor once you have completed 
+         *  your objects construction (so as the last step). 
+         *
+         *  This should only be called once ever! 
+         */
+        bool Start();
 
 #if (INCLUDE_vTaskDelete == 1)
         /**
@@ -153,9 +121,13 @@ class Thread {
 
         /**
          *  Start the scheduler.
+         *
+         *  @note You need to use this call. Do NOT directly call 
+         *  vTaskStartScheduler while using this library.
          */
         static inline void StartScheduler()
         {
+            SchedulerActive = true;
             vTaskStartScheduler();
         }
 
@@ -164,19 +136,26 @@ class Thread {
          *
          *  @note Please see the FreeRTOS documentation regarding constraints
          *  with the implementation of this.
+         *
+         *  @note You need to use this call. Do NOT directly call 
+         *  vTaskEndScheduler while using this library.
          */
         static inline void EndScheduler()
         {
             vTaskEndScheduler();
+            SchedulerActive = false;
         }
 
 #if (INCLUDE_vTaskSuspend == 1)
         /**
-         *  Suspend a specific thread.
+         *  Suspend this thread.
+         *
+         *  @note While a Thread can Suspend() itself, it cannot Resume() 
+         *  itself, becauseit's suspended.
          */
-        static inline void Suspend(Thread& thread)
+        inline void Suspend()
         {
-            vTaskSuspend(thread.GetHandle());
+            vTaskSuspend(GetHandle());
         }
 
         /**
@@ -184,9 +163,9 @@ class Thread {
          *
          *  @param thread Reference to the thread to resume.
          */
-        static inline void Resume(Thread& thread)
+        inline void Resume()
         {
-            vTaskResume(thread.GetHandle());
+            vTaskResume(GetHandle());
         }
 #endif
 
@@ -196,63 +175,57 @@ class Thread {
          *
          *  @param thread Reference to the thread to resume.
          */
-        static inline void ResumeFromISR(Thread& thread)
+        inline void ResumeFromISR()
         {
-            xTaskResumeFromISR(thread.GetHandle());
+            xTaskResumeFromISR(GetHandle());
         }
 #endif
 
 #if (INCLUDE_uxTaskPriorityGet == 1)
         /**
-         *  Get the priority of another thread.
+         *  Get the priority of this Thread.
          *
-         *  @param thread Reference to the thread.
          *  @return Priority at the time this was called.
          */
-        static inline UBaseType_t GetPriority(Thread& thread)
+        inline UBaseType_t GetPriority()
         {
-            return (uxTaskPriorityGet(thread.GetHandle()));
+            return (uxTaskPriorityGet(GetHandle()));
         }
 
         /**
-         *  Get the priority of another thread from ISR context.
+         *  Get the priority of this Thread from ISR context.
          *
-         *  @param thread Reference to the thread.
          *  @return Priority at the time this was called.
          */
-        static inline UBaseType_t GetPriorityFromISR(Thread& thread)
+        inline UBaseType_t GetPriorityFromISR()
         {
-            return (uxTaskPriorityGetFromISR(thread.GetHandle()));
+            return (uxTaskPriorityGetFromISR(GetHandle()));
         }
 #endif
+
 
 #if (INCLUDE_vTaskPrioritySet == 1)
         /**
-         *  Set the priority of another thread.
+         *  Set the priority of this thread.
          *
-         *  @param thread Reference to the thread.
          *  @param NewPriority The thread's new priority.
          */
-        static inline void SetPriority( Thread& thread,
-                                        UBaseType_t NewPriority)
+        inline void SetPriority(UBaseType_t NewPriority)
         {
-            vTaskPrioritySet(thread.GetHandle(), NewPriority);
+            Priority = NewPriority;
+            vTaskPrioritySet(GetHandle(), NewPriority);
         }
 #endif
 
-#if (INCLUDE_pcTaskGetTaskName == 1)
         /**
-         *  Get the name of a thread.
+         *  Get the name of this thread.
          *
-         *  @param thread Reference to the thread.
-         *  @return The thread's name.
+         *  @return a C++ string with the name of the task.
          */
-        static inline std::string Name(Thread& thread)
+        inline std::string GetName()
         {
-            std::string name = pcTaskGetTaskName(thread.GetHandle());
-            return name;
+            return Name;
         }
-#endif
 
 
     /////////////////////////////////////////////////////////////////////////
@@ -276,18 +249,24 @@ class Thread {
          */
         virtual void Run() = 0;
 
-#if ( INCLUDE_vTaskSuspend == 1 )
+#if (INCLUDE_vTaskDelete == 1)
         /**
-         *  Suspend this thread.
+         *  Called on exit from your Run() routine. 
+         *  
+         *  It is optional whether you implement this or not.
          *
-         *  @note There is no Resume() function, becaue you
-         *  can't resume from the thread you just suspended, because
-         *  it's suspended.
+         *  If you allow your Thread to exit its Run method, 
+         *  implementing a Cleanup method allows you to call 
+         *  your Thread's destructor. If you decide to call delete 
+         *  in your Cleanup function, be aware that additional 
+         *  derived classes shouldn't call delete. 
+         */ 
+        virtual void Cleanup();
+#else
+        /**
+         *  If we can't delete a task, it makes no sense to have a
+         *  Cleanup routine.
          */
-        void inline Suspend()
-        {
-            vTaskSuspend(NULL);
-        }
 #endif
 
 #if (INCLUDE_vTaskDelay == 1)
@@ -321,54 +300,6 @@ class Thread {
         void ResetDelayUntil();
 #endif
 
-#if (INCLUDE_uxTaskPriorityGet == 1)
-        /**
-         *  Obtain our own priority.
-         *
-         *  @return Our priority.
-         */
-        UBaseType_t inline GetPriority()
-        {
-            return (uxTaskPriorityGet(NULL));
-        }
-
-        /**
-         *  Obtain our own priority from an ISR context.
-         *
-         *  @return Our priority.
-         */
-        UBaseType_t inline GetPriorityFromISR()
-        {
-            return (uxTaskPriorityGetFromISR(NULL));
-        }
-
-#endif
-
-#if (INCLUDE_vTaskPrioritySet == 1)
-        /**
-         *  Change the priority of this thread.
-         *
-         *  @param NewPriority The thread's new priority.
-         */
-        void SetPriority(UBaseType_t NewPriority)
-        {
-            vTaskPrioritySet(NULL, NewPriority);
-        }
-#endif
-
-#if (INCLUDE_pcTaskGetTaskName == 1)
-        /**
-         *  Get the name of this thread.
-         *
-         *  @return The thread's name.
-         */
-        static inline std::string Name()
-        {
-            std::string name = pcTaskGetTaskName(NULL);
-            return name;
-        }
-#endif
-
     /////////////////////////////////////////////////////////////////////////
     //
     //  Private API
@@ -381,6 +312,36 @@ class Thread {
          *  Can be obtained from GetHandle().
          */
         TaskHandle_t handle;
+
+        /**
+         *  We need to track whether the scheduler is active or not.
+         */
+        static volatile bool SchedulerActive;
+
+        /**
+         *  The name of this thread.
+         */
+        const std::string Name;
+
+        /**
+         *  Stack depth of this Thread, in words.
+         */
+        const uint16_t StackDepth;
+
+        /**
+         *  A saved / cached copy of what the Thread's priority is.
+         */
+        UBaseType_t Priority;
+
+        /**
+         *  Flag whether or not the Thread was started.
+         */
+        bool ThreadStarted;
+        
+        /**
+         *  Make sure no one calls Start more than once.
+         */
+        static MutexStandard StartGuardLock;
 
         /**
          *  Adapter function that allows you to write a class

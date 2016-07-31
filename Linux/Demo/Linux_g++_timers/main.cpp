@@ -79,6 +79,7 @@ class TestThread : public Thread {
         TestThread(PeriodicTimer &t, SingleRunTimer &s)
            : Thread("TestThread", 100, 1), periodicTimer(t), singleRunTimer(s)
         {
+            Start();
         };
 
     protected:

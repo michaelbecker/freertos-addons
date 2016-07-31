@@ -41,6 +41,11 @@ class TestThread : public Thread {
              id (i), 
              DelayInSeconds(delayInSeconds)
         {
+            //
+            //  Now that construction is completed, we
+            //  can safely start the thread.
+            //  
+            Start();
         };
 
     protected:

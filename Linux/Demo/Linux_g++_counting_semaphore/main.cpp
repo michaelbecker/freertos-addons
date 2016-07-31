@@ -40,6 +40,7 @@ class Producer : public Thread {
         Producer(Semaphore &sem)
            : Thread("Producer", 100, 1), Sem(sem)
         {
+            Start();
         };
 
     protected:
@@ -77,6 +78,7 @@ class Consumer : public Thread {
         Consumer(Semaphore &sem)
            : Thread("Consumer", 100, 1), Sem(sem)
         {
+            Start();
         };
 
     protected:

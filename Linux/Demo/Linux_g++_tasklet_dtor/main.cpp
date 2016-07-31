@@ -97,6 +97,7 @@ class TestThread : public Thread {
         TestThread()
            : Thread("Thread", 100, configMAX_PRIORITIES - 1)
         {
+            Start();
         };
 
     protected:
