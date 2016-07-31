@@ -54,6 +54,10 @@ WorkQueue::WorkQueue(   const char * const Name,
     WorkItemQueue = new Queue(maxWorkItems, sizeof(WorkItem *));
     ThreadComplete = new BinarySemaphore();
     WorkerThread = new CWorkerThread(Name, StackDepth, Priority, this);
+    //
+    //  Our ctor chain is complete, we can start.
+    //
+    WorkerThread->Start();
 }
 
 
@@ -68,6 +72,10 @@ WorkQueue::WorkQueue(   uint16_t StackDepth,
     WorkItemQueue = new Queue(maxWorkItems, sizeof(WorkItem *));
     ThreadComplete = new BinarySemaphore();
     WorkerThread = new CWorkerThread(StackDepth, Priority, this);
+    //
+    //  Our ctor chain is complete, we can start.
+    //
+    WorkerThread->Start();
 }
 
 

@@ -70,6 +70,7 @@ class TestThread : public Thread {
              id (i), 
              DelayInSeconds(delayInSeconds)
         {
+            Start();
         };
 
     protected:
