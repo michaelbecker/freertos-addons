@@ -6,8 +6,9 @@ After working with FreeRTOS for over 6 years now, I've decided to start adding f
 
 + C++ Wrappers 
   - A collection of C++ wrappers encapsulating FreeRTOS functionality, allowing you to write your RTOS application in C++ while still using FreeRTOS. This wrapper layer does all the integration work for you.
+  - This library is for you if you are planning on using C++ and FreeRTOS in your project but don't want to spend the time integrating the two.
   - Everything was testing successfully using FreeRTOS versions 8.2.3 and 9.0.0.
-  - There are currently 18 demo / unit test projects using these wrappers.
+  - There are numerous demo / unit test projects using these wrappers and various features they provide.
 
 + Updated Linux port 
   - An update of the Linux / POSIX port of FreeRTOS
@@ -18,8 +19,11 @@ After working with FreeRTOS for over 6 years now, I've decided to start adding f
 
 ## Releases
 
-### Version 1.0.2 - (WIP)
-Fixing a major bug in Thread creation.
+### (WIP)
+Adding object oriented work queues.
+
+### Version 1.0.2
+Fixed a major bug in Thread creation.
 
 ### Version 1.0.1
 Changed license from GPLv3 to GPLv2 (or later) to accomodate FreeRTOS's modified GPLv2 license.
@@ -40,7 +44,6 @@ Initial release.
 
 ### New Value Added
 + In Timers, add OnStop / OnStart / mutex sync with these methods?
-+ Work Queues
 + Fixed size Memory pools
 + Priority queues
 + Monitors 
