@@ -122,7 +122,7 @@ class TestThread : public Thread {
 int main (void)
 {
     cout << "Testing FreeRTOS C++ wrappers" << endl;
-    cout << "Workqueues" << endl;
+    cout << "Workqueues Delete" << endl;
 
     TestThread thread(1, 1);
 

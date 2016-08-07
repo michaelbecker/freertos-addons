@@ -107,7 +107,7 @@ WorkQueue::~WorkQueue()
 
 bool WorkQueue::QueueWork(WorkItem *work)
 {
-    return WorkItemQueue->Enqueue(work);
+    return WorkItemQueue->Enqueue(&work);
 }
 
 
