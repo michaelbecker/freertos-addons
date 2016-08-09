@@ -85,17 +85,24 @@ WorkQueue::~WorkQueue()
     //  This dtor is tricky, because of the multiple objects in 
     //  play, and the multithreaded nature of this specific object.
     //
-    //  First empty the queue.
+
     //
-    WorkItemQueue->Flush();
+    //  Note that we cannot flush the queue. If there are items 
+    //  in the queue maked freeAfterComplete, we would leak the 
+    //  memory. 
+    //
+
     //
     //  Send a message that it's time to cleanup.
     //
-    WorkItemQueue->Enqueue(NULL);
+    WorkItem *work = NULL;
+    WorkItemQueue->Enqueue(&work);
+
     //
     //  Wait until the thread has run enough to signal that it's done.
     //
     ThreadComplete->Take();
+
     //
     //  Then delete the queue and thread. Order doesn't matter here.
     //

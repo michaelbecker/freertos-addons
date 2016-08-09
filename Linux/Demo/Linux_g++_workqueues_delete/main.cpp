@@ -67,7 +67,8 @@ class TestThread : public Thread {
         TestThread(int i, int delayInSeconds)
            : Thread("TestThread", 100, 3), 
              id (i), 
-             DelayInSeconds(delayInSeconds)
+             DelayInSeconds(delayInSeconds),
+             TotalWorkItems(0)
         {
             Start();
         };
@@ -78,36 +79,15 @@ class TestThread : public Thread {
 
             cout << "Starting thread " << id << endl;
 
-            //
-            //  Low priority work queue - lower than this thread
-            //
-            WorkQueue wq_low("wq_low", DEFAULT_WORK_QUEUE_STACK_SIZE, 1);
-
-            //
-            //  High priority work queue - higher than this thread
-            //
-            WorkQueue wq_high("wq_high", DEFAULT_WORK_QUEUE_STACK_SIZE, 5);
-
-            MyWorkItem *work1;
-            MyWorkItem *work2;
-            int count = 1;
-            
             while (true) {
             
                 Delay(Ticks::SecondsToTicks(DelayInSeconds));
                 cout << "\n[t:" << id <<"] making work"<< endl;
 
-                work1 = new MyWorkItem(count++, true);
-                work2 = new MyWorkItem(count++, true);
-
-                wq_low.QueueWork(work1);
-                wq_high.QueueWork(work2);
-
-                work1 = new MyWorkItem(count++, true);
-                wq_low.QueueWork(work1);
-
-                work1 = new MyWorkItem(count++, true);
-                wq_low.QueueWork(work1);
+                CreateWorkQueues();
+                QueueWork();
+                QueueExtraWork();
+                DeleteWorkQueues();
 
                 cout << "[t" << id <<"] done\n"<< endl;
             }
@@ -116,6 +96,54 @@ class TestThread : public Thread {
     private:
         int id;
         int DelayInSeconds;
+        WorkQueue *WqLow;
+        WorkQueue *WqHigh;
+        int TotalWorkItems;
+
+        void CreateWorkQueues()
+        {
+            //
+            //  Low priority work queue - lower than this thread
+            //
+            WqLow = new WorkQueue("WqLow", DEFAULT_WORK_QUEUE_STACK_SIZE, 1);
+
+            //
+            //  High priority work queue - higher than this thread
+            //
+            WqHigh = new WorkQueue("WqHigh", DEFAULT_WORK_QUEUE_STACK_SIZE, 5);
+        }
+
+        void DeleteWorkQueues()
+        {
+            delete WqLow;
+            delete WqHigh;
+        }
+
+        void QueueWork()
+        {
+            MyWorkItem *work1;
+            MyWorkItem *work2;
+            
+            work1 = new MyWorkItem(TotalWorkItems++, true);
+            work2 = new MyWorkItem(TotalWorkItems++, true);
+
+            WqLow->QueueWork(work1);
+            WqHigh->QueueWork(work2);
+        }
+
+        void QueueExtraWork()
+        {
+            MyWorkItem *work1;
+            
+            work1 = new MyWorkItem(TotalWorkItems++, true);
+            WqLow->QueueWork(work1);
+
+            work1 = new MyWorkItem(TotalWorkItems++, true);
+            WqLow->QueueWork(work1);
+
+            work1 = new MyWorkItem(TotalWorkItems++, true);
+            WqLow->QueueWork(work1);
+        }
 };
 
 
@@ -124,7 +152,7 @@ int main (void)
     cout << "Testing FreeRTOS C++ wrappers" << endl;
     cout << "Workqueues Delete" << endl;
 
-    TestThread thread(1, 1);
+    TestThread thread(1, 3);
 
     Thread::StartScheduler();
 
