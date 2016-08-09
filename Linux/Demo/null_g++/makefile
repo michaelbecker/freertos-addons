@@ -76,7 +76,8 @@ FREERTOS_CPP_SRC= \
 				  ctasklet.cpp \
 				  cthread.cpp \
 				  ctickhook.cpp \
-				  ctimer.cpp
+				  ctimer.cpp \
+				  cworkqueue.cpp \
 
 
 OBJ = ${SRC:.cpp=.o} 
