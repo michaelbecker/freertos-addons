@@ -106,9 +106,19 @@ int main (void)
     cout << "Testing FreeRTOS C++ wrappers" << endl;
     cout << "Binary Semaphore" << endl;
 
-    BinarySemaphore Sem;
-    SignalingThread sthd(Sem);
-    WaitingThread wthr(Sem);
+    BinarySemaphore *Sem;
+
+    try {
+        Sem = new BinarySemaphore();
+    }
+    catch(SemaphoreCreateException &ex) {
+        cout << "Caught SemaphoreCreateException" << endl;
+        cout << ex.what() << endl;
+        configASSERT(!"BinarySemaphore creation failed!");
+    }
+
+    SignalingThread sthd(*Sem);
+    WaitingThread wthr(*Sem);
 
     Thread::StartScheduler();
 

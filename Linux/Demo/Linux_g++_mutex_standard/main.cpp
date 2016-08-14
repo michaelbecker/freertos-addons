@@ -77,11 +77,20 @@ int main (void)
     cout << "Testing FreeRTOS C++ wrappers" << endl;
     cout << "Standard Mutexes" << endl;
 
-    MutexStandard SharedLock;
+    MutexStandard *SharedLock;
 
-    TestThread thread0(1, 200, SharedLock);
-    TestThread thread1(2, 200, SharedLock);
-    TestThread thread2(3, 200, SharedLock);
+    try {
+        SharedLock = new MutexStandard();
+    }
+    catch(MutexCreateException &ex) {
+        cout << "Caught MutexCreateException" << endl;
+        cout << ex.what() << endl;
+        configASSERT(!"MutexRecursive creation failed!");
+    }
+    
+    TestThread thread0(1, 200, *SharedLock);
+    TestThread thread1(2, 200, *SharedLock);
+    TestThread thread2(3, 200, *SharedLock);
 
     Thread::StartScheduler();
 

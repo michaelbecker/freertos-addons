@@ -110,16 +110,25 @@ int main (void)
     cout << "Testing FreeRTOS C++ wrappers" << endl;
     cout << "ReadWriteLockPreferReader" << endl;
 
-    ReadWriteLockPreferReader Lock;
+    ReadWriteLockPreferReader *Lock;
 
-    ReaderThread r1(1, 1, Lock);
-    ReaderThread r2(2, 1, Lock);
-    ReaderThread r3(3, 1, Lock);
-    ReaderThread r4(4, 5, Lock);
-    ReaderThread r5(5, 5, Lock);
+    try {
+        Lock = new ReadWriteLockPreferReader();
+    }
+    catch(ReadWriteLockCreateException &ex) {
+        cout << "Caught ReadWriteLockCreateException" << endl;
+        cout << ex.what() << endl;
+        configASSERT(!"ReadWriteLock creation failed!");
+    }
 
-    WriterThread w1(10, 2, Lock);
-    WriterThread w2(11, 3, Lock);
+    ReaderThread r1(1, 1, *Lock);
+    ReaderThread r2(2, 1, *Lock);
+    ReaderThread r3(3, 1, *Lock);
+    ReaderThread r4(4, 5, *Lock);
+    ReaderThread r5(5, 5, *Lock);
+
+    WriterThread w1(10, 2, *Lock);
+    WriterThread w2(11, 3, *Lock);
 
 
     Thread::StartScheduler();

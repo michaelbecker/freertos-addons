@@ -116,19 +116,28 @@ int main (void)
     //  These parameters may be adjusted to explore queue 
     //  behaviors.
     //
-    Queue MessageQueue(5, sizeof(int));
+    Queue *MessageQueue;
 
-    ProducerThread p1(1, 1, 3, MessageQueue);
-    ProducerThread p2(2, 1, 3, MessageQueue);
-    ProducerThread p3(3, 1, 3, MessageQueue);
-    ProducerThread p4(4, 1, 3, MessageQueue);
-    ProducerThread p5(5, 1, 3, MessageQueue);
+    try {
+        MessageQueue = new Queue(5, sizeof(int));
+    }
+    catch(QueueCreateException &ex) {
+        cout << "Caught QueueCreateException" << endl;
+        cout << ex.what() << endl;
+        configASSERT(!"Queue creation failed!");
+    }
 
-    ConsumerThread c1(1, 0, MessageQueue);
-    ConsumerThread c2(2, 0, MessageQueue);
-    ConsumerThread c3(3, 0, MessageQueue);
-    ConsumerThread c4(4, 0, MessageQueue);
-    ConsumerThread c5(5, 0, MessageQueue);
+    ProducerThread p1(1, 1, 3, *MessageQueue);
+    ProducerThread p2(2, 1, 3, *MessageQueue);
+    ProducerThread p3(3, 1, 3, *MessageQueue);
+    ProducerThread p4(4, 1, 3, *MessageQueue);
+    ProducerThread p5(5, 1, 3, *MessageQueue);
+
+    ConsumerThread c1(1, 0, *MessageQueue);
+    ConsumerThread c2(2, 0, *MessageQueue);
+    ConsumerThread c3(3, 0, *MessageQueue);
+    ConsumerThread c4(4, 0, *MessageQueue);
+    ConsumerThread c5(5, 0, *MessageQueue);
 
     Thread::StartScheduler();
 

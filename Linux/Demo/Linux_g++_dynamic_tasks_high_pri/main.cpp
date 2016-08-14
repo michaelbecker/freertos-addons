@@ -131,6 +131,7 @@ class RootThread : public Thread {
                     case 4:
                         cout << GetName() << " Starting " << threadName << endl;
                         dt->Start();
+                        break;
 
                     default:
                         count = 0;

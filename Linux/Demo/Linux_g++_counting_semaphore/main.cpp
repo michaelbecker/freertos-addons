@@ -113,9 +113,19 @@ int main (void)
     cout << "Counting Semaphore" << endl;
 
     // Set inital count lower to generate Sem,Give() failures
-    CountingSemaphore Sem (10, 0);
-    Producer sthd(Sem);
-    Consumer wthr(Sem);
+    CountingSemaphore *Sem;
+
+    try {
+        Sem = new CountingSemaphore(10, 0);
+    }
+    catch(SemaphoreCreateException &ex) {
+        cout << "Caught SemaphoreCreateException" << endl;
+        cout << ex.what() << endl;
+        configASSERT(!"BinarySemaphore creation failed!");
+    }
+
+    Producer sthd(*Sem);
+    Consumer wthr(*Sem);
 
     Thread::StartScheduler();
 

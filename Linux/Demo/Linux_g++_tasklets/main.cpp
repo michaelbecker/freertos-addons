@@ -100,10 +100,6 @@ class TestThread : public Thread {
                 Parameter++;
             }
         };
-
-    private:
-        int id;
-        int DelayInSeconds;
 };
 
 

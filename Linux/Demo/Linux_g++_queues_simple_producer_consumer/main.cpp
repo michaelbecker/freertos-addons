@@ -116,9 +116,19 @@ int main (void)
     //  These parameters may be adjusted to explore queue 
     //  behaviors.
     //
-    Queue MessageQueue(1, sizeof(int));
-    ProducerThread p1(1, 1, 10, MessageQueue);
-    ConsumerThread c1(1, 1, MessageQueue);
+    Queue *MessageQueue;
+
+    try {
+        MessageQueue = new Queue(1, sizeof(int));
+    }
+    catch(QueueCreateException &ex) {
+        cout << "Caught QueueCreateException" << endl;
+        cout << ex.what() << endl;
+        configASSERT(!"Queue creation failed!");
+    }
+
+    ProducerThread p1(1, 1, 10, *MessageQueue);
+    ConsumerThread c1(1, 1, *MessageQueue);
 
     Thread::StartScheduler();
 

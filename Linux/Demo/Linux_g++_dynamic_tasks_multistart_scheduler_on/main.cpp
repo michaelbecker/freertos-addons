@@ -120,8 +120,6 @@ class RootThread : public Thread {
                 count++;
 
                 switch (count) {
-                    case 0:
-                        break;
 
                     case 1: {
                         char nameBuf[10];
