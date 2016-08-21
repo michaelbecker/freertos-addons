@@ -146,7 +146,6 @@ class TestThread : public Thread {
         };
 
     private:
-        int id;
         int DelayInSeconds;
 };
 
