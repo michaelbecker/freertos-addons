@@ -1,0 +1,4 @@
+<map id="cpp_freertos::Semaphore" name="cpp_freertos::Semaphore">
+<area shape="rect" id="node2" href="$classcpp__freertos_1_1_binary_semaphore.html" title="cpp_freertos::BinarySemaphore" alt="" coords="5,80,211,107"/>
+<area shape="rect" id="node3" href="$classcpp__freertos_1_1_counting_semaphore.html" title="cpp_freertos::CountingSemaphore" alt="" coords="235,80,455,107"/>
+</map>
