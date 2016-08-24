@@ -160,8 +160,6 @@ class Thread {
 
         /**
          *  Resume a specific thread.
-         *
-         *  @param thread Reference to the thread to resume.
          */
         inline void Resume()
         {
@@ -172,8 +170,6 @@ class Thread {
 #if (INCLUDE_xTaskResumeFromISR == 1)
         /**
          *  Resume a specific thread from ISR context.
-         *
-         *  @param thread Reference to the thread to resume.
          */
         inline void ResumeFromISR()
         {

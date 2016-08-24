@@ -102,7 +102,7 @@ class WorkItem {
 
 /**
  *  This class is the "engine" for WorkItems. Create one or more WorkQueues
- *  to accept WorkItems. WorkQueues pull WotkItems off of a FIFO queue and 
+ *  to accept WorkItems. WorkQueues pull WorkItems off of a FIFO queue and 
  *  run them sequentially.
  */
 class WorkQueue {
