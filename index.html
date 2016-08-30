@@ -10,7 +10,7 @@
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <title>Freertos-addons by michaelbecker</title>
+    <title>Freertos-addons by Michael Becker</title>
   </head>
 
   <body>
@@ -19,9 +19,20 @@
 
         <header>
           <h1>Freertos-addons</h1>
-          <h2>Extra features to FreeRTOS</h2>
+            <p>After working with <a href="http://www.freertos.org/" target="_blank">FreeRTOS</a> for over 6 years now, I've decided to start adding features and implementations that I wish would have been there at the beginning.
+</p>
         </header>
 
+        <section id="downloads" class="clearfix">
+            <h2>Latest release (v1.1.0)</h2>
+          <a href="https://github.com/michaelbecker/freertos-addons/archive/v1.1.0.zip" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/michaelbecker/freertos-addons/archive/v1.1.0.tar.gz" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/michaelbecker/freertos-addons/releases/tag/v1.1.0" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
+
+        <hr>
+
+            <h2>Latest code (master branch)</h2>
         <section id="downloads" class="clearfix">
           <a href="https://github.com/michaelbecker/freertos-addons/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
           <a href="https://github.com/michaelbecker/freertos-addons/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
@@ -34,24 +45,37 @@
           <h1>
 <a id="freertos-addons" class="anchor" href="#freertos-addons" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>freertos-addons</h1>
 
-<p>After working with FreeRTOS for over 6 years now, I've decided to start adding the little features and implementations that I wish would have been there. </p>
-
 <h1>
-<a id="features" class="anchor" href="#features" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Features</h1>
+<a id="features" class="anchor" href="#features" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Current Features
+</h1>
 
+<h2>C++ Wrappers</h2> 
+<p>A collection of C++ wrappers encapsulating FreeRTOS functionality, allowing you to write your RTOS application in C++ while still using FreeRTOS. This wrapper layer does all the integration work for you.
+</p>
 <ul>
-<li>C++ Wrappers - a collection of C++ wrappers encapsulating FreeRTOS functionality, allowing you to write your RTOS application in C++ while still using FreeRTOS. This wrapper layer does all the integration work for you.</li>
-<li><a href="docs/html/index.html">(WIP) Doxygen documentation</a> 
-<li>Updated Linux port - an update of the Linux / POSIX port of FreeRTOS that functions with FreeRTOS v8.x.x and v9.x.x</li>
-</ul>
-        </section>
+    <li><a href="https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html" target="blank">Licensing is GPLv2</a>. Anyone is free to use this anywhere they want however they want, with the understanding that their code will also be required to be GPLv2, and open to the public. However, if alternate licensing is required or desired, please contact me.</li>
+    <li>This library is for you if you are planning on using C++ and FreeRTOS in your project but don't want to spend the time integrating the two.</li>
+    <li>Everything was testing successfully using FreeRTOS versions <a href="https://sourceforge.net/projects/freertos/files/FreeRTOS/V8.2.3/" target="_blank">8.2.3</a> and <a href="https://sourceforge.net/projects/freertos/files/FreeRTOS/V9.0.0/" target="_blank">9.0.0</a>.</li>
+    <li>There are numerous demo / unit test projects using these wrappers and various features they provide. (Last count we are at 24 Demo projects showing how you might use the C++ Wrapper library.</li>
+    <li>Full <a href="docs/html/index.html">documentation</a> of the library. Documents were auto-generated and cross-referenced using <a target="_blank" href="http://www.stack.nl/~dimitri/doxygen/">Doxygen</a></li>
+
+    <h2>Updated Linux port</h2>
+    <p>An update of the Linux / POSIX port of FreeRTOS, for testing and debugging on a Linux PC.</p>
+    <li><a href="https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html" target="blank">Licensing is GPLv2</a>. This is a derivative work of a GPLv2 product.</li>
+    <li>This update was tested successfully with FreeRTOS <a href="https://sourceforge.net/projects/freertos/files/FreeRTOS/V8.2.3/" target="_blank">8.2.3</a> and <a href="https://sourceforge.net/projects/freertos/files/FreeRTOS/V9.0.0/" target="_blank">9.0.0</a></li>
+    <li>Two Ubuntu workstations were also used, running 16.04 and 14.04, both 64-bit multicore machines.</li> 
+    <li>This revised Posix port I renamed to Linux port, since I ended up using a few Linux specific APIs in it.</li>
+    <li>Thanks to William Davy who wrote the original Posix FreeRTOS port. He did amazing work simulating a real-time system under Linux.</li>
+
+
+</section>
+
 
         <footer>
-          Freertos-addons is maintained by <a href="https://github.com/michaelbecker">michaelbecker</a><br>
-          This page was generated by <a href="https://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
+          Freertos-addons is maintained by <a href="https://github.com/michaelbecker">Michael Becker</a><br>
+          This page was initially generated by <a href="https://pages.github.com">GitHub Pages</a> and later edited manually. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
         </footer>
 
-        
       </div>
     </div>
   </body>
