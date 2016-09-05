@@ -4,7 +4,7 @@ After working with FreeRTOS for over 6 years now, I've decided to start adding f
 
 ## Current Features
 
-+ C++ Wrappers 
++ C++ Wrappers [![Coverity Scan Build Status](https://scan.coverity.com/projects/9669/badge.svg)](https://scan.coverity.com/projects/michaelbecker-freertos-addons)
   - Licensing is GPLv2. Anyone is free to use this anywhere they want however they want, with the understanding that their code will also be required to be GPLv2, and open to the public. However, if alternate licensing is required or desired, please contact me. 
   - A collection of C++ wrappers encapsulating FreeRTOS functionality, allowing you to write your RTOS application in C++ while still using FreeRTOS. This wrapper layer does all the integration work for you.
   - This library is for you if you are planning on using C++ and FreeRTOS in your project but don't want to spend the time integrating the two.
@@ -22,20 +22,24 @@ After working with FreeRTOS for over 6 years now, I've decided to start adding f
 
 ## Releases
 
-### Version 1.1.0 (WIP)
+### Version 1.1.0 
++ https://github.com/michaelbecker/freertos-addons/releases/tag/v1.1.0
 + Adding object oriented work queues.
 + Coverity scan analysis performed, with bug fixes.
   - See: https://scan.coverity.com/projects/michaelbecker-freertos-addons
 
 ### Version 1.0.2
++ https://github.com/michaelbecker/freertos-addons/releases/tag/v1.0.2
 + Fixed a major bug in Thread creation.
   - See: https://www.linkedin.com/pulse/apples-kumquats-perils-multi-threaded-polymorphism-michael-becker
 
 ### Version 1.0.1
++ https://github.com/michaelbecker/freertos-addons/releases/tag/v1.0.1
 + Changed license from GPLv3 to GPLv2 (or later) to accomodate FreeRTOS's modified GPLv2 license.
 + See https://www.gnu.org/licenses/gpl-faq.html#AllCompatibility for more information.
 
 ### Version 1.0.0 
++ https://github.com/michaelbecker/freertos-addons/releases/tag/v1.0.0
 + Initial release.
 
 ## TODO
