@@ -10,6 +10,8 @@ After working with FreeRTOS for over 6 years now, I've decided to start adding f
   - This library is for you if you are planning on using C++ and FreeRTOS in your project but don't want to spend the time integrating the two.
   - Everything was testing successfully using FreeRTOS versions 8.2.3 and 9.0.0.
   - There are numerous demo / unit test projects using these wrappers and various features they provide. (Last count we are at 24 Demo projects showing how you might use the C++ Wrapper library.
+  - [Project web page](http://michaelbecker.github.io/freertos-addons/)
+  - [Full cross-referenced documentation](http://michaelbecker.github.io/freertos-addons/docs/html/index.html)
 
 + Updated Linux port
   - Licensing is GPLv2 (this is a derivative work).
