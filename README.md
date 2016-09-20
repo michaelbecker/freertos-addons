@@ -24,6 +24,9 @@ After working with FreeRTOS for over 6 years now, I've decided to start adding f
 
 ## Releases
 
+### Version 1.2.0 - WIP
++ Adding preprocessor flag to exclude exceptions for smaller footprint and C++ compilers that do not support them.
+
 ### Version 1.1.0 
 + https://github.com/michaelbecker/freertos-addons/releases/tag/v1.1.0
 + Adding object oriented work queues.

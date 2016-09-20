@@ -41,7 +41,11 @@ MutexStandard::MutexStandard()
     handle = xSemaphoreCreateMutex();
 
     if (handle == NULL) {
+#ifndef CPP_FREERTOS_NO_EXCEPTIONS
         throw MutexCreateException();
+#else
+        configASSERT(!"Mutex Constructor Failed");
+#endif        
     }
 }
 
@@ -67,7 +71,11 @@ MutexRecursive::MutexRecursive()
     handle = xSemaphoreCreateRecursiveMutex();
 
     if (handle == NULL) {
+#ifndef CPP_FREERTOS_NO_EXCEPTIONS
         throw MutexCreateException();
+#else
+        configASSERT(!"Mutex Constructor Failed");
+#endif        
     }
 }
 
