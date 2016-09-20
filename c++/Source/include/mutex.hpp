@@ -22,14 +22,14 @@
 #ifndef MUTEX_HPP_
 #define MUTEX_HPP_
 
-#include <exception>
 #ifndef CPP_FREERTOS_NO_EXCEPTIONS
+#include <exception>
 #include <string>
+// TODO - explore replacing sprintf with stringstream
+#include <cstdio>
 #endif
 #include "FreeRTOS.h"
 #include "semphr.h"
-// TODO - explore replacing sprintf with stringstream
-#include <cstdio>
 
 namespace cpp_freertos {
 

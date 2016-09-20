@@ -22,18 +22,20 @@
 #ifndef QUEUE_HPP_
 #define QUEUE_HPP_
 
-
+#ifndef CPP_FREERTOS_NO_EXCEPTIONS
 #include <exception>
-#include <string>
-#include "FreeRTOS.h"
-#include "queue.h"
 // TODO - explore replacing sprintf with stringstream
 #include <cstdio>
+#include <string>
+#endif
+#include "FreeRTOS.h"
+#include "queue.h"
 
 
 namespace cpp_freertos {
 
 
+#ifndef CPP_FREERTOS_NO_EXCEPTIONS
 /**
  *  This is the exception that is thrown if a Queue constructor fails.
  */
@@ -72,6 +74,7 @@ class QueueCreateException : public std::exception {
          */
         char errorString[80];
 };
+#endif
 
 
 /**

@@ -23,18 +23,21 @@
 #define TASKLET_HPP_
 
 
+#ifndef CPP_FREERTOS_NO_EXCEPTIONS
 #include <exception>
 #include <string>
+// TODO - explore replacing sprintf with stringstream
+#include <cstdio>
+#endif
 #include "FreeRTOS.h"
 #include "timers.h"
 #include "semphr.h"
-// TODO - explore replacing sprintf with stringstream
-#include <cstdio>
 
 
 namespace cpp_freertos {
 
 
+#ifndef CPP_FREERTOS_NO_EXCEPTIONS
 /**
  *  This is the exception that is thrown if a Tasklet constructor fails.
  */
@@ -73,6 +76,7 @@ class TaskletCreateException : public std::exception {
          */
         char errorString[80];
 };
+#endif
 
 
 /**
@@ -180,3 +184,4 @@ class Tasklet {
 
 }
 #endif
+

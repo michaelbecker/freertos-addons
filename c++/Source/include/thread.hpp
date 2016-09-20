@@ -22,7 +22,7 @@
 #ifndef THREAD_HPP_
 #define THREAD_HPP_
 
-#include <exception>
+
 #include <string>
 #include "FreeRTOS.h"
 #include "task.h"

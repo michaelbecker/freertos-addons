@@ -81,7 +81,11 @@ BinarySemaphore::BinarySemaphore(bool set)
     handle = xSemaphoreCreateBinary();
 
     if (handle == NULL) {
+#ifndef CPP_FREERTOS_NO_EXCEPTIONS
         throw SemaphoreCreateException();
+#else
+        configASSERT(!"BinarySemaphore Constructor Failed");
+#endif
     }
 
     if (set) {
@@ -93,16 +97,30 @@ BinarySemaphore::BinarySemaphore(bool set)
 CountingSemaphore::CountingSemaphore(UBaseType_t maxCount, UBaseType_t initialCount)
 {
     if (maxCount == 0) {
+#ifndef CPP_FREERTOS_NO_EXCEPTIONS
         throw SemaphoreCreateException("bad maxCount");
+#else
+        configASSERT(!"CountingSemaphore Constructor bad maxCount");
+#endif
     }
 
     if (initialCount > maxCount) {
+#ifndef CPP_FREERTOS_NO_EXCEPTIONS
         throw SemaphoreCreateException("bad initialCount");
+#else
+        configASSERT(!"CountingSemaphore Constructor bad initialCount");
+#endif
     }
 
     handle = xSemaphoreCreateCounting(maxCount, initialCount);
 
     if (handle == NULL) {
+#ifndef CPP_FREERTOS_NO_EXCEPTIONS
         throw SemaphoreCreateException();
+#else
+        configASSERT(!"CountingSemaphore Constructor Failed");
+#endif
     }
 }
+
+

@@ -45,7 +45,7 @@ MutexStandard::MutexStandard()
         throw MutexCreateException();
 #else
         configASSERT(!"Mutex Constructor Failed");
-#endif        
+#endif
     }
 }
 
@@ -75,7 +75,7 @@ MutexRecursive::MutexRecursive()
         throw MutexCreateException();
 #else
         configASSERT(!"Mutex Constructor Failed");
-#endif        
+#endif
     }
 }
 

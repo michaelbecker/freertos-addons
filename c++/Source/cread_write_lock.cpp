@@ -30,7 +30,11 @@ ReadWriteLock::ReadWriteLock()
 {
     ReadLock = xSemaphoreCreateMutex();
     if (ReadLock == NULL) {
+#ifndef CPP_FREERTOS_NO_EXCEPTIONS
         throw ReadWriteLockCreateException();
+#else
+        configASSERT(!"ReadWriteLock Constructor Failed");
+#endif
     }
 
     //
@@ -43,7 +47,11 @@ ReadWriteLock::ReadWriteLock()
     ResourceLock = xSemaphoreCreateBinary();
     if (ResourceLock == NULL) {
         vSemaphoreDelete(ReadLock);
+#ifndef CPP_FREERTOS_NO_EXCEPTIONS
         throw ReadWriteLockCreateException();
+#else
+        configASSERT(!"ReadWriteLock Constructor Failed");
+#endif
     }
 
     //
@@ -104,7 +112,11 @@ ReadWriteLockPreferWriter::ReadWriteLockPreferWriter()
 {
     WriteLock = xSemaphoreCreateMutex();
     if (WriteLock == NULL) {
+#ifndef CPP_FREERTOS_NO_EXCEPTIONS
         throw ReadWriteLockCreateException();
+#else
+        configASSERT(!"ReadWriteLockPreferWriter Constructor Failed");
+#endif
     }
 
     //
@@ -117,7 +129,11 @@ ReadWriteLockPreferWriter::ReadWriteLockPreferWriter()
     BlockReadersLock = xSemaphoreCreateBinary();
     if (BlockReadersLock == NULL) {
         vSemaphoreDelete(WriteLock);
+#ifndef CPP_FREERTOS_NO_EXCEPTIONS
         throw ReadWriteLockCreateException();
+#else
+        configASSERT(!"ReadWriteLockPreferWriter Constructor Failed");
+#endif
     }
 
     //

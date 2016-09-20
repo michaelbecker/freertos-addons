@@ -37,7 +37,11 @@ Timer::Timer(   const char * const TimerName,
                             TimerCallbackFunctionAdapter);
 
     if (handle == NULL) {
+#ifndef CPP_FREERTOS_NO_EXCEPTIONS
         throw TimerCreateException();
+#else
+        configASSERT(!"Timer Constructor Failed");
+#endif
     }
 }
 
@@ -53,7 +57,11 @@ Timer::Timer(   TickType_t PeriodInTicks,
                             TimerCallbackFunctionAdapter);
 
     if (handle == NULL) {
+#ifndef CPP_FREERTOS_NO_EXCEPTIONS
         throw TimerCreateException();
+#else
+        configASSERT(!"Timer Constructor Failed");
+#endif
     }
 }
 

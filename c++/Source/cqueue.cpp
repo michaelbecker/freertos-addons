@@ -30,7 +30,11 @@ Queue::Queue(UBaseType_t maxItems, UBaseType_t itemSize)
     handle = xQueueCreate(maxItems, itemSize);
 
     if (handle == NULL) {
+#ifndef CPP_FREERTOS_NO_EXCEPTIONS
         throw QueueCreateException();
+#else
+        configASSERT(!"Queue Constructor Failed");
+#endif
     }
 }
 

@@ -23,17 +23,20 @@
 #define READ_WRITE_LOCK_HPP_
 
 
+#ifndef CPP_FREERTOS_NO_EXCEPTIONS
 #include <exception>
 #include <string>
-#include "FreeRTOS.h"
-#include "semphr.h"
 // TODO - explore replacing sprintf with stringstream
 #include <cstdio>
+#endif
+#include "FreeRTOS.h"
+#include "semphr.h"
 
 
 namespace cpp_freertos {
 
 
+#ifndef CPP_FREERTOS_NO_EXCEPTIONS
 /**
  *  This is the exception that is thrown if a ReadWriteLock constructor fails.
  */
@@ -63,6 +66,7 @@ class ReadWriteLockCreateException : public std::exception {
          */
         char errorString[80];
 };
+#endif
 
 
 /**

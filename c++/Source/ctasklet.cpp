@@ -30,7 +30,11 @@ Tasklet::Tasklet()
     DtorLock = xSemaphoreCreateBinary();
 
     if (DtorLock == NULL) {
+#ifndef CPP_FREERTOS_NO_EXCEPTIONS
         throw TaskletCreateException("Create DtorLock Failed");
+#else
+        configASSERT(!"Tasklet Constructor Failed");
+#endif
     }
 
     xSemaphoreGive(DtorLock);
