@@ -24,8 +24,9 @@ After working with FreeRTOS for over 6 years now, I've decided to start adding f
 
 ## Releases
 
-### Version 1.2.0 - WIP
+### Version 1.2.0
 + Adding preprocessor flag to exclude exceptions for smaller footprint and C++ compilers that do not support them.
++ Updated license to one similar to FreeRTOS version. What does that mean for you? It means you are free to use FreeRTOS C++ Wrappers in your commercial product without making your product open source.
 
 ### Version 1.1.0 
 + https://github.com/michaelbecker/freertos-addons/releases/tag/v1.1.0
