@@ -5,13 +5,13 @@ After working with FreeRTOS for over 6 years now, I've decided to start adding f
 ## Current Features
 
 + C++ Wrappers [![Coverity Scan Build Status](https://scan.coverity.com/projects/9669/badge.svg)](https://scan.coverity.com/projects/michaelbecker-freertos-addons)
-  - Licensing is GPLv2. Anyone is free to use this anywhere they want however they want, with the understanding that their code will also be required to be GPLv2, and open to the public. However, if alternate licensing is required or desired, please contact me. 
   - A collection of C++ wrappers encapsulating FreeRTOS functionality, allowing you to write your RTOS application in C++ while still using FreeRTOS. This wrapper layer does all the integration work for you.
   - This library is for you if you are planning on using C++ and FreeRTOS in your project but don't want to spend the time integrating the two.
   - Everything was testing successfully using FreeRTOS versions 8.2.3 and 9.0.0.
   - There are numerous demo / unit test projects using these wrappers and various features they provide. (Last count we are at 24 Demo projects showing how you might use the C++ Wrapper library.
+  - Licensing is a modified GPLv2, the same as FreeRTOS.
   - [Project web page](http://michaelbecker.github.io/freertos-addons/)
-  - [Full cross-referenced documentation](http://michaelbecker.github.io/freertos-addons/docs/html/index.html)
+  - [Full cross-referenced documentation](http://michaelbecker.github.io/freertos-addons/docs/html/index.html). Documents were auto-generated and cross-referenced using Doxygen.
 
 + Updated Linux port
   - Licensing is GPLv2 (this is a derivative work).
@@ -25,6 +25,7 @@ After working with FreeRTOS for over 6 years now, I've decided to start adding f
 ## Releases
 
 ### Version 1.2.0
++ https://github.com/michaelbecker/freertos-addons/releases/tag/v1.2.0
 + Adding preprocessor flag to exclude exceptions for smaller footprint and C++ compilers that do not support them.
 + Updated license to one similar to FreeRTOS version. What does that mean for you? It means you are free to use FreeRTOS C++ Wrappers in your commercial product without making your product open source.
 
