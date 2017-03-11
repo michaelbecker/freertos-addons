@@ -66,177 +66,45 @@
  *  information accuracy).
  *  
  ***************************************************************************/
-#include "queue.hpp"
+#ifndef CONDITION_VARIABLE_HPP_
+#define CONDITION_VARIABLE_HPP_
+
+#include <list>
+#include "mutex.hpp"
 
 
-using namespace cpp_freertos;
+namespace cpp_freertos {
+
+//
+//  Forward declaration. We need to prevent a circular dependency
+//  between the Thread class and the ConditionVariable class.
+//
+class Thread;
 
 
-Queue::Queue(UBaseType_t maxItems, UBaseType_t itemSize)
-{
-    handle = xQueueCreate(maxItems, itemSize);
+class ConditionVariable {
 
-    if (handle == NULL) {
-#ifndef CPP_FREERTOS_NO_EXCEPTIONS
-        throw QueueCreateException();
-#else
-        configASSERT(!"Queue Constructor Failed");
+    /////////////////////////////////////////////////////////////////////////
+    //
+    //  Public API
+    //
+    /////////////////////////////////////////////////////////////////////////
+    public:
+    
+        ConditionVariable();
+
+        void Wait(Mutex &CvLock, Thread *thread);
+
+    private:
+
+        MutexStandard Lock;
+
+        std::list<Thread *> WaitList;
+
+};
+
+
+}
+
 #endif
-    }
-}
 
-
-Queue::~Queue()
-{
-    vQueueDelete(handle);
-}
-
-
-bool Queue::Enqueue(void *item)
-{
-    BaseType_t success;
-
-    success = xQueueSendToBack(handle, item, portMAX_DELAY);
-
-    return success == pdTRUE ? true : false;
-}
-
-
-bool Queue::Enqueue(void *item, TickType_t Timeout)
-{
-    BaseType_t success;
-
-    success = xQueueSendToBack(handle, item, Timeout);
-
-    return success == pdTRUE ? true : false;
-}
-
-
-bool Queue::Dequeue(void *item, TickType_t Timeout)
-{
-    BaseType_t success;
-
-    success = xQueueReceive(handle, item, Timeout);
-
-    return success == pdTRUE ? true : false;
-}
-
-
-bool Queue::Peek(void *item, TickType_t Timeout)
-{
-    BaseType_t success;
-
-    success = xQueuePeek(handle, item, Timeout);
-
-    return success == pdTRUE ? true : false;
-}
-
-
-bool Queue::EnqueueFromISR(void *item, BaseType_t *pxHigherPriorityTaskWoken)
-{
-    BaseType_t success;
-
-    success = xQueueSendToBackFromISR(handle, item, pxHigherPriorityTaskWoken);
-
-    return success == pdTRUE ? true : false;
-}
-
-
-bool Queue::DequeueFromISR(void *item, BaseType_t *pxHigherPriorityTaskWoken)
-{
-    BaseType_t success;
-
-    success = xQueueReceiveFromISR(handle, item, pxHigherPriorityTaskWoken);
-
-    return success == pdTRUE ? true : false;
-}
-
-
-bool Queue::PeekFromISR(void *item)
-{
-    BaseType_t success;
-
-    success = xQueuePeekFromISR(handle, item);
-
-    return success == pdTRUE ? true : false;
-}
-
-
-bool Queue::IsEmpty()
-{
-    UBaseType_t cnt = uxQueueMessagesWaiting(handle);
-
-    return cnt == 0 ? true : false;
-}
-
-
-bool Queue::IsFull()
-{
-    UBaseType_t cnt = uxQueueSpacesAvailable(handle);
-
-    return cnt == 0 ? true : false;
-}
-
-
-void Queue::Flush()
-{
-    xQueueReset(handle);
-}
-
-
-UBaseType_t Queue::NumItems()
-{
-    return uxQueueMessagesWaiting(handle);
-}
-
-
-UBaseType_t Queue::NumSpacesLeft()
-{
-    return uxQueueSpacesAvailable(handle);
-}
-
-
-Deque::Deque(UBaseType_t maxItems, UBaseType_t itemSize)
-    : Queue(maxItems, itemSize)
-{
-}
-
-
-bool Deque::EnqueueToFront(void *item, TickType_t Timeout)
-{
-    BaseType_t success;
-
-    success = xQueueSendToFront(handle, item, Timeout);
-
-    return success == pdTRUE ? true : false;
-}
-
-
-bool Deque::EnqueueToFrontFromISR(void *item, BaseType_t *pxHigherPriorityTaskWoken)
-{
-    BaseType_t success;
-
-    success = xQueueSendToFrontFromISR(handle, item, pxHigherPriorityTaskWoken);
-
-    return success == pdTRUE ? true : false;
-}
-
-
-BinaryQueue::BinaryQueue(UBaseType_t itemSize)
-    : Queue(1, itemSize)
-{
-}
-
-
-bool BinaryQueue::Enqueue(void *item)
-{
-    (void)xQueueOverwrite(handle, item);
-    return true;
-}
-
-
-bool BinaryQueue::EnqueueFromISR(void *item, BaseType_t *pxHigherPriorityTaskWoken)
-{
-    (void)xQueueOverwriteFromISR(handle, item, pxHigherPriorityTaskWoken);
-    return true;
-}

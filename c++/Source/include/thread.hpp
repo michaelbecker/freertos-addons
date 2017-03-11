@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- *  Copyright (c) 2016, Michael Becker (michael.f.becker@gmail.com)
+ *  Copyright (c) 2017, Michael Becker (michael.f.becker@gmail.com)
  *
  *  This file is part of the FreeRTOS C++ Wrappers project.
  *  
@@ -74,6 +74,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "mutex.hpp"
+#include "semaphore.h"
+#include "condition_variable.hpp"
 
 namespace cpp_freertos {
 
@@ -343,6 +345,14 @@ class Thread {
         void ResetDelayUntil();
 #endif
 
+
+#ifndef CPP_FREERTOS_NO_CONDITION_VARIABLES
+
+        void Wait(Mutex &CvLock, ConditionVariable &Cv);
+
+#endif
+
+
     /////////////////////////////////////////////////////////////////////////
     //
     //  Private API
@@ -404,6 +414,14 @@ class Thread {
          *  Book keeping value for delay until.
          */
         TickType_t delayUntilPreviousWakeTime;
+#endif
+
+
+
+#ifndef CPP_FREERTOS_NO_CONDITION_VARIABLES
+
+        BinarySemaphore ThreadWaitSem;
+
 #endif
 
 };

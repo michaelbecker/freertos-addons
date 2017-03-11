@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- *  Copyright (c) 2016, Michael Becker (michael.f.becker@gmail.com)
+ *  Copyright (c) 2017, Michael Becker (michael.f.becker@gmail.com)
  *
  *  This file is part of the FreeRTOS C++ Wrappers project.
  *  
@@ -200,3 +200,16 @@ void Thread::ResetDelayUntil()
 }
 
 #endif
+
+
+#ifndef CPP_FREERTOS_NO_CONDITION_VARIABLES
+
+void Thread::Wait(Mutex &Lock, ConditionVariable &Cv)
+{
+    Cv.Wait(Lock, 
+}
+
+
+#endif
+
+
