@@ -202,13 +202,34 @@ void Thread::ResetDelayUntil()
 #endif
 
 
-#ifndef CPP_FREERTOS_NO_CONDITION_VARIABLES
+#ifdef CPP_FREERTOS_CONDITION_VARIABLES
 
-void Thread::Wait(Mutex &Lock, ConditionVariable &Cv)
+bool Thread::Wait(  ConditionVariable &Cv,
+                    Mutex &CvLock,
+                    TickType_t Timeout)
 {
-    Cv.Wait(Lock, 
+    Cv.AddToWaitList(CvLock, this);
+
+    //
+    //  Drop the associated external lock, as per cv semantics.
+    //
+    CvLock.Unlock()
+
+    bool timed_out = ThreadWaitSem.Take(Timeout);
+    
+    //
+    //  Grab the external lock again, as per cv semantics.
+    //
+    CvLock.Lock()
+
+    return timed_out;
 }
 
+
+void Thread::Signal()
+{
+    ThreadWaitSem.Give();
+}
 
 #endif
 

@@ -68,4 +68,80 @@
  ***************************************************************************/
 
 
+#include "condition_variable.hpp"
+#include "thread.hpp"
+
+
+using namespace std;
+using namespace cpp_freertos;
+
+
+ConditionVariable::ConditionVariable() 
+    :Lock(), WaitList()
+{
+}
+
+
+void ConditionVariable::AddToWaitList(Thread *thread)
+{
+    //
+    //  Lock the internal condition variable state
+    //
+    Lock.Lock();
+
+    //
+    //  Add the thread to the condition variable wait list.
+    //
+    WaitList.push_back(thread);
+
+    //
+    //  Drop the internal condition variable lock.
+    //
+    Lock.Unlock();
+}
+
+
+void ConditionVariable::Signal()
+{
+    //
+    //  Lock the internal condition variable state
+    //
+    Lock.Lock();
+
+    if ( !WaitList.empty() ) {
+
+        Thread *thr = WaitList.front();
+        WaitList.pop_front(thread);
+
+        thr->Signal();
+    }
+
+    //
+    //  Drop the internal condition variable lock.
+    //
+    Lock.Unlock();
+}
+
+
+void ConditionVariable::Broadcast()
+{
+    //
+    //  Lock the internal condition variable state
+    //
+    Lock.Lock();
+
+    while ( !WaitList.empty() ) {
+
+        Thread *thr = WaitList.front();
+        WaitList.pop_front(thread);
+
+        thr->Signal();
+    }
+
+    //
+    //  Drop the internal condition variable lock.
+    //
+    Lock.Unlock();
+}
+
 

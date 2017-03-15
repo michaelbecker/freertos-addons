@@ -346,9 +346,25 @@ class Thread {
 #endif
 
 
-#ifndef CPP_FREERTOS_NO_CONDITION_VARIABLES
+#ifdef CPP_FREERTOS_CONDITION_VARIABLES
 
-        void Wait(Mutex &CvLock, ConditionVariable &Cv);
+        /**
+         *  Have this thread wait on a condition variable. 
+         *
+         *  @note Threads wait, while ConditionVariables signal.
+         *
+         *  @param Cv The condition variable associated with the Wait.
+         *  @param CvLock The required condition variable lock. The 
+         *  Lock must be held before calling Wait.
+         *  @param Timeout Allows you to specify a timeout on the Wait,
+         *  if desired.
+         *
+         *  @return true if the condition variable was signaled, 
+         *  false if it timed out.
+         */
+        bool Wait(  ConditionVariable &Cv,
+                    Mutex &CvLock,
+                    TickType_t Timeout = portMAX_DELAY);
 
 #endif
 
@@ -418,9 +434,27 @@ class Thread {
 
 
 
-#ifndef CPP_FREERTOS_NO_CONDITION_VARIABLES
+#ifdef CPP_FREERTOS_CONDITION_VARIABLES
 
+        /**
+         *  How we wait and signal the thread when using condition variables.
+         *  Because a semaphore maintains state, this solves the race condition
+         *  between dropping the CvLock and waiting. 
+         */
         BinarySemaphore ThreadWaitSem;
+
+        /**
+         *  Internal helper function to signal this thread.
+         */
+        inline void Signal();
+
+    /**
+     *  The Thread class and the ConditionVariable class are interdependent.
+     *  If we allow the ConditionVariable class to access the internals of the 
+     *  Thread class, we can reduce the public interface, which is a 
+     *  good thing.
+     */
+    friend class ConditionVariable;
 
 #endif
 
