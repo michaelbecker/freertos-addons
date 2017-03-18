@@ -73,6 +73,14 @@
 #include "mutex.hpp"
 
 
+/**
+ *  Condition variables are an additon to the FreeRTOS C++ Wrapper
+ *  classes. If you want to include them, you need to define the 
+ *  following in your makefile or project.
+ */
+#ifdef CPP_FREERTOS_CONDITION_VARIABLES
+
+
 namespace cpp_freertos {
 
 //
@@ -83,11 +91,14 @@ class Thread;
 
 
 /**
- *  Class implementation of condition variable semantics based on 
+ *  Class implementation of condition variable based on
  *  FreeRTOS C++ Wrapper classes.
+ *  
+ *  A condition variable isn't really a variable. It's a list
+ *  of threads.
  *
- *  The design here is that a Thread waits, and a ConditionVariable 
- *  signals. This affects where the public interfaces reside.
+ *  The design here is that a Thread "waits", and a ConditionVariable
+ *  "signals". This affects where the public interfaces reside.
  */
 class ConditionVariable {
 
@@ -105,7 +116,7 @@ class ConditionVariable {
 
         /**
          *  Signal a thread waiting on this ConditionVariable.
-         *  Signaling is FIFO.
+         *  Signaling is implemented as FIFO.
          */
         void Signal();
 
@@ -114,8 +125,14 @@ class ConditionVariable {
          */
         void Broadcast();
 
+    /////////////////////////////////////////////////////////////////////////
+    //
+    //  Private API
+    //  The internals of this wrapper class.
+    //
+    /////////////////////////////////////////////////////////////////////////
     private:
-        
+
         /**
          *  Protect the internal ConditionVariable state.
          */
@@ -133,9 +150,9 @@ class ConditionVariable {
         inline void AddToWaitList(Thread *thread);
 
     /**
-     *  The Thread class and the ConditionVariable class are interdependent. 
-     *  If we allow the Thread class to access the internals of the 
-     *  ConditionVariable, we can reduce the public interface which is a 
+     *  The Thread class and the ConditionVariable class are interdependent.
+     *  If we allow the Thread class to access the internals of the
+     *  ConditionVariable, we can reduce the public interface which is a
      *  good thing.
      */
     friend class Thread;
@@ -143,6 +160,8 @@ class ConditionVariable {
 
 
 }
+
+#endif
 
 #endif
 

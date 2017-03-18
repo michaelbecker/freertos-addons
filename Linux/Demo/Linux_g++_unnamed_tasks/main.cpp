@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- *  Copyright (c) 2016, Michael Becker (michael.f.becker@gmail.com)
+ *  Copyright (c) 2017, Michael Becker (michael.f.becker@gmail.com)
  *
  *  This file is part of the FreeRTOS C++ Wrappers project.
  *  
@@ -95,7 +95,7 @@ class TestThread : public Thread {
 
         virtual void Run() {
 
-            cout << "Starting thread " << id << endl;
+            cout << "Starting thread " << id << " " << GetName() << endl;
             
             while (true) {
             
@@ -104,7 +104,7 @@ class TestThread : public Thread {
                 if (ticks)
                     Delay(ticks);
             
-                cout << "Running thread " << id << endl;
+                cout << "Running thread " << id <<  " " << GetName() << endl;
             }
         };
 

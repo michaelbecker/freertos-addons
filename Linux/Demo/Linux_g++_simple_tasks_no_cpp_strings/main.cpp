@@ -72,7 +72,6 @@
 #include "task.h"
 #include "thread.hpp"
 #include "ticks.hpp"
-#include "read_write_lock.hpp"
 
 
 using namespace cpp_freertos;
@@ -80,16 +79,18 @@ using namespace std;
 
 
 
-class ReaderThread : public Thread {
+class TestThread : public Thread {
 
     public:
 
-        ReaderThread(int i, int delayInSeconds, ReadWriteLock &lock)
-           : Thread("ReaderThread", 100, 1), 
-             id (i), 
-             DelayInSeconds(delayInSeconds),
-             Lock(lock)
+        TestThread(const char *name, int delayInSeconds)
+           : Thread(name, 100, 1),
+             DelayInSeconds(delayInSeconds)
         {
+            //
+            //  Now that construction is completed, we
+            //  can safely start the thread.
+            //  
             Start();
         };
 
@@ -97,86 +98,39 @@ class ReaderThread : public Thread {
 
         virtual void Run() {
 
+            printf("Starting thread: %s\n", GetName());
+            
             while (true) {
             
-                Delay(Ticks::SecondsToTicks(DelayInSeconds));
-
-                Lock.ReaderLock();
-                cout << "[ R "<< id << " ] Starting Read" << endl;
-                Delay(Ticks::SecondsToTicks(3));
-                cout << "[ R "<< id << " ] Ending Read" << endl;
-                Lock.ReaderUnlock();
+                TickType_t ticks = Ticks::SecondsToTicks(DelayInSeconds);
+            
+                if (ticks)
+                    Delay(ticks);
+            
+                printf("Running thread: %s\n", GetName());
             }
         };
 
     private:
-        int id;
         int DelayInSeconds;
-        ReadWriteLock &Lock;
-};
-
-
-class WriterThread : public Thread {
-
-    public:
-
-        WriterThread(int i, int delayInSeconds, ReadWriteLock &lock)
-           : Thread("WriterThread", 100, 1), 
-             id (i), 
-             DelayInSeconds(delayInSeconds),
-             Lock(lock)
-        {
-            Start();
-        };
-
-    protected:
-
-        virtual void Run() {
-
-            while (true) {
-            
-                Delay(Ticks::SecondsToTicks(DelayInSeconds));
-
-                Lock.WriterLock();
-                cout << "[ W "<< id << " ] Starting Write" << endl;
-                Delay(Ticks::SecondsToTicks(2));
-                cout << "[ W "<< id << " ] Ending Write" << endl;
-                Lock.WriterUnlock();
-            }
-        };
-
-    private:
-        int id;
-        int DelayInSeconds;
-        ReadWriteLock &Lock;
 };
 
 
 int main (void)
 {
     cout << "Testing FreeRTOS C++ wrappers" << endl;
-    cout << "ReadWriteLockPreferReader" << endl;
+    cout << "Simple Tasks - No C++ Strings" << endl;
+    
+    cout << "configMAX_TASK_NAME_LEN = " << configMAX_TASK_NAME_LEN << endl;
+    cout << "  Therefore, thread names cannot be greater than " 
+         << configMAX_TASK_NAME_LEN - 1 << " characters long." << endl;
+    
 
-    ReadWriteLockPreferReader *Lock;
-
-    try {
-        Lock = new ReadWriteLockPreferReader();
-    }
-    catch(ReadWriteLockCreateException &ex) {
-        cout << "Caught ReadWriteLockCreateException" << endl;
-        cout << ex.what() << endl;
-        configASSERT(!"ReadWriteLock creation failed!");
-    }
-
-    ReaderThread r1(1, 1, *Lock);
-    ReaderThread r2(2, 1, *Lock);
-    ReaderThread r3(3, 1, *Lock);
-    ReaderThread r4(4, 5, *Lock);
-    ReaderThread r5(5, 5, *Lock);
-
-    WriterThread w1(10, 2, *Lock);
-    WriterThread w2(11, 3, *Lock);
-
+    TestThread thread1("Thr_Name_1", 1);
+    TestThread thread2("Thr_Name_22", 2);
+    TestThread thread3("Thr_Name_333", 3);
+    TestThread thread4("Thr_Name_4444", 4);
+    TestThread thread5("Thr_Name_55555", 5);
 
     Thread::StartScheduler();
 

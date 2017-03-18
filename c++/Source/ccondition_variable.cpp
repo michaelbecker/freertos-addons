@@ -72,6 +72,9 @@
 #include "thread.hpp"
 
 
+#ifdef CPP_FREERTOS_CONDITION_VARIABLES
+
+
 using namespace std;
 using namespace cpp_freertos;
 
@@ -144,4 +147,5 @@ void ConditionVariable::Broadcast()
     Lock.Unlock();
 }
 
+#endif
 

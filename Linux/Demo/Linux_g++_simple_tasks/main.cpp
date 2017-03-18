@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- *  Copyright (c) 2016, Michael Becker (michael.f.becker@gmail.com)
+ *  Copyright (c) 2017, Michael Becker (michael.f.becker@gmail.com)
  *
  *  This file is part of the FreeRTOS C++ Wrappers project.
  *  
@@ -83,8 +83,8 @@ class TestThread : public Thread {
 
     public:
 
-        TestThread(int i, int delayInSeconds)
-           : Thread("TestThread", 100, 1), 
+        TestThread(string name, int i, int delayInSeconds)
+           : Thread(name, 100, 1),
              id (i), 
              DelayInSeconds(delayInSeconds)
         {
@@ -99,7 +99,7 @@ class TestThread : public Thread {
 
         virtual void Run() {
 
-            cout << "Starting thread " << id << endl;
+            cout << "Starting thread " << id << " " << GetName() << endl;
             
             while (true) {
             
@@ -108,7 +108,7 @@ class TestThread : public Thread {
                 if (ticks)
                     Delay(ticks);
             
-                cout << "Running thread " << id << endl;
+                cout << "Running thread " << id << " " << GetName() << endl;
             }
         };
 
@@ -123,9 +123,15 @@ int main (void)
     cout << "Testing FreeRTOS C++ wrappers" << endl;
     cout << "Simple Tasks" << endl;
 
-    TestThread thread0(1, 1);
-    TestThread thread1(2, 2);
-    TestThread thread2(3, 3);
+    cout << "configMAX_TASK_NAME_LEN = " << configMAX_TASK_NAME_LEN << endl;
+    cout << "  C++ Thread names can be greater than " 
+         << configMAX_TASK_NAME_LEN - 1 << " characters long." << endl;
+
+    TestThread thread1("Thr_Name_1", 1, 1);
+    TestThread thread2("Thr_Name_22", 2, 2);
+    TestThread thread3("Thr_Name_333", 3, 3);
+    TestThread thread4("Thr_Name_4444", 4, 4);
+    TestThread thread5("Thr_Name_55555_55555_55555", 5, 5);
 
     Thread::StartScheduler();
 

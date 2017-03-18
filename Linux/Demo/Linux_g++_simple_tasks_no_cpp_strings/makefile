@@ -79,7 +79,7 @@ CC = gcc
 CXX = g++
 
 CFLAGS += -Wall -Werror -Wextra -Wpedantic -pthread -O0 -g
-CXXFLAGS += -Wall -Werror -Wextra -Wpedantic -pthread -O0 -g
+CXXFLAGS += -Wall -Werror -Wextra -Wpedantic -pthread -O0 -g -DCPP_FREERTOS_NO_CPP_STRINGS -DCPP_FREERTOS_NO_EXCEPTIONS
 LDFLAGS += -Wall -Werror -Wextra -Wpedantic -pthread -O0 -g
 
 
@@ -96,7 +96,7 @@ VPATH += ${FREERTOS_SRC_DIR} \
 		 ${PORTABLE_SRC_MEM_MANG_DIR} \
 
 
-TARGET = Linux_g++_workqueues
+TARGET = Linux_g++_simple_tasks_no_cpp_strings
 
 default: all
 
