@@ -259,6 +259,7 @@ void Thread::ResetDelayUntil()
 #endif
 
 
+
 #ifdef CPP_FREERTOS_CONDITION_VARIABLES
 
 bool Thread::Wait(  ConditionVariable &Cv,
@@ -281,16 +282,11 @@ bool Thread::Wait(  ConditionVariable &Cv,
     //
     //  Grab the external lock again, as per cv semantics.
     //
-    CvLock.Lock()
+    CvLock.Lock();
 
     return timed_out;
 }
 
-
-void Thread::Signal()
-{
-    ThreadWaitSem.Give();
-}
 
 #endif
 

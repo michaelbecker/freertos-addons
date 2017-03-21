@@ -85,7 +85,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "mutex.hpp"
-#include "semaphore.h"
+#include "semaphore.hpp"
 #include "condition_variable.hpp"
 
 namespace cpp_freertos {
@@ -475,7 +475,10 @@ class Thread {
         /**
          *  Internal helper function to signal this thread.
          */
-        inline void Signal();
+        inline void Signal()
+        {
+            ThreadWaitSem.Give();
+        }
 
     /**
      *  The Thread class and the ConditionVariable class are interdependent.

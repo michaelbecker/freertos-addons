@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Michael Becker (michael.f.becker@gmail.com
+ *  Copyright (C) 2017 Michael Becker (michael.f.becker@gmail.com
  *  Modified from code from William Davy (william.davy@wittenstein.co.uk)
  *
  *  Modifications (not exhaustive):
@@ -104,7 +104,6 @@ typedef struct ThreadState_t_
     portBASE_TYPE   uxCriticalNesting;
     pdTASK_CODE     pxCode;
     void            *pvParams;
-    int             Nice;
 
 } ThreadState_t;
 
@@ -409,9 +408,6 @@ static void *ThreadStartWrapper( void * pvParams )
 {
     ThreadState_t *State = (ThreadState_t *)pvParams;
 
-    if (State->Nice != 0)
-        nice(State->Nice);
-    
     pthread_cleanup_push( DeleteThreadCleanupRoutine, State );
 
     pthread_mutex_lock(&xSingleThreadMutex); 

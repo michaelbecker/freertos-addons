@@ -125,6 +125,7 @@ class ConditionVariable {
          */
         void Broadcast();
 
+
     /////////////////////////////////////////////////////////////////////////
     //
     //  Private API
@@ -147,7 +148,7 @@ class ConditionVariable {
          *  Internal helper function to queue a Thread to 
          *  this ConditionVariable's wait list.
          */
-        inline void AddToWaitList(Thread *thread);
+        void AddToWaitList(Thread *thread);
 
     /**
      *  The Thread class and the ConditionVariable class are interdependent.

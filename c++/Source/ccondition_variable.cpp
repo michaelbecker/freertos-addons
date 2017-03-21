@@ -79,8 +79,8 @@ using namespace std;
 using namespace cpp_freertos;
 
 
-ConditionVariable::ConditionVariable() 
-    :Lock(), WaitList()
+ConditionVariable::ConditionVariable()
+    : Lock(), WaitList()
 {
 }
 
@@ -114,8 +114,7 @@ void ConditionVariable::Signal()
     if ( !WaitList.empty() ) {
 
         Thread *thr = WaitList.front();
-        WaitList.pop_front(thread);
-
+        WaitList.pop_front();
         thr->Signal();
     }
 
@@ -136,8 +135,7 @@ void ConditionVariable::Broadcast()
     while ( !WaitList.empty() ) {
 
         Thread *thr = WaitList.front();
-        WaitList.pop_front(thread);
-
+        WaitList.pop_front();
         thr->Signal();
     }
 
