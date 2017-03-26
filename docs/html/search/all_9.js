@@ -1,13 +1,6 @@
 var searchData=
 [
-  ['mstoticks',['MsToTicks',['../classcpp__freertos_1_1_ticks.html#a5dc8a555d3fc7cb9f244f8abcf52192a',1,'cpp_freertos::Ticks']]],
-  ['mutex',['Mutex',['../classcpp__freertos_1_1_mutex.html',1,'cpp_freertos']]],
-  ['mutex',['Mutex',['../classcpp__freertos_1_1_mutex.html#a593423d868daf926c7b0d63a833ae29a',1,'cpp_freertos::Mutex::Mutex()'],['../classcpp__freertos_1_1_lock_guard.html#a3b67f7513dfadf84bd37a3d3ba0f2603',1,'cpp_freertos::LockGuard::mutex()']]],
-  ['mutex_2ehpp',['mutex.hpp',['../mutex_8hpp.html',1,'']]],
-  ['mutexcreateexception',['MutexCreateException',['../classcpp__freertos_1_1_mutex_create_exception.html#a1f0d4d2f54e54a7213b4e0518da9ca70',1,'cpp_freertos::MutexCreateException']]],
-  ['mutexcreateexception',['MutexCreateException',['../classcpp__freertos_1_1_mutex_create_exception.html',1,'cpp_freertos']]],
-  ['mutexrecursive',['MutexRecursive',['../classcpp__freertos_1_1_mutex_recursive.html',1,'cpp_freertos']]],
-  ['mutexrecursive',['MutexRecursive',['../classcpp__freertos_1_1_mutex_recursive.html#a426901660c5879b1c0a98f040be36b2f',1,'cpp_freertos::MutexRecursive']]],
-  ['mutexstandard',['MutexStandard',['../classcpp__freertos_1_1_mutex_standard.html',1,'cpp_freertos']]],
-  ['mutexstandard',['MutexStandard',['../classcpp__freertos_1_1_mutex_standard.html#aa42d0a64a53ce605d519f87d46fc6d9d',1,'cpp_freertos::MutexStandard']]]
+  ['lock',['Lock',['../classcpp__freertos_1_1_condition_variable.html#a9de86e42fae80d497441de132670c38f',1,'cpp_freertos::ConditionVariable::Lock()'],['../classcpp__freertos_1_1_mutex.html#ad32b3657e5bab97b248273e80c0c3ae7',1,'cpp_freertos::Mutex::Lock()'],['../classcpp__freertos_1_1_mutex_standard.html#a496a92f219f93f431a9249ba5d140a61',1,'cpp_freertos::MutexStandard::Lock()'],['../classcpp__freertos_1_1_mutex_recursive.html#a751e5af8f8af53de3822cc7c0f2c905e',1,'cpp_freertos::MutexRecursive::Lock()']]],
+  ['lockguard',['LockGuard',['../classcpp__freertos_1_1_lock_guard.html#a4eb7c1037e77dfb43618803011b92573',1,'cpp_freertos::LockGuard::LockGuard(Mutex &amp;m)'],['../classcpp__freertos_1_1_lock_guard.html#a059fdab4efe7500b95ebe3f861bdc65a',1,'cpp_freertos::LockGuard::LockGuard(const LockGuard &amp;)']]],
+  ['lockguard',['LockGuard',['../classcpp__freertos_1_1_lock_guard.html',1,'cpp_freertos']]]
 ];

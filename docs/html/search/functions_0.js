@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['binaryqueue',['BinaryQueue',['../classcpp__freertos_1_1_binary_queue.html#a3cbe4921a69a33f335e56d5891225e4c',1,'cpp_freertos::BinaryQueue']]],
-  ['binarysemaphore',['BinarySemaphore',['../classcpp__freertos_1_1_binary_semaphore.html#a852811f96c09920dbb2bd06bcc2c2928',1,'cpp_freertos::BinarySemaphore']]]
+  ['addtowaitlist',['AddToWaitList',['../classcpp__freertos_1_1_condition_variable.html#a2ffe9249383d68bc423221be9e69dad0',1,'cpp_freertos::ConditionVariable']]]
 ];

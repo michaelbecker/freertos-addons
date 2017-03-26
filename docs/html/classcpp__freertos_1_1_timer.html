@@ -24,7 +24,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">FreeRTOS C++ Wrappers
-   &#160;<span id="projectnumber">1.1.0</span>
+   &#160;<span id="projectnumber">1.3.0</span>
    </div>
    <div id="projectbrief">C++ interface to FreeRTOS</div>
   </td>
@@ -154,7 +154,7 @@ Private Attributes</h2></td></tr>
 <div class="textblock"><p>Wrapper class around FreeRTOS's implementation of a timer.</p>
 <p>This is an abstract base class. To use this, you need to subclass it. All of your timers should be derived from the <a class="el" href="classcpp__freertos_1_1_timer.html">Timer</a> class. Then implement the virtual Run function. This is a similar design to Java threading. </p>
 
-<p>Definition at line <a class="el" href="timer_8hpp_source.html#l00076">76</a> of file <a class="el" href="timer_8hpp_source.html">timer.hpp</a>.</p>
+<p>Definition at line <a class="el" href="timer_8hpp_source.html#l00136">136</a> of file <a class="el" href="timer_8hpp_source.html">timer.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="ab9df38de944064725d42f9e8572bcf6a"></a>
 <div class="memitem">
@@ -201,7 +201,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="ctimer_8cpp_source.html#l00028">28</a> of file <a class="el" href="ctimer_8cpp_source.html">ctimer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="ctimer_8cpp_source.html#l00075">75</a> of file <a class="el" href="ctimer_8cpp_source.html">ctimer.cpp</a>.</p>
 
 </div>
 </div>
@@ -243,7 +243,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="ctimer_8cpp_source.html#l00045">45</a> of file <a class="el" href="ctimer_8cpp_source.html">ctimer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="ctimer_8cpp_source.html#l00096">96</a> of file <a class="el" href="ctimer_8cpp_source.html">ctimer.cpp</a>.</p>
 
 </div>
 </div>
@@ -261,7 +261,7 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Destructor </p>
 
-<p>Definition at line <a class="el" href="ctimer_8cpp_source.html#l00061">61</a> of file <a class="el" href="ctimer_8cpp_source.html">ctimer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="ctimer_8cpp_source.html#l00116">116</a> of file <a class="el" href="ctimer_8cpp_source.html">ctimer.cpp</a>.</p>
 
 </div>
 </div>
@@ -289,7 +289,7 @@ Private Attributes</h2></td></tr>
 <p>If you need it, obtain the task handle of the FreeRTOS task that is running the timers.</p>
 <dl class="section return"><dt>Returns</dt><dd>Task handle of the FreeRTOS timer task. </dd></dl>
 
-<p>Definition at line <a class="el" href="ctimer_8cpp_source.html#l00131">131</a> of file <a class="el" href="ctimer_8cpp_source.html">ctimer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="ctimer_8cpp_source.html#l00186">186</a> of file <a class="el" href="ctimer_8cpp_source.html">ctimer.cpp</a>.</p>
 
 </div>
 </div>
@@ -308,7 +308,7 @@ Private Attributes</h2></td></tr>
 <p>Is the timer currently active?</p>
 <dl class="section return"><dt>Returns</dt><dd>true if the timer is active, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="ctimer_8cpp_source.html#l00067">67</a> of file <a class="el" href="ctimer_8cpp_source.html">ctimer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="ctimer_8cpp_source.html#l00122">122</a> of file <a class="el" href="ctimer_8cpp_source.html">ctimer.cpp</a>.</p>
 
 </div>
 </div>
@@ -334,7 +334,7 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if this command will be sent to the timer code, false if it will not (i.e. timeout). </dd></dl>
 
-<p>Definition at line <a class="el" href="ctimer_8cpp_source.html#l00099">99</a> of file <a class="el" href="ctimer_8cpp_source.html">ctimer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="ctimer_8cpp_source.html#l00154">154</a> of file <a class="el" href="ctimer_8cpp_source.html">ctimer.cpp</a>.</p>
 
 </div>
 </div>
@@ -360,7 +360,7 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if this command will be sent to the timer code, false if it will not (i.e. timeout). </dd></dl>
 
-<p>Definition at line <a class="el" href="ctimer_8cpp_source.html#l00105">105</a> of file <a class="el" href="ctimer_8cpp_source.html">ctimer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="ctimer_8cpp_source.html#l00160">160</a> of file <a class="el" href="ctimer_8cpp_source.html">ctimer.cpp</a>.</p>
 
 </div>
 </div>
@@ -421,7 +421,7 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if this command will be sent to the timer code, false if it will not (i.e. timeout). </dd></dl>
 
-<p>Definition at line <a class="el" href="ctimer_8cpp_source.html#l00112">112</a> of file <a class="el" href="ctimer_8cpp_source.html">ctimer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="ctimer_8cpp_source.html#l00167">167</a> of file <a class="el" href="ctimer_8cpp_source.html">ctimer.cpp</a>.</p>
 
 </div>
 </div>
@@ -458,7 +458,7 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if this command will be sent to the timer code, false if it will not (i.e. timeout). </dd></dl>
 
-<p>Definition at line <a class="el" href="ctimer_8cpp_source.html#l00120">120</a> of file <a class="el" href="ctimer_8cpp_source.html">ctimer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="ctimer_8cpp_source.html#l00175">175</a> of file <a class="el" href="ctimer_8cpp_source.html">ctimer.cpp</a>.</p>
 
 </div>
 </div>
@@ -484,7 +484,7 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if this command will be sent to the timer code, false if it will not (i.e. timeout). </dd></dl>
 
-<p>Definition at line <a class="el" href="ctimer_8cpp_source.html#l00073">73</a> of file <a class="el" href="ctimer_8cpp_source.html">ctimer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="ctimer_8cpp_source.html#l00128">128</a> of file <a class="el" href="ctimer_8cpp_source.html">ctimer.cpp</a>.</p>
 
 </div>
 </div>
@@ -510,7 +510,7 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if this command will be sent to the timer code, false if it will not (i.e. timeout). </dd></dl>
 
-<p>Definition at line <a class="el" href="ctimer_8cpp_source.html#l00079">79</a> of file <a class="el" href="ctimer_8cpp_source.html">ctimer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="ctimer_8cpp_source.html#l00134">134</a> of file <a class="el" href="ctimer_8cpp_source.html">ctimer.cpp</a>.</p>
 
 </div>
 </div>
@@ -536,7 +536,7 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if this command will be sent to the timer code, false if it will not (i.e. timeout). </dd></dl>
 
-<p>Definition at line <a class="el" href="ctimer_8cpp_source.html#l00086">86</a> of file <a class="el" href="ctimer_8cpp_source.html">ctimer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="ctimer_8cpp_source.html#l00141">141</a> of file <a class="el" href="ctimer_8cpp_source.html">ctimer.cpp</a>.</p>
 
 </div>
 </div>
@@ -562,7 +562,7 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if this command will be sent to the timer code, false if it will not (i.e. timeout). </dd></dl>
 
-<p>Definition at line <a class="el" href="ctimer_8cpp_source.html#l00092">92</a> of file <a class="el" href="ctimer_8cpp_source.html">ctimer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="ctimer_8cpp_source.html#l00147">147</a> of file <a class="el" href="ctimer_8cpp_source.html">ctimer.cpp</a>.</p>
 
 </div>
 </div>
@@ -589,7 +589,7 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Adapter function that allows you to write a class specific <a class="el" href="classcpp__freertos_1_1_timer.html#abfb9dfc3970efe4c1d5e344df787ad80">Run()</a> function that interfaces with FreeRTOS. Look at the implementation of the constructors and this code to see how the interface between C and C++ is performed. </p>
 
-<p>Definition at line <a class="el" href="ctimer_8cpp_source.html#l00139">139</a> of file <a class="el" href="ctimer_8cpp_source.html">ctimer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="ctimer_8cpp_source.html#l00194">194</a> of file <a class="el" href="ctimer_8cpp_source.html">ctimer.cpp</a>.</p>
 
 </div>
 </div>
@@ -613,7 +613,7 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Reference to the underlying timer handle. </p>
 
-<p>Definition at line <a class="el" href="timer_8hpp_source.html#l00248">248</a> of file <a class="el" href="timer_8hpp_source.html">timer.hpp</a>.</p>
+<p>Definition at line <a class="el" href="timer_8hpp_source.html#l00308">308</a> of file <a class="el" href="timer_8hpp_source.html">timer.hpp</a>.</p>
 
 </div>
 </div>
@@ -624,7 +624,7 @@ Private Attributes</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Aug 23 2016 20:55:26 for FreeRTOS C++ Wrappers by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat Mar 25 2017 20:35:28 for FreeRTOS C++ Wrappers by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.11
 </small></address>

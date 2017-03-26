@@ -1,4 +1,12 @@
 var searchData=
 [
-  ['handle',['handle',['../classcpp__freertos_1_1_mutex.html#a639327163cdbee7b3847982d49b2fe03',1,'cpp_freertos::Mutex::handle()'],['../classcpp__freertos_1_1_queue.html#a4b52f88d1cca486036905434f7867a48',1,'cpp_freertos::Queue::handle()'],['../classcpp__freertos_1_1_semaphore.html#a524cc7b70300cd28d223bfdf9034c09f',1,'cpp_freertos::Semaphore::handle()'],['../classcpp__freertos_1_1_thread.html#ab3983387b061df971b5571aa1b40c474',1,'cpp_freertos::Thread::handle()'],['../classcpp__freertos_1_1_timer.html#a4be351aa40d79dd4be252d363cdc0f78',1,'cpp_freertos::Timer::handle()']]]
+  ['gethandle',['GetHandle',['../classcpp__freertos_1_1_thread.html#a1053a1c4f291a9a9a5dbf4ead7e96ae7',1,'cpp_freertos::Thread']]],
+  ['getname',['GetName',['../classcpp__freertos_1_1_thread.html#a51469110641ad7ba19a32364dd18c213',1,'cpp_freertos::Thread']]],
+  ['getpriority',['GetPriority',['../classcpp__freertos_1_1_thread.html#ace92214a082dd8fd49e48af680e9bee5',1,'cpp_freertos::Thread']]],
+  ['getpriorityfromisr',['GetPriorityFromISR',['../classcpp__freertos_1_1_thread.html#a00923e979ba8b757d293c7f33701df29',1,'cpp_freertos::Thread']]],
+  ['getticks',['GetTicks',['../classcpp__freertos_1_1_ticks.html#ad289d001946586e6f392872fec51976f',1,'cpp_freertos::Ticks']]],
+  ['getticksfromisr',['GetTicksFromISR',['../classcpp__freertos_1_1_ticks.html#aa025f776de91d8c48601f8ef5dd7fff7',1,'cpp_freertos::Ticks']]],
+  ['gettimerdaemonhandle',['GetTimerDaemonHandle',['../classcpp__freertos_1_1_timer.html#af6d4167af4fd308d78e56ca6d713b8c4',1,'cpp_freertos::Timer']]],
+  ['give',['Give',['../classcpp__freertos_1_1_semaphore.html#ae2328f019955e0f2e94d72b26d71bf76',1,'cpp_freertos::Semaphore']]],
+  ['givefromisr',['GiveFromISR',['../classcpp__freertos_1_1_semaphore.html#a48c0998ba13e32110b2738651b9b07d5',1,'cpp_freertos::Semaphore']]]
 ];

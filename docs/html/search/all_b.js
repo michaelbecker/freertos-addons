@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['parentworkqueue',['ParentWorkQueue',['../classcpp__freertos_1_1_work_queue_1_1_c_worker_thread.html#ad9ab42180e93bd876f7d0bb1dcd231ed',1,'cpp_freertos::WorkQueue::CWorkerThread']]],
-  ['peek',['Peek',['../classcpp__freertos_1_1_queue.html#a2f53a7c5e542275d3e25c59002c04eb3',1,'cpp_freertos::Queue']]],
-  ['peekfromisr',['PeekFromISR',['../classcpp__freertos_1_1_queue.html#a0b8be750c74eba027576bcada410b2f8',1,'cpp_freertos::Queue']]],
-  ['priority',['Priority',['../classcpp__freertos_1_1_thread.html#a75d8a4c561b63555e4a61ac93fadebad',1,'cpp_freertos::Thread']]]
+  ['name',['Name',['../classcpp__freertos_1_1_thread.html#a1f2cd65e506b35d36ec7004f81cc1dbf',1,'cpp_freertos::Thread']]],
+  ['numitems',['NumItems',['../classcpp__freertos_1_1_queue.html#ac434616f5ba6d27bae22fc20b78ccd49',1,'cpp_freertos::Queue']]],
+  ['numspacesleft',['NumSpacesLeft',['../classcpp__freertos_1_1_queue.html#a6f1afbb10175767b684cf3e39bda94ee',1,'cpp_freertos::Queue']]]
 ];

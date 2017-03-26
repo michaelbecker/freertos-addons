@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['vapplicationtickhook',['vApplicationTickHook',['../classcpp__freertos_1_1_tick_hook.html#a71d2ae51434f778f25b7807d06994137',1,'cpp_freertos::TickHook']]],
-  ['vapplicationtickhook',['vApplicationTickHook',['../ctickhook_8cpp.html#a9ca051aa77e17583aa5a85d5de5c199a',1,'vApplicationTickHook(void):&#160;ctickhook.cpp'],['../tickhook_8hpp.html#a9ca051aa77e17583aa5a85d5de5c199a',1,'vApplicationTickHook(void):&#160;ctickhook.cpp']]]
+  ['unlock',['Unlock',['../classcpp__freertos_1_1_mutex.html#a9acd81676fcd099254ecca161d51a4a3',1,'cpp_freertos::Mutex::Unlock()'],['../classcpp__freertos_1_1_mutex_standard.html#ac035aaf9134b1be0f03aa748b0e3b289',1,'cpp_freertos::MutexStandard::Unlock()'],['../classcpp__freertos_1_1_mutex_recursive.html#a99fa48374855689b546d4034fb458321',1,'cpp_freertos::MutexRecursive::Unlock()']]]
 ];

@@ -1,3 +1,5 @@
 <map id="thread.hpp" name="thread.hpp">
-<area shape="rect" id="node6" href="$mutex_8hpp.html" title="mutex.hpp" alt="" coords="173,80,255,107"/>
+<area shape="rect" id="node5" href="$mutex_8hpp.html" title="mutex.hpp" alt="" coords="273,155,355,181"/>
+<area shape="rect" id="node9" href="$semaphore_8hpp.html" title="semaphore.hpp" alt="" coords="75,155,185,181"/>
+<area shape="rect" id="node10" href="$condition__variable_8hpp.html" title="condition_variable.hpp" alt="" coords="161,80,312,107"/>
 </map>

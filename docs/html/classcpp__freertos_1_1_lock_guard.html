@@ -24,7 +24,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">FreeRTOS C++ Wrappers
-   &#160;<span id="projectnumber">1.1.0</span>
+   &#160;<span id="projectnumber">1.3.0</span>
    </div>
    <div id="projectbrief">C++ interface to FreeRTOS</div>
   </td>
@@ -129,7 +129,7 @@ Private Attributes</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Synchronization helper class that leverages the C++ language to help prevent deadlocks. This is a C++11 feature that allows <a class="el" href="classcpp__freertos_1_1_mutex.html">Mutex</a> Locking and Unlocking to behave following an RAII style. The constructor of this helper object locks the <a class="el" href="classcpp__freertos_1_1_mutex.html">Mutex</a>. The destructor unlocks the <a class="el" href="classcpp__freertos_1_1_mutex.html">Mutex</a>. Since C++ guarantees that an object's desctuctor is always called when it goes out of scope, calls to Unlock become unnecessary and are in fact guaranteed as long as correct scoping is used. </p>
 
-<p>Definition at line <a class="el" href="mutex_8hpp_source.html#l00231">231</a> of file <a class="el" href="mutex_8hpp_source.html">mutex.hpp</a>.</p>
+<p>Definition at line <a class="el" href="mutex_8hpp_source.html#l00291">291</a> of file <a class="el" href="mutex_8hpp_source.html">mutex.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a4eb7c1037e77dfb43618803011b92573"></a>
 <div class="memitem">
@@ -156,7 +156,7 @@ Private Attributes</h2></td></tr>
 <dl class="section post"><dt>Postcondition</dt><dd>The <a class="el" href="classcpp__freertos_1_1_mutex.html">Mutex</a> will be locked. </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>There is an infinite timeout for acquiring the Lock. </dd></dl>
 
-<p>Definition at line <a class="el" href="cmutex_8cpp_source.html#l00091">91</a> of file <a class="el" href="cmutex_8cpp_source.html">cmutex.cpp</a>.</p>
+<p>Definition at line <a class="el" href="cmutex_8cpp_source.html#l00146">146</a> of file <a class="el" href="cmutex_8cpp_source.html">cmutex.cpp</a>.</p>
 
 </div>
 </div>
@@ -175,7 +175,7 @@ Private Attributes</h2></td></tr>
 <p>Destroy a <a class="el" href="classcpp__freertos_1_1_lock_guard.html">LockGuard</a>.</p>
 <dl class="section post"><dt>Postcondition</dt><dd>The <a class="el" href="classcpp__freertos_1_1_mutex.html">Mutex</a> will be unlocked. </dd></dl>
 
-<p>Definition at line <a class="el" href="cmutex_8cpp_source.html#l00098">98</a> of file <a class="el" href="cmutex_8cpp_source.html">cmutex.cpp</a>.</p>
+<p>Definition at line <a class="el" href="cmutex_8cpp_source.html#l00153">153</a> of file <a class="el" href="cmutex_8cpp_source.html">cmutex.cpp</a>.</p>
 
 </div>
 </div>
@@ -224,7 +224,7 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Reference to the <a class="el" href="classcpp__freertos_1_1_mutex.html">Mutex</a> we locked, so it can be unlocked in the destructor. </p>
 
-<p>Definition at line <a class="el" href="mutex_8hpp_source.html#l00269">269</a> of file <a class="el" href="mutex_8hpp_source.html">mutex.hpp</a>.</p>
+<p>Definition at line <a class="el" href="mutex_8hpp_source.html#l00329">329</a> of file <a class="el" href="mutex_8hpp_source.html">mutex.hpp</a>.</p>
 
 </div>
 </div>
@@ -235,7 +235,7 @@ Private Attributes</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Aug 23 2016 20:55:26 for FreeRTOS C++ Wrappers by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat Mar 25 2017 20:35:28 for FreeRTOS C++ Wrappers by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.11
 </small></address>

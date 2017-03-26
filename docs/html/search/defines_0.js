@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['default_5fmax_5fwork_5fitems',['DEFAULT_MAX_WORK_ITEMS',['../workqueue_8hpp.html#ab04d8a63c7db73bbcb6bc1420bfe6dca',1,'workqueue.hpp']]],
-  ['default_5fwork_5fqueue_5fpriority',['DEFAULT_WORK_QUEUE_PRIORITY',['../workqueue_8hpp.html#a5c048e142ef3724dc5681328815b649d',1,'workqueue.hpp']]],
-  ['default_5fwork_5fqueue_5fstack_5fsize',['DEFAULT_WORK_QUEUE_STACK_SIZE',['../workqueue_8hpp.html#aa049238a0fd11372426a0d4ab6f6540d',1,'workqueue.hpp']]]
+  ['cpp_5fwrappers_5fversion_5fmajor',['CPP_WRAPPERS_VERSION_MAJOR',['../version_8hpp.html#a5af8f3217a314686bfa79b1c7c1f94eb',1,'version.hpp']]],
+  ['cpp_5fwrappers_5fversion_5fminor',['CPP_WRAPPERS_VERSION_MINOR',['../version_8hpp.html#a56d8d062a3fc1f5f483817a0f1e6e14f',1,'version.hpp']]],
+  ['cpp_5fwrappers_5fversion_5frelease',['CPP_WRAPPERS_VERSION_RELEASE',['../version_8hpp.html#a2c719b0523b9bd2693d51f2ff5cc70d6',1,'version.hpp']]],
+  ['cpp_5fwrappers_5fversion_5fstring',['CPP_WRAPPERS_VERSION_STRING',['../version_8hpp.html#a8aed89ce08305f46be9f2f9c6a0346f8',1,'version.hpp']]]
 ];

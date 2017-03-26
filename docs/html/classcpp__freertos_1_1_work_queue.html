@@ -24,7 +24,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">FreeRTOS C++ Wrappers
-   &#160;<span id="projectnumber">1.1.0</span>
+   &#160;<span id="projectnumber">1.3.0</span>
    </div>
    <div id="projectbrief">C++ interface to FreeRTOS</div>
   </td>
@@ -105,15 +105,15 @@ Collaboration diagram for cpp_freertos::WorkQueue:</div>
 <div class="dyncontent">
 <div class="center"><img src="classcpp__freertos_1_1_work_queue__coll__graph.png" border="0" usemap="#cpp__freertos_1_1_work_queue_coll__map" alt="Collaboration graph"/></div>
 <map name="cpp__freertos_1_1_work_queue_coll__map" id="cpp__freertos_1_1_work_queue_coll__map">
-<area shape="rect" id="node2" href="classcpp__freertos_1_1_work_queue_1_1_c_worker_thread.html" title="cpp_freertos::WorkQueue\l::CWorkerThread" alt="" coords="908,83,1079,125"/>
-<area shape="rect" id="node3" href="classcpp__freertos_1_1_thread.html" title="cpp_freertos::Thread" alt="" coords="591,56,734,83"/>
+<area shape="rect" id="node2" href="classcpp__freertos_1_1_work_queue_1_1_c_worker_thread.html" title="cpp_freertos::WorkQueue\l::CWorkerThread" alt="" coords="908,98,1079,139"/>
+<area shape="rect" id="node3" href="classcpp__freertos_1_1_thread.html" title="cpp_freertos::Thread" alt="" coords="591,63,734,89"/>
 <area shape="rect" id="node4" href="classcpp__freertos_1_1_mutex_standard.html" title="cpp_freertos::MutexStandard" alt="" coords="230,7,421,33"/>
 <area shape="rect" id="node5" href="classcpp__freertos_1_1_mutex.html" title="cpp_freertos::Mutex" alt="" coords="20,5,159,32"/>
-<area shape="rect" id="node6" title="STL class. " alt="" coords="285,60,365,87"/>
+<area shape="rect" id="node6" title="STL class. " alt="" coords="285,61,365,88"/>
 <area shape="rect" id="node7" title="STL class. " alt="" coords="26,57,153,98"/>
-<area shape="rect" id="node8" href="classcpp__freertos_1_1_binary_semaphore.html" title="cpp_freertos::BinarySemaphore" alt="" coords="223,131,428,157"/>
-<area shape="rect" id="node9" href="classcpp__freertos_1_1_semaphore.html" title="cpp_freertos::Semaphore" alt="" coords="5,131,173,157"/>
-<area shape="rect" id="node10" href="classcpp__freertos_1_1_queue.html" title="cpp_freertos::Queue" alt="" coords="255,181,395,208"/>
+<area shape="rect" id="node8" href="classcpp__freertos_1_1_binary_semaphore.html" title="cpp_freertos::BinarySemaphore" alt="" coords="223,133,428,160"/>
+<area shape="rect" id="node9" href="classcpp__freertos_1_1_semaphore.html" title="cpp_freertos::Semaphore" alt="" coords="5,133,173,160"/>
+<area shape="rect" id="node10" href="classcpp__freertos_1_1_queue.html" title="cpp_freertos::Queue" alt="" coords="255,196,395,223"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
@@ -145,7 +145,7 @@ Private Attributes</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>This class is the "engine" for WorkItems. Create one or more WorkQueues to accept WorkItems. WorkQueues pull WorkItems off of a FIFO queue and run them sequentially. </p>
 
-<p>Definition at line <a class="el" href="workqueue_8hpp_source.html#l00108">108</a> of file <a class="el" href="workqueue_8hpp_source.html">workqueue.hpp</a>.</p>
+<p>Definition at line <a class="el" href="workqueue_8hpp_source.html#l00155">155</a> of file <a class="el" href="workqueue_8hpp_source.html">workqueue.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a2cfd45d2bd9caf4dab33221d369e7e28"></a>
 <div class="memitem">
@@ -199,7 +199,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="cworkqueue_8cpp_source.html#l00045">45</a> of file <a class="el" href="cworkqueue_8cpp_source.html">cworkqueue.cpp</a>.</p>
+<p>Definition at line <a class="el" href="cworkqueue_8cpp_source.html#l00092">92</a> of file <a class="el" href="cworkqueue_8cpp_source.html">cworkqueue.cpp</a>.</p>
 
 </div>
 </div>
@@ -248,7 +248,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="cworkqueue_8cpp_source.html#l00064">64</a> of file <a class="el" href="cworkqueue_8cpp_source.html">cworkqueue.cpp</a>.</p>
+<p>Definition at line <a class="el" href="cworkqueue_8cpp_source.html#l00111">111</a> of file <a class="el" href="cworkqueue_8cpp_source.html">cworkqueue.cpp</a>.</p>
 
 </div>
 </div>
@@ -267,7 +267,7 @@ Private Attributes</h2></td></tr>
 <p>Our destructor.</p>
 <dl class="section note"><dt>Note</dt><dd>Given the multithreaded nature of this class, the dtor may block until the underlying <a class="el" href="classcpp__freertos_1_1_thread.html">Thread</a> has had a chance to clean up. </dd></dl>
 
-<p>Definition at line <a class="el" href="cworkqueue_8cpp_source.html#l00082">82</a> of file <a class="el" href="cworkqueue_8cpp_source.html">cworkqueue.cpp</a>.</p>
+<p>Definition at line <a class="el" href="cworkqueue_8cpp_source.html#l00129">129</a> of file <a class="el" href="cworkqueue_8cpp_source.html">cworkqueue.cpp</a>.</p>
 
 </div>
 </div>
@@ -295,7 +295,7 @@ Private Attributes</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>true if it was queued, false otherwise. </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>This function may block if the <a class="el" href="classcpp__freertos_1_1_work_queue.html">WorkQueue</a> is presently full. </dd></dl>
 
-<p>Definition at line <a class="el" href="cworkqueue_8cpp_source.html#l00115">115</a> of file <a class="el" href="cworkqueue_8cpp_source.html">cworkqueue.cpp</a>.</p>
+<p>Definition at line <a class="el" href="cworkqueue_8cpp_source.html#l00162">162</a> of file <a class="el" href="cworkqueue_8cpp_source.html">cworkqueue.cpp</a>.</p>
 
 </div>
 </div>
@@ -319,7 +319,7 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p><a class="el" href="classcpp__freertos_1_1_semaphore.html">Semaphore</a> to support deconstruction without race conditions. </p>
 
-<p>Definition at line <a class="el" href="workqueue_8hpp_source.html#l00208">208</a> of file <a class="el" href="workqueue_8hpp_source.html">workqueue.hpp</a>.</p>
+<p>Definition at line <a class="el" href="workqueue_8hpp_source.html#l00255">255</a> of file <a class="el" href="workqueue_8hpp_source.html">workqueue.hpp</a>.</p>
 
 </div>
 </div>
@@ -342,7 +342,7 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Pointer to our WorkerThread. </p>
 
-<p>Definition at line <a class="el" href="workqueue_8hpp_source.html#l00198">198</a> of file <a class="el" href="workqueue_8hpp_source.html">workqueue.hpp</a>.</p>
+<p>Definition at line <a class="el" href="workqueue_8hpp_source.html#l00245">245</a> of file <a class="el" href="workqueue_8hpp_source.html">workqueue.hpp</a>.</p>
 
 </div>
 </div>
@@ -365,7 +365,7 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Pointer to our work queue itself. </p>
 
-<p>Definition at line <a class="el" href="workqueue_8hpp_source.html#l00203">203</a> of file <a class="el" href="workqueue_8hpp_source.html">workqueue.hpp</a>.</p>
+<p>Definition at line <a class="el" href="workqueue_8hpp_source.html#l00250">250</a> of file <a class="el" href="workqueue_8hpp_source.html">workqueue.hpp</a>.</p>
 
 </div>
 </div>
@@ -376,7 +376,7 @@ Private Attributes</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Aug 23 2016 20:55:26 for FreeRTOS C++ Wrappers by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat Mar 25 2017 20:35:28 for FreeRTOS C++ Wrappers by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.11
 </small></address>

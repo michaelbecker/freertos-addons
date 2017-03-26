@@ -1,18 +1,16 @@
 var searchData=
 [
-  ['schedule',['Schedule',['../classcpp__freertos_1_1_tasklet.html#a5255e30f9d073f6da4044318d0d65136',1,'cpp_freertos::Tasklet']]],
-  ['schedulefromisr',['ScheduleFromISR',['../classcpp__freertos_1_1_tasklet.html#a4cbb17881f3cb7a69450bc65743da56b',1,'cpp_freertos::Tasklet']]],
-  ['secondstoticks',['SecondsToTicks',['../classcpp__freertos_1_1_ticks.html#a7afe69afdf61a4cb9ce638a38d5f945e',1,'cpp_freertos::Ticks']]],
-  ['semaphore',['Semaphore',['../classcpp__freertos_1_1_semaphore.html#ae32c955336ae9e60e20a3facde270714',1,'cpp_freertos::Semaphore']]],
-  ['semaphorecreateexception',['SemaphoreCreateException',['../classcpp__freertos_1_1_semaphore_create_exception.html#a6d9bd8c9435361be4add21c327838c34',1,'cpp_freertos::SemaphoreCreateException::SemaphoreCreateException()'],['../classcpp__freertos_1_1_semaphore_create_exception.html#a16413ee983f224cc57415b0ae9035c40',1,'cpp_freertos::SemaphoreCreateException::SemaphoreCreateException(const char *info)']]],
-  ['setperiod',['SetPeriod',['../classcpp__freertos_1_1_timer.html#aa86f6d14b67157711e6e3001a8d79e65',1,'cpp_freertos::Timer']]],
-  ['setperiodfromisr',['SetPeriodFromISR',['../classcpp__freertos_1_1_timer.html#a0f072ddbcaba51714bdebe9d107e747f',1,'cpp_freertos::Timer']]],
-  ['setpriority',['SetPriority',['../classcpp__freertos_1_1_thread.html#a5e40076f0050bdcfcf949506f139879e',1,'cpp_freertos::Thread']]],
-  ['start',['Start',['../classcpp__freertos_1_1_thread.html#a279c2b78aa2bf43371f2462623588830',1,'cpp_freertos::Thread::Start()'],['../classcpp__freertos_1_1_timer.html#a171c77988a6d4c2d8d32f86344514359',1,'cpp_freertos::Timer::Start()']]],
-  ['startfromisr',['StartFromISR',['../classcpp__freertos_1_1_timer.html#ae512d19700e4197dfb6b6e7c59fa6143',1,'cpp_freertos::Timer']]],
-  ['startscheduler',['StartScheduler',['../classcpp__freertos_1_1_thread.html#a6c5e2fea2e1badb606730c279559aa36',1,'cpp_freertos::Thread']]],
-  ['stop',['Stop',['../classcpp__freertos_1_1_timer.html#a15873ed66f31b28e7c7af88ca0c9d2d5',1,'cpp_freertos::Timer']]],
-  ['stopfromisr',['StopFromISR',['../classcpp__freertos_1_1_timer.html#a403285c6e10f401cd3d9fb43843092cb',1,'cpp_freertos::Timer']]],
-  ['suspend',['Suspend',['../classcpp__freertos_1_1_thread.html#a9eca55dec69e4758cf397e882338c7e6',1,'cpp_freertos::Thread']]],
-  ['suspendscheduler',['SuspendScheduler',['../classcpp__freertos_1_1_critical_section.html#a27aa6c4e9bf5bbe3da7222030392783c',1,'cpp_freertos::CriticalSection']]]
+  ['readerlock',['ReaderLock',['../classcpp__freertos_1_1_read_write_lock.html#ab824802f557190853843ef28d4d40af3',1,'cpp_freertos::ReadWriteLock::ReaderLock()'],['../classcpp__freertos_1_1_read_write_lock_prefer_reader.html#a6eb22bff8d46df415b06d54cb184bab4',1,'cpp_freertos::ReadWriteLockPreferReader::ReaderLock()'],['../classcpp__freertos_1_1_read_write_lock_prefer_writer.html#a31e8525d2b0ef7c293e30e61dfe942ac',1,'cpp_freertos::ReadWriteLockPreferWriter::ReaderLock()']]],
+  ['readerunlock',['ReaderUnlock',['../classcpp__freertos_1_1_read_write_lock.html#a3f1763bbcdb0caecd49efbb11b646203',1,'cpp_freertos::ReadWriteLock::ReaderUnlock()'],['../classcpp__freertos_1_1_read_write_lock_prefer_reader.html#abc44f201f624d20840c9b983f8496d36',1,'cpp_freertos::ReadWriteLockPreferReader::ReaderUnlock()'],['../classcpp__freertos_1_1_read_write_lock_prefer_writer.html#a2e3b7527e0db1bce0ceb2f6a7de54d63',1,'cpp_freertos::ReadWriteLockPreferWriter::ReaderUnlock()']]],
+  ['readwritelock',['ReadWriteLock',['../classcpp__freertos_1_1_read_write_lock.html#a6717282a541aca49a6c1df7968fef3de',1,'cpp_freertos::ReadWriteLock']]],
+  ['readwritelockcreateexception',['ReadWriteLockCreateException',['../classcpp__freertos_1_1_read_write_lock_create_exception.html#aa031f57a0d9ec4303c77b164e483478e',1,'cpp_freertos::ReadWriteLockCreateException']]],
+  ['readwritelockpreferwriter',['ReadWriteLockPreferWriter',['../classcpp__freertos_1_1_read_write_lock_prefer_writer.html#a12576f50c5859afe331e6b9115092693',1,'cpp_freertos::ReadWriteLockPreferWriter']]],
+  ['register',['Register',['../classcpp__freertos_1_1_tick_hook.html#a4521dcae85c773d230572b290b16c471',1,'cpp_freertos::TickHook']]],
+  ['reset',['Reset',['../classcpp__freertos_1_1_timer.html#a96d82602e1649be3d73866037f538359',1,'cpp_freertos::Timer']]],
+  ['resetdelayuntil',['ResetDelayUntil',['../classcpp__freertos_1_1_thread.html#a71f796ec7c2bd53bb0f28b648967f601',1,'cpp_freertos::Thread']]],
+  ['resetfromisr',['ResetFromISR',['../classcpp__freertos_1_1_timer.html#abe2ba000ef220abfb0ad36e9d61094f2',1,'cpp_freertos::Timer']]],
+  ['resume',['Resume',['../classcpp__freertos_1_1_thread.html#a0a413b18b2818072998320f1f6388eee',1,'cpp_freertos::Thread']]],
+  ['resumefromisr',['ResumeFromISR',['../classcpp__freertos_1_1_thread.html#aa11e945ef24eb35b4df261050576a2c0',1,'cpp_freertos::Thread']]],
+  ['resumescheduler',['ResumeScheduler',['../classcpp__freertos_1_1_critical_section.html#a33568ab0478ad5fb4e7438af8e25a40d',1,'cpp_freertos::CriticalSection']]],
+  ['run',['Run',['../classcpp__freertos_1_1_tasklet.html#a51f3ebc518a938f616392d47d61f5eda',1,'cpp_freertos::Tasklet::Run()'],['../classcpp__freertos_1_1_thread.html#a93df31e4bee72f150dd742ab5d6d35c3',1,'cpp_freertos::Thread::Run()'],['../classcpp__freertos_1_1_tick_hook.html#ad066f6c25d23e546bf7bc0190d8907f7',1,'cpp_freertos::TickHook::Run()'],['../classcpp__freertos_1_1_timer.html#abfb9dfc3970efe4c1d5e344df787ad80',1,'cpp_freertos::Timer::Run()'],['../classcpp__freertos_1_1_work_item.html#a9671b0cf7d043ae9052c59acb5e8d397',1,'cpp_freertos::WorkItem::Run()'],['../classcpp__freertos_1_1_work_queue_1_1_c_worker_thread.html#a6fe045f97485fda01d4bae558e9e3a5b',1,'cpp_freertos::WorkQueue::CWorkerThread::Run()']]]
 ];

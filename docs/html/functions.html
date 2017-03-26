@@ -24,7 +24,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">FreeRTOS C++ Wrappers
-   &#160;<span id="projectnumber">1.1.0</span>
+   &#160;<span id="projectnumber">1.3.0</span>
    </div>
    <div id="projectbrief">C++ interface to FreeRTOS</div>
   </td>
@@ -74,10 +74,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li class="current"><a href="functions.html"><span>All</span></a></li>
       <li><a href="functions_func.html"><span>Functions</span></a></li>
       <li><a href="functions_vars.html"><span>Variables</span></a></li>
+      <li><a href="functions_rela.html"><span>Related&#160;Functions</span></a></li>
     </ul>
   </div>
   <div id="navrow4" class="tabs3">
     <ul class="tablist">
+      <li><a href="#index_a"><span>a</span></a></li>
       <li><a href="#index_b"><span>b</span></a></li>
       <li><a href="#index_c"><span>c</span></a></li>
       <li><a href="#index_d"><span>d</span></a></li>
@@ -119,6 +121,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="contents">
 <div class="textblock">Here is a list of all class members with links to the classes they belong to:</div>
 
+<h3><a class="anchor" id="index_a"></a>- a -</h3><ul>
+<li>AddToWaitList()
+: <a class="el" href="classcpp__freertos_1_1_condition_variable.html#a2ffe9249383d68bc423221be9e69dad0">cpp_freertos::ConditionVariable</a>
+</li>
+</ul>
+
+
 <h3><a class="anchor" id="index_b"></a>- b -</h3><ul>
 <li>BinaryQueue()
 : <a class="el" href="classcpp__freertos_1_1_binary_queue.html#a3cbe4921a69a33f335e56d5891225e4c">cpp_freertos::BinaryQueue</a>
@@ -128,6 +137,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </li>
 <li>BlockReadersLock
 : <a class="el" href="classcpp__freertos_1_1_read_write_lock_prefer_writer.html#a213fe58c4ae08e04b2465a24e4c57d5f">cpp_freertos::ReadWriteLockPreferWriter</a>
+</li>
+<li>Broadcast()
+: <a class="el" href="classcpp__freertos_1_1_condition_variable.html#a1a761e4196ddcfa8ecb32dc598090091">cpp_freertos::ConditionVariable</a>
 </li>
 </ul>
 
@@ -142,11 +154,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>Cleanup()
 : <a class="el" href="classcpp__freertos_1_1_thread.html#a997f36c77c28021873241b0df1c21a6b">cpp_freertos::Thread</a>
 </li>
+<li>ConditionVariable()
+: <a class="el" href="classcpp__freertos_1_1_condition_variable.html#a37d388bea146c06f2e1341a542096333">cpp_freertos::ConditionVariable</a>
+, <a class="el" href="classcpp__freertos_1_1_thread.html#ab270e49e575fdf0fe1a4f2ee911df116">cpp_freertos::Thread</a>
+</li>
 <li>CountingSemaphore()
 : <a class="el" href="classcpp__freertos_1_1_counting_semaphore.html#a734f3e84f02d113d59a6acf85144a06f">cpp_freertos::CountingSemaphore</a>
 </li>
 <li>CWorkerThread()
-: <a class="el" href="classcpp__freertos_1_1_work_queue_1_1_c_worker_thread.html#adfa2312ba49a34fb6949894f164a789e">cpp_freertos::WorkQueue::CWorkerThread</a>
+: <a class="el" href="classcpp__freertos_1_1_work_queue_1_1_c_worker_thread.html#acbbe049e4cde5f236a42d427534da9f8">cpp_freertos::WorkQueue::CWorkerThread</a>
 </li>
 </ul>
 
@@ -304,8 +320,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 
 <h3><a class="anchor" id="index_l"></a>- l -</h3><ul>
-<li>Lock()
-: <a class="el" href="classcpp__freertos_1_1_mutex.html#ad32b3657e5bab97b248273e80c0c3ae7">cpp_freertos::Mutex</a>
+<li>Lock
+: <a class="el" href="classcpp__freertos_1_1_condition_variable.html#a9de86e42fae80d497441de132670c38f">cpp_freertos::ConditionVariable</a>
+, <a class="el" href="classcpp__freertos_1_1_mutex.html#ad32b3657e5bab97b248273e80c0c3ae7">cpp_freertos::Mutex</a>
 , <a class="el" href="classcpp__freertos_1_1_mutex_recursive.html#a751e5af8f8af53de3822cc7c0f2c905e">cpp_freertos::MutexRecursive</a>
 , <a class="el" href="classcpp__freertos_1_1_mutex_standard.html#a496a92f219f93f431a9249ba5d140a61">cpp_freertos::MutexStandard</a>
 </li>
@@ -468,6 +485,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>SetPriority()
 : <a class="el" href="classcpp__freertos_1_1_thread.html#a5e40076f0050bdcfcf949506f139879e">cpp_freertos::Thread</a>
 </li>
+<li>Signal()
+: <a class="el" href="classcpp__freertos_1_1_condition_variable.html#a0138363e79628a7d0c0af8ae39e36bb3">cpp_freertos::ConditionVariable</a>
+, <a class="el" href="classcpp__freertos_1_1_thread.html#aaec2e2e8bc5d1c4f0b6b22738995e77e">cpp_freertos::Thread</a>
+</li>
 <li>StackDepth
 : <a class="el" href="classcpp__freertos_1_1_thread.html#a4583bd1bfe825cf482cbcab200282581">cpp_freertos::Thread</a>
 </li>
@@ -518,14 +539,18 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>TaskletCreateException()
 : <a class="el" href="classcpp__freertos_1_1_tasklet_create_exception.html#a7a5ee7bbb2a18e4d45f85d194af87bab">cpp_freertos::TaskletCreateException</a>
 </li>
-<li>Thread()
-: <a class="el" href="classcpp__freertos_1_1_thread.html#ab9bcc1da7274a7337ce35ee75916cee2">cpp_freertos::Thread</a>
+<li>Thread
+: <a class="el" href="classcpp__freertos_1_1_condition_variable.html#adbc148eaddd341d7ae4d07c9e9e33bfd">cpp_freertos::ConditionVariable</a>
+, <a class="el" href="classcpp__freertos_1_1_thread.html#ab9bcc1da7274a7337ce35ee75916cee2">cpp_freertos::Thread</a>
 </li>
 <li>ThreadComplete
 : <a class="el" href="classcpp__freertos_1_1_work_queue.html#a57d984fb9d49e8729563ca49ad650ab7">cpp_freertos::WorkQueue</a>
 </li>
 <li>ThreadStarted
 : <a class="el" href="classcpp__freertos_1_1_thread.html#a647e7dc223202ff0e3e2fd71d9e0a4b2">cpp_freertos::Thread</a>
+</li>
+<li>ThreadWaitSem
+: <a class="el" href="classcpp__freertos_1_1_thread.html#a6784d37909e2e98091ea1870ab3c9e6c">cpp_freertos::Thread</a>
 </li>
 <li>TickHook()
 : <a class="el" href="classcpp__freertos_1_1_tick_hook.html#a1146c4ec2eff87e893c91e1a6280a958">cpp_freertos::TickHook</a>
@@ -534,7 +559,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="classcpp__freertos_1_1_ticks.html#afdde0af1fb5cff55eb46b40fe0dd65c2">cpp_freertos::Ticks</a>
 </li>
 <li>Timer()
-: <a class="el" href="classcpp__freertos_1_1_timer.html#a6b1e228f95973e9088990a53d0ee5a1a">cpp_freertos::Timer</a>
+: <a class="el" href="classcpp__freertos_1_1_timer.html#ab9df38de944064725d42f9e8572bcf6a">cpp_freertos::Timer</a>
 </li>
 <li>TimerCallbackFunctionAdapter()
 : <a class="el" href="classcpp__freertos_1_1_timer.html#a55fd73838c60d042d891707395b54477">cpp_freertos::Timer</a>
@@ -562,6 +587,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 
 <h3><a class="anchor" id="index_w"></a>- w -</h3><ul>
+<li>Wait()
+: <a class="el" href="classcpp__freertos_1_1_thread.html#a91a73909fb17ee160f992a78cfd2b119">cpp_freertos::Thread</a>
+</li>
+<li>WaitList
+: <a class="el" href="classcpp__freertos_1_1_condition_variable.html#a6f1f045948cbf5a9c807a142666bcc95">cpp_freertos::ConditionVariable</a>
+</li>
 <li>what()
 : <a class="el" href="classcpp__freertos_1_1_mutex_create_exception.html#a4578273b261d8b7113523153b535ccd6">cpp_freertos::MutexCreateException</a>
 , <a class="el" href="classcpp__freertos_1_1_queue_create_exception.html#a501b9dc059420636b68237125ada3fd4">cpp_freertos::QueueCreateException</a>
@@ -652,7 +683,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Aug 23 2016 20:55:26 for FreeRTOS C++ Wrappers by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat Mar 25 2017 20:35:28 for FreeRTOS C++ Wrappers by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.11
 </small></address>

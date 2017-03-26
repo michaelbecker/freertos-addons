@@ -1,5 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classcpp__freertos_1_1_read_write_lock.html" title="cpp_freertos::ReadWriteLock" alt="" coords="5,46,197,73"/>
-<area shape="rect" id="node2" href="$classcpp__freertos_1_1_read_write_lock_prefer_reader.html" title="cpp_freertos::ReadWriteLock\lPreferReader" alt="" coords="245,5,437,47"/>
-<area shape="rect" id="node3" href="$classcpp__freertos_1_1_read_write_lock_prefer_writer.html" title="cpp_freertos::ReadWriteLock\lPreferWriter" alt="" coords="245,71,437,112"/>
+<area shape="rect" id="node1" href="$classcpp__freertos_1_1_queue.html" title="cpp_freertos::Queue" alt="" coords="5,31,145,57"/>
+<area shape="rect" id="node2" href="$classcpp__freertos_1_1_binary_queue.html" title="cpp_freertos::BinaryQueue" alt="" coords="193,5,371,32"/>
+<area shape="rect" id="node3" href="$classcpp__freertos_1_1_deque.html" title="cpp_freertos::Deque" alt="" coords="212,56,352,83"/>
 </map>
