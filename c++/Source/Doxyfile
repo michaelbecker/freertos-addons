@@ -38,7 +38,7 @@ PROJECT_NAME           = "FreeRTOS C++ Wrappers"
 # could be handy for archiving the generated documentation or if some version
 # control system is used.
 
-PROJECT_NUMBER         = 1.1.0
+PROJECT_NUMBER         = 1.3.0
 
 # Using the PROJECT_BRIEF tag one can provide an optional one line description
 # for a project that appears at the top of each page and should give viewer a
@@ -2100,7 +2100,8 @@ PREDEFINED             = "configUSE_IDLE_HOOK=1" \
                          "INCLUDE_vTaskDelay=1" \
                          "INCLUDE_vTaskDelayUntil=1" \
                          "configUSE_TICK_HOOK=1" \
-                         "INCLUDE_xTimerGetTimerDaemonTaskHandle=1"
+                         "INCLUDE_xTimerGetTimerDaemonTaskHandle=1" \
+                         "CPP_FREERTOS_CONDITION_VARIABLES"
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this
 # tag can be used to specify a list of macro names that should be expanded. The
