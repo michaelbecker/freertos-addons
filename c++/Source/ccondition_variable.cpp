@@ -75,7 +75,6 @@
 #ifdef CPP_FREERTOS_CONDITION_VARIABLES
 
 
-using namespace std;
 using namespace cpp_freertos;
 
 

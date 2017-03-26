@@ -96,7 +96,7 @@ VPATH += ${FREERTOS_SRC_DIR} \
 		 ${PORTABLE_SRC_MEM_MANG_DIR} \
 
 
-TARGET = Linux_g++_condition_variables
+TARGET = Linux_g++_condition_variables_multiple_producers_consumers
 
 default: all
 

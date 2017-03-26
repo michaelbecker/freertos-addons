@@ -69,6 +69,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <list>
+#include <vector>
 #include "FreeRTOS.h"
 #include "task.h"
 #include "thread.hpp"
@@ -82,13 +83,13 @@ using namespace std;
 
 
 //
-//  Simple implementation of a bounded queue, to demonstrate 
-//  how condition variables work. This is the classical 
-//  exmaple for condition variables.
+//  Simple implementation of a bounded queue, to demonstrate
+//  how condition variables work. This is the classical
+//  example for condition variables.
 //
-//  In the tradtional example, queues are _NOT_ thread safe and 
-//  cannot block. The whole point of condition variables in this 
-//  example is to use them to allow safe access and propegation 
+//  In this example, queues are _NOT_ thread safe and
+//  cannot block. The whole point of condition variables in this
+//  example is to use them to allow safe access and propegation
 //  of execution when shared amongst threads.
 //
 class BoundedQueue {
@@ -151,7 +152,7 @@ class ProducerThread : public Thread {
     public:
 
         ProducerThread(string name, int data_start)
-           : Thread(name, 100, 1), DataGenerator(data_start)
+           : Thread(name, 100, 1), DataGenerator(data_start), runIterations(0)
         {
             //
             //  Now that construction is completed, we
@@ -160,6 +161,11 @@ class ProducerThread : public Thread {
             Start();
         };
 
+        unsigned int GetRunIterations()
+        {
+            return runIterations;
+        }
+
     protected:
 
         virtual void Run() {
@@ -167,21 +173,12 @@ class ProducerThread : public Thread {
             cerr << "Starting Producer thread " << GetName() << endl;
             
             while (true) {
-            
-                //
-                //  We need to add a delay here to allow for the terminal
-                //  to keep up, else we appear to deadlock inside our
-                //  output statements.
-                //
-                if ((DataGenerator % 19) == 0)
-                    Delay(100);
+
+                runIterations++;
 
                 boundedQueueLock.Lock();
 
-                cerr << GetName() << " queueing: " << DataGenerator << endl;
-                
                 while (boundedQueue->IsFull()) {
-                    cerr << GetName() << " - queue is full!, waiting..." << endl;
                     Wait(notFullCv, boundedQueueLock);
                 }
 
@@ -196,6 +193,7 @@ class ProducerThread : public Thread {
 
     private:
         int DataGenerator;
+        volatile unsigned int runIterations;
 };
 
 
@@ -204,7 +202,7 @@ class ConsumerThread : public Thread {
     public:
 
         ConsumerThread(string name, int data_start)
-           : Thread(name, 100, 1), DataVerified(data_start)
+           : Thread(name, 100, 1), DataVerified(data_start), runIterations(0)
         {
             //
             //  Now that construction is completed, we
@@ -212,6 +210,11 @@ class ConsumerThread : public Thread {
             //  
             Start();
         };
+
+        unsigned int GetRunIterations()
+        {
+            return runIterations;
+        }
 
     protected:
 
@@ -221,24 +224,15 @@ class ConsumerThread : public Thread {
             
             while (true) {
 
-                //
-                //  We need to add a delay here to allow for the terminal
-                //  to keep up, else we appear to deadlock inside our
-                //  output statements.
-                //
-                if ((DataVerified % 23) == 0)
-                    Delay(100);
+                runIterations++;
                 
                 boundedQueueLock.Lock();
                 
                 while (boundedQueue->IsEmpty()) {
-                    cerr << GetName() << " - queue is empty!, waiting..." << endl;
                     Wait(notEmptyCv, boundedQueueLock);
                 }
 
                 int x = boundedQueue->Remove();
-
-                cerr << GetName() << " dequeued: " << x << endl;
 
                 configASSERT(DataVerified == x);
                 DataVerified++;
@@ -252,19 +246,80 @@ class ConsumerThread : public Thread {
     private:
 
         int DataVerified;
+        volatile unsigned int runIterations;
 };
+
+
+
+class MonitorThread : public Thread {
+
+    public:
+
+        MonitorThread(string name, vector<ConsumerThread *>cthr, vector<ProducerThread *>pthr)
+           : Thread(name, 100, 2), ConsumerThreadList(cthr), ProducerThreadList(pthr)
+        {
+            //
+            //  Now that construction is completed, we
+            //  can safely start the thread.
+            //  
+            Start();
+        };
+
+    protected:
+
+        virtual void Run() {
+
+            cerr << "Starting Monitor thread " << GetName() << endl;
+            
+            while (true) {
+
+                Delay(1000);
+                
+                cerr << "Thread runs:\n" << "--------------------------------" << endl;
+                for (unsigned int i = 0; i < ConsumerThreadList.size(); i++) {
+                    cerr << ConsumerThreadList[i]->GetName() << " : " 
+                         << ConsumerThreadList[i]->GetRunIterations() << endl;
+                }
+
+                for (unsigned int i = 0; i < ProducerThreadList.size(); i++) {
+                    cerr << ProducerThreadList[i]->GetName() << " : " 
+                         << ProducerThreadList[i]->GetRunIterations() << endl;
+                }
+                cerr << endl;
+            }
+        };
+
+    private:
+
+        vector<ConsumerThread *>ConsumerThreadList;
+        vector<ProducerThread *>ProducerThreadList;
+};
+
 
 
 int main (void)
 {
     cout << "Testing FreeRTOS C++ wrappers" << endl;
-    cout << "Condition Variable - Bounded queue consumer / producer" << endl;
-
+    cout << "-----------------------------" << endl;
+    cout << "Condition Variable - Bounded queue Consumer / Producer part 2.\n"
+         << "This test confirms that the potential deadlock behavior\n"
+         << "seen when running without any delays in the initial\n"
+         << "Producer / Consumer thread example is due to stdout / console\n"
+         << "issues in the Linux simulator. This is confirmed. This example\n"
+         << "never deadlocks despite not using any delays."
+         << endl;
 
     boundedQueue = new BoundedQueue(10);
-    ProducerThread thread1("Producer", 1);
-    ConsumerThread thread2("Consumer", 1);
+    ProducerThread p1("Producer", 1);
+    ConsumerThread c1("Consumer", 1);
 
+    vector<ConsumerThread *>clist;
+    clist.push_back(&c1);
+
+    vector<ProducerThread *>plist;
+    plist.push_back(&p1);
+
+    MonitorThread monitor("Monitor", clist, plist);
     Thread::StartScheduler();
 
     //
