@@ -1,6 +1,6 @@
 # freertos-addons
 
-After working with FreeRTOS for over 6 years now, I've decided to start adding features and implementations that I wish would have been there at the beginning. 
+After working with FreeRTOS for over 7 years now, I've decided to start adding features and implementations that I wish would have been there at the beginning. 
 
 ## Current Features
 
@@ -8,7 +8,7 @@ After working with FreeRTOS for over 6 years now, I've decided to start adding f
   - A collection of C++ wrappers encapsulating FreeRTOS functionality, allowing you to write your RTOS application in C++ while still using FreeRTOS. This wrapper layer does all the integration work for you.
   - This library is for you if you are planning on using C++ and FreeRTOS in your project but don't want to spend the time integrating the two.
   - Everything was testing successfully using FreeRTOS versions 8.2.3 and 9.0.0.
-  - There are numerous demo / unit test projects using these wrappers and various features they provide. (Last count we are at 24 Demo projects showing how you might use the C++ Wrapper library.
+  - There are numerous demo / unit test projects using these wrappers and various features they provide. (Last count we are at 42 Demo projects showing how you might use the C++ Wrapper library.
   - Licensing is a modified GPLv2, the same as FreeRTOS.
   - [Project web page](http://michaelbecker.github.io/freertos-addons/)
   - [Full cross-referenced documentation](http://michaelbecker.github.io/freertos-addons/docs/html/index.html). Documents were auto-generated and cross-referenced using Doxygen.
@@ -23,6 +23,11 @@ After working with FreeRTOS for over 6 years now, I've decided to start adding f
 
 
 ## Releases
+
+### Version 1.3.0
++ https://github.com/michaelbecker/freertos-addons/releases/tag/v1.3.0
++ Added preprocessor variable "CPP_FREERTOS_NO_CPP_STRINGS". If you do not want to use C++ strings, simply define this in your makefile or project. Note that if you define this, you must also define "CPP_FREERTOS_NO_EXCEPTIONS". Some classes throw exceptions if they cannot be constructed, and the exceptions they throw depend of C++ strings.
++ Added an implementation of condition variables. These are not enabled by default. To use, define "CPP_FREERTOS_CONDITION_VARIABLES". Also include the files condition_variable.hpp and ccondition_variable.cpp in your project.
 
 ### Version 1.2.0
 + https://github.com/michaelbecker/freertos-addons/releases/tag/v1.2.0
@@ -65,8 +70,6 @@ This is my todo list for this project. If there's something you'd like to see do
 + In Timers, add OnStop / OnStart / mutex sync with these methods?
 + Fixed size Memory pools
 + Priority queues
-+ Monitors 
-+ Condition Variables
 + Tick Hooks - option to round robin hooks, one per tick
 
 
