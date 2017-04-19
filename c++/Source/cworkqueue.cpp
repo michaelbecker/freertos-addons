@@ -126,6 +126,8 @@ WorkQueue::WorkQueue(   uint16_t StackDepth,
 }
 
 
+#if (INCLUDE_vTaskDelete == 1)
+
 WorkQueue::~WorkQueue()
 {
     //
@@ -157,6 +159,8 @@ WorkQueue::~WorkQueue()
     delete WorkerThread;
     delete ThreadComplete;
 }
+
+#endif
 
 
 bool WorkQueue::QueueWork(WorkItem *work)

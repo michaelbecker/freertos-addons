@@ -176,7 +176,7 @@ class Timer {
         /**
          *  Destructor
          */
-        ~Timer();
+        virtual ~Timer();
 
         /**
          *  Is the timer currently active?

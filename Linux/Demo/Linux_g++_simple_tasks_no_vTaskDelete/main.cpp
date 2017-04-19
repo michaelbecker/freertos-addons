@@ -66,18 +66,108 @@
  *  information accuracy).
  *  
  ***************************************************************************/
-#ifndef VERSION_CPP_WRAPPERS_HPP_
-#define VERSION_CPP_WRAPPERS_HPP_
+#include <stdio.h>
+#include <iostream>
+#include "FreeRTOS.h"
+#include "task.h"
+#include "thread.hpp"
+#include "ticks.hpp"
 
 
-namespace cpp_freertos {
+using namespace cpp_freertos;
+using namespace std;
 
-#define CPP_WRAPPERS_VERSION_MAJOR      1
-#define CPP_WRAPPERS_VERSION_MINOR      3
-#define CPP_WRAPPERS_VERSION_RELEASE    1
 
-#define CPP_WRAPPERS_VERSION_STRING "1.3.1"
 
+class TestThread : public Thread {
+
+    public:
+
+        TestThread(string name, int i, int delayInSeconds)
+           : Thread(name, 100, 1),
+             id (i), 
+             DelayInSeconds(delayInSeconds)
+        {
+            //
+            //  Now that construction is completed, we
+            //  can safely start the thread.
+            //  
+            Start();
+        };
+
+    protected:
+
+        virtual void Run() {
+
+            cout << "Starting thread " << id << " " << GetName() << endl;
+            
+            while (true) {
+            
+                TickType_t ticks = Ticks::SecondsToTicks(DelayInSeconds);
+            
+                if (ticks)
+                    Delay(ticks);
+            
+                cout << "Running thread " << id << " " << GetName() << endl;
+            }
+        };
+
+    private:
+        int id;
+        int DelayInSeconds;
+};
+
+
+int main (void)
+{
+    cout << "Testing FreeRTOS C++ wrappers" << endl;
+    cout << "Simple Tasks" << endl;
+
+    cout << "configMAX_TASK_NAME_LEN = " << configMAX_TASK_NAME_LEN << endl;
+    cout << "  C++ Thread names can be greater than " 
+         << configMAX_TASK_NAME_LEN - 1 << " characters long." << endl;
+
+    TestThread thread1("Thr_Name_1", 1, 1);
+    TestThread thread2("Thr_Name_22", 2, 2);
+    TestThread thread3("Thr_Name_333", 3, 3);
+    TestThread thread4("Thr_Name_4444", 4, 4);
+    TestThread thread5("Thr_Name_55555_55555_55555", 5, 5);
+
+    Thread::StartScheduler();
+
+    //
+    //  We shouldn't ever get here unless someone calls 
+    //  Thread::EndScheduler()
+    //
+
+    cout << "Scheduler ended!" << endl;
+
+    return 0;
 }
-#endif
+
+
+void vAssertCalled( unsigned long ulLine, const char * const pcFileName )
+{
+    printf("ASSERT: %s : %d\n", pcFileName, (int)ulLine);
+    while(1);
+}
+
+
+unsigned long ulGetRunTimeCounterValue(void)
+{
+    return 0;
+}
+
+void vConfigureTimerForRunTimeStats(void)
+{
+    return;
+}
+
+
+extern "C" void vApplicationMallocFailedHook(void);
+void vApplicationMallocFailedHook(void)
+{
+	while(1);
+}
+
 

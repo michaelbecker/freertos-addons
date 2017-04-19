@@ -157,18 +157,11 @@ class Thread {
          */
         bool Start();
 
-#if (INCLUDE_vTaskDelete == 1)
         /**
-         *  Our destructor, if FreeRTOS is configured to allow task deletion.
+         *  Our destructor. This must exist even if FreeRTOS is
+         *  configured to disallow task deletion.
          */
         virtual ~Thread();
-#else
-        /**
-         *  If we can't delete a task, it makes no sense to have a
-         *  destructor.
-         */
-        ~Thread() = delete;
-#endif
 
         /**
          *  Accessor to get the thread's backing task handle.

@@ -189,6 +189,7 @@ class WorkQueue {
                     UBaseType_t Priority = DEFAULT_WORK_QUEUE_PRIORITY,
                     UBaseType_t MaxWorkItems = DEFAULT_MAX_WORK_ITEMS);
 
+#if (INCLUDE_vTaskDelete == 1)
         /**
          *  Our destructor.
          *
@@ -197,6 +198,19 @@ class WorkQueue {
          *  clean up.
          */
         ~WorkQueue();
+#else
+//
+//  If we are using C++11 or later, take advantage of the 
+//  newer features to find bugs.
+//
+#if __cplusplus >= 201103L
+        /**
+         *  If we can't delete a task, it makes no sense to have a
+         *  destructor.
+         */
+        ~WorkQueue() = delete;
+#endif
+#endif
 
         /**
          *  Send a WorkItem off to be executed.
