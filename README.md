@@ -24,6 +24,9 @@ After working with FreeRTOS for over 7 years now, I've decided to start adding f
 
 ## Releases
 
+### Version 1.3.1
++ Bug fixes to 1.3.0, related to defining vTaskDelete to 0, as well as needing to make the Timer class's dtor virtual. Many thanks to Ewout Boks from the HAN technical college, Arnhem, the Netherlands for finding these.
+
 ### Version 1.3.0
 + https://github.com/michaelbecker/freertos-addons/releases/tag/v1.3.0
 + Added preprocessor variable "CPP_FREERTOS_NO_CPP_STRINGS". If you do not want to use C++ strings, simply define this in your makefile or project. Note that if you define this, you must also define "CPP_FREERTOS_NO_EXCEPTIONS". Some classes throw exceptions if they cannot be constructed, and the exceptions they throw depend of C++ strings.
@@ -34,7 +37,7 @@ After working with FreeRTOS for over 7 years now, I've decided to start adding f
 + Adding preprocessor flag to exclude exceptions for smaller footprint and C++ compilers that do not support them.
 + Updated license to one similar to FreeRTOS version. What does that mean for you? It means you are free to use FreeRTOS C++ Wrappers in your commercial product without making your product open source.
 
-### Version 1.1.0 
+### Version 1.1.0
 + https://github.com/michaelbecker/freertos-addons/releases/tag/v1.1.0
 + Adding object oriented work queues.
 + Coverity scan analysis performed, with bug fixes.
@@ -50,7 +53,7 @@ After working with FreeRTOS for over 7 years now, I've decided to start adding f
 + Changed license from GPLv3 to GPLv2 (or later) to accomodate FreeRTOS's modified GPLv2 license.
 + See https://www.gnu.org/licenses/gpl-faq.html#AllCompatibility for more information.
 
-### Version 1.0.0 
+### Version 1.0.0
 + https://github.com/michaelbecker/freertos-addons/releases/tag/v1.0.0
 + Initial release.
 
@@ -68,7 +71,7 @@ This is my todo list for this project. If there's something you'd like to see do
 
 ### New Value Added
 + In Timers, add OnStop / OnStart / mutex sync with these methods?
-+ Fixed size Memory pools
++ Fixed size Memory pools (In progress)
 + Priority queues
 + Tick Hooks - option to round robin hooks, one per tick
 
