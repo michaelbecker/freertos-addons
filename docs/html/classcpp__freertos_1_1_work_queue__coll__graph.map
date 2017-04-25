@@ -1,11 +1,11 @@
 <map id="cpp_freertos::WorkQueue" name="cpp_freertos::WorkQueue">
-<area shape="rect" id="node2" href="$classcpp__freertos_1_1_work_queue_1_1_c_worker_thread.html" title="cpp_freertos::WorkQueue\l::CWorkerThread" alt="" coords="908,98,1079,139"/>
-<area shape="rect" id="node3" href="$classcpp__freertos_1_1_thread.html" title="cpp_freertos::Thread" alt="" coords="591,63,734,89"/>
-<area shape="rect" id="node4" href="$classcpp__freertos_1_1_mutex_standard.html" title="cpp_freertos::MutexStandard" alt="" coords="230,7,421,33"/>
+<area shape="rect" id="node2" href="$classcpp__freertos_1_1_work_queue_1_1_c_worker_thread.html" title="cpp_freertos::WorkQueue\l::CWorkerThread" alt="" coords="909,98,1080,139"/>
+<area shape="rect" id="node3" href="$classcpp__freertos_1_1_thread.html" title="cpp_freertos::Thread" alt="" coords="593,63,735,89"/>
+<area shape="rect" id="node4" href="$classcpp__freertos_1_1_mutex_standard.html" title="cpp_freertos::MutexStandard" alt="" coords="231,7,422,33"/>
 <area shape="rect" id="node5" href="$classcpp__freertos_1_1_mutex.html" title="cpp_freertos::Mutex" alt="" coords="20,5,159,32"/>
-<area shape="rect" id="node6" title="STL class. " alt="" coords="285,61,365,88"/>
+<area shape="rect" id="node6" title="STL class. " alt="" coords="287,61,367,88"/>
 <area shape="rect" id="node7" title="STL class. " alt="" coords="26,57,153,98"/>
-<area shape="rect" id="node8" href="$classcpp__freertos_1_1_binary_semaphore.html" title="cpp_freertos::BinarySemaphore" alt="" coords="223,133,428,160"/>
+<area shape="rect" id="node8" href="$classcpp__freertos_1_1_binary_semaphore.html" title="cpp_freertos::BinarySemaphore" alt="" coords="224,133,429,160"/>
 <area shape="rect" id="node9" href="$classcpp__freertos_1_1_semaphore.html" title="cpp_freertos::Semaphore" alt="" coords="5,133,173,160"/>
-<area shape="rect" id="node10" href="$classcpp__freertos_1_1_queue.html" title="cpp_freertos::Queue" alt="" coords="255,196,395,223"/>
+<area shape="rect" id="node10" href="$classcpp__freertos_1_1_queue.html" title="cpp_freertos::Queue" alt="" coords="257,196,397,223"/>
 </map>

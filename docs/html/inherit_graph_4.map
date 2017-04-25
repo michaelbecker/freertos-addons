@@ -1,9 +1,9 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" title="STL class. " alt="" coords="5,177,109,203"/>
-<area shape="rect" id="node2" href="$classcpp__freertos_1_1_mutex_create_exception.html" title="cpp_freertos::MutexCreate\lException" alt="" coords="172,5,349,47"/>
-<area shape="rect" id="node3" href="$classcpp__freertos_1_1_queue_create_exception.html" title="cpp_freertos::QueueCreate\lException" alt="" coords="171,71,350,112"/>
-<area shape="rect" id="node4" href="$classcpp__freertos_1_1_read_write_lock_create_exception.html" title="cpp_freertos::ReadWriteLock\lCreateException" alt="" coords="165,136,357,177"/>
-<area shape="rect" id="node5" href="$classcpp__freertos_1_1_semaphore_create_exception.html" title="cpp_freertos::SemaphoreCreate\lException" alt="" coords="157,201,364,243"/>
-<area shape="rect" id="node6" href="$classcpp__freertos_1_1_tasklet_create_exception.html" title="cpp_freertos::TaskletCreate\lException" alt="" coords="169,267,353,308"/>
-<area shape="rect" id="node7" href="$classcpp__freertos_1_1_timer_create_exception.html" title="cpp_freertos::TimerCreate\lException" alt="" coords="173,332,348,373"/>
+<area shape="rect" id="node1" title="STL class. " alt="" coords="5,176,109,203"/>
+<area shape="rect" id="node2" href="$classcpp__freertos_1_1_mutex_create_exception.html" title="cpp_freertos::MutexCreate\lException" alt="" coords="173,5,350,46"/>
+<area shape="rect" id="node3" href="$classcpp__freertos_1_1_queue_create_exception.html" title="cpp_freertos::QueueCreate\lException" alt="" coords="172,70,351,111"/>
+<area shape="rect" id="node4" href="$classcpp__freertos_1_1_read_write_lock_create_exception.html" title="cpp_freertos::ReadWriteLock\lCreateException" alt="" coords="165,135,357,177"/>
+<area shape="rect" id="node5" href="$classcpp__freertos_1_1_semaphore_create_exception.html" title="cpp_freertos::SemaphoreCreate\lException" alt="" coords="158,201,365,242"/>
+<area shape="rect" id="node6" href="$classcpp__freertos_1_1_tasklet_create_exception.html" title="cpp_freertos::TaskletCreate\lException" alt="" coords="169,266,353,307"/>
+<area shape="rect" id="node7" href="$classcpp__freertos_1_1_timer_create_exception.html" title="cpp_freertos::TimerCreate\lException" alt="" coords="174,331,349,373"/>
 </map>

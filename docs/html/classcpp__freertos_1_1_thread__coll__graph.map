@@ -1,8 +1,8 @@
 <map id="cpp_freertos::Thread" name="cpp_freertos::Thread">
-<area shape="rect" id="node2" href="$classcpp__freertos_1_1_mutex_standard.html" title="cpp_freertos::MutexStandard" alt="" coords="5,96,196,123"/>
-<area shape="rect" id="node3" href="$classcpp__freertos_1_1_mutex.html" title="cpp_freertos::Mutex" alt="" coords="31,13,170,39"/>
-<area shape="rect" id="node4" title="STL class. " alt="" coords="221,96,301,123"/>
-<area shape="rect" id="node5" title="STL class. " alt="" coords="196,5,323,47"/>
-<area shape="rect" id="node6" href="$classcpp__freertos_1_1_binary_semaphore.html" title="cpp_freertos::BinarySemaphore" alt="" coords="327,96,533,123"/>
-<area shape="rect" id="node7" href="$classcpp__freertos_1_1_semaphore.html" title="cpp_freertos::Semaphore" alt="" coords="347,13,515,39"/>
+<area shape="rect" id="node2" href="$classcpp__freertos_1_1_mutex_standard.html" title="cpp_freertos::MutexStandard" alt="" coords="5,99,195,125"/>
+<area shape="rect" id="node3" href="$classcpp__freertos_1_1_mutex.html" title="cpp_freertos::Mutex" alt="" coords="31,13,169,40"/>
+<area shape="rect" id="node4" title="STL class. " alt="" coords="220,99,299,125"/>
+<area shape="rect" id="node5" title="STL class. " alt="" coords="195,6,321,47"/>
+<area shape="rect" id="node6" href="$classcpp__freertos_1_1_binary_semaphore.html" title="cpp_freertos::BinarySemaphore" alt="" coords="327,99,532,125"/>
+<area shape="rect" id="node7" href="$classcpp__freertos_1_1_semaphore.html" title="cpp_freertos::Semaphore" alt="" coords="347,13,515,40"/>
 </map>
