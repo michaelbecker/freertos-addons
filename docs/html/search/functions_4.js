@@ -8,7 +8,7 @@ var searchData=
   ['enqueuetofront',['EnqueueToFront',['../classcpp__freertos_1_1_deque.html#a92aa59429028a76e775087def340e80e',1,'cpp_freertos::Deque']]],
   ['enqueuetofrontfromisr',['EnqueueToFrontFromISR',['../classcpp__freertos_1_1_deque.html#a786e2a3c308172f5ca3a47704cc5b594',1,'cpp_freertos::Deque']]],
   ['enter',['Enter',['../classcpp__freertos_1_1_critical_section.html#ac31be583c6674aea582d4fa831e4e3fb',1,'cpp_freertos::CriticalSection']]],
-  ['enterfromisr',['EnterFromISR',['../classcpp__freertos_1_1_critical_section.html#adf4345ad10fa7e2a1c4fc8cf986b8ad4',1,'cpp_freertos::CriticalSection']]],
+  ['enterfromisr',['EnterFromISR',['../classcpp__freertos_1_1_critical_section.html#ab78166fa2e3130eb0285b9ff88bc090a',1,'cpp_freertos::CriticalSection']]],
   ['exit',['Exit',['../classcpp__freertos_1_1_critical_section.html#a5f7e9a6a562669d8554658e5e974302a',1,'cpp_freertos::CriticalSection']]],
-  ['exitfromisr',['ExitFromISR',['../classcpp__freertos_1_1_critical_section.html#a57b39b69dfe49f499446254ac057f250',1,'cpp_freertos::CriticalSection']]]
+  ['exitfromisr',['ExitFromISR',['../classcpp__freertos_1_1_critical_section.html#ab3b454d554d41da00bb23c8c32a4b21a',1,'cpp_freertos::CriticalSection']]]
 ];
