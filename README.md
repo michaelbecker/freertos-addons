@@ -24,6 +24,10 @@ After working with FreeRTOS for over 7 years now, I've decided to start adding f
 
 ## Releases
 
+### Version 1.3.2
++ https://github.com/michaelbecker/freertos-addons/releases/tag/v1.3.2
++ Bug fixes to 1.3.1 regarding the critical section wrapper. Code prior to this version in critical.hpp will not compile successfully. Also added a Demo project using straight C and the updated Linux simulator only. Also note I am working through some configuration issues with Coverity. It is reporting 9 new defects, but these are false positives that the tool is not handling. When I added CPP_FREERTOS_NO_EXCEPTIONS, I also added Demo projects to test this. Coverity is incorrectly flagging these projects as not catching exceptions, when in fact these configurations are never throwing exceptions.
+
 ### Version 1.3.1
 + https://github.com/michaelbecker/freertos-addons/releases/tag/v1.3.1
 + Bug fixes to 1.3.0, related to defining vTaskDelete to 0, as well as needing to make the Timer class's dtor virtual. Many thanks to Ewout Boks from the HAN technical college, Arnhem, the Netherlands for finding these.
