@@ -71,8 +71,14 @@
 all:
 	$(MAKE) -C Linux_g++_binary_semaphore
 	$(MAKE) -C Linux_g++_binary_semaphore_no_except
+	$(MAKE) -C Linux_gcc_simple_tasks
+	$(MAKE) -C Linux_g++_condition_variables
+	$(MAKE) -C Linux_g++_condition_variables2
+	$(MAKE) -C Linux_g++_condition_variables_multiple_producers_consumers
+	$(MAKE) -C Linux_g++_condition_variables_multiple_producers_consumers2
 	$(MAKE) -C Linux_g++_counting_semaphore
 	$(MAKE) -C Linux_g++_counting_semaphore_no_except
+	$(MAKE) -C Linux_g++_critical_section
 	$(MAKE) -C Linux_g++_delay_until
 	$(MAKE) -C Linux_g++_dynamic_tasks
 	$(MAKE) -C Linux_g++_dynamic_tasks_high_pri
@@ -108,5 +114,5 @@ all:
 	$(MAKE) -C Linux_g++_unnamed_tasks_no_cpp_strings
 	$(MAKE) -C Linux_g++_workqueues
 	$(MAKE) -C Linux_g++_workqueues_delete
-	$(MAKE) -C Linux_gcc_simple_tasks
+
 
