@@ -68,7 +68,7 @@
  ***************************************************************************/
 
 
-#include "condition_variable.hpp"
+#include "condition_variable"
 #include "thread.hpp"
 
 
