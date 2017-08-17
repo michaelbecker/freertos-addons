@@ -71,7 +71,6 @@
 
 using namespace cpp_freertos;
 
-
 Mutex::Mutex()
 {
 }
