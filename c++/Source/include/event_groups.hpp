@@ -158,7 +158,13 @@ class EventGroup {
          *  Construct a Event Group
          */
         EventGroup();
-		
+
+#if( configSUPPORT_STATIC_ALLOCATION == 1 )
+		/**
+         *  Construct a Event Group with static allocation
+         */
+        EventGroup(StaticEventGroup_t *pxEventGroupBuffer);
+#endif
         /**
          *  Allow two or more tasks to use an event group to sync each other.
          *  @param uxBitsToSet A bit mask that specifies the event bit, or event bits,
@@ -229,6 +235,13 @@ class EventGroup {
          *  @return The value of the event group before the specified bits were cleared.
          */
         BaseType_t ClearBitsFromISR(const EventBits_t uxBitsToClear);
+
+		/**
+        *  Returns the current value of the event bits (event flags) in an event group.
+        *
+        *  @return The value of the event bits in the event group at the time EventGroup::GetBitsFromISR was called.
+        */
+        EventBits_t GetBits();
 		
 		/**
          *  Returns the current value of the event bits (event flags) in an event group from ISR context.
@@ -243,6 +256,23 @@ class EventGroup {
          *  @return The value of the event group at the time the call to EventGroup::SetBits returns
          */		
 		EventBits_t SetBits(const EventBits_t uxBitsToSet);
+
+
+		#if ( ( configUSE_TRACE_FACILITY == 1 ) && ( INCLUDE_xTimerPendFunctionCall == 1 ) && ( configUSE_TIMERS == 1 ) )
+		/**
+         *  Set bits (flags) within an event group from ISR context.
+         *
+         *  @param uxBitsToSet A bitwise value that indicates the bit or bits to set in the event group.
+         *  @param pxHigherPriorityTaskWoken A bitwise value that indicates the bit or bits to set in the event group.
+         *  @return Calling this function will result in a message being sent to the RTOS daemon task. If the priority
+         *  of the daemon task is higher than the priority of the currently running task (the task the interrupt interrupted)
+         *  then *pxHigherPriorityTaskWoken will be set to true by EventGroupSetBitsFromISR, indicating that a context
+         *  switch should be requested before the interrupt exits. For that reason *pxHigherPriorityTaskWoken must be
+         *  initialised to false.
+         */
+		BaseType_t SetBitsFromISR(const EventBits_t uxBitsToSet, BaseType_t *pxHigherPriorityTaskWoken);
+
+		#endif
 
         /**
          *  Our destructor

@@ -83,9 +83,24 @@ EventGroup::EventGroup()
 		configASSERT(!"EventGroup Constructor Failed");
 #endif
 	}
-	
-	
+
 }
+
+#if( configSUPPORT_STATIC_ALLOCATION == 1 )
+EventGroup::EventGroup(StaticEventGroup_t *pxEventGroupBuffer)
+{
+	handle = xEventGroupCreateStatic(pxEventGroupBuffer);
+
+	if (handle == NULL) {
+#ifndef CPP_FREERTOS_NO_EXCEPTIONS
+		throw EventGroupCreateException();
+#else
+		configASSERT(!"EventGroup Constructor Failed");
+#endif
+	}
+
+}
+#endif /* configSUPPORT_STATIC_ALLOCATION */
 
 EventGroup::~EventGroup()
 {
@@ -135,6 +150,10 @@ BaseType_t EventGroup::ClearBitsFromISR(const EventBits_t uxBitsToClear)
 
 }
 
+EventBits_t EventGroup::GetBits()
+{
+	return xEventGroupGetBits(handle);
+}
 
 EventBits_t EventGroup::GetBitsFromISR()
 {
@@ -149,4 +168,16 @@ EventBits_t EventGroup::SetBits(const EventBits_t uxBitsToSet)
 	return xEventGroupSetBits(handle, uxBitsToSet);
 
 }
+
+#if ( ( configUSE_TRACE_FACILITY == 1 ) && ( INCLUDE_xTimerPendFunctionCall == 1 ) && ( configUSE_TIMERS == 1 ) )
+
+BaseType_t EventGroup::SetBitsFromISR(const EventBits_t uxBitsToSet, BaseType_t *pxHigherPriorityTaskWoken)
+{
+
+	return xEventGroupSetBitsFromISR(handle, uxBitsToSet, pxHigherPriorityTaskWoken);
+
+}
+#endif
+
+
  
