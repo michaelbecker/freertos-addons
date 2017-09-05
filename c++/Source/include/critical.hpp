@@ -108,18 +108,31 @@ class CriticalSection {
         /**
          *  Disable context switches as well as maskable interrupts
          *  from an interrupt context.
+         *
+         *  @return Opaque representation of interrupt mask state.
+         *  This must be passed back to the corresponding call to 
+         *  ExitFromISR().
+         *
+         *  @note See the following for further details:
+         *  http://www.freertos.org/taskENTER_CRITICAL_FROM_ISR_taskEXIT_CRITICAL_FROM_ISR.html
          */
-        static inline void EnterFromISR()
+        static inline BaseType_t EnterFromISR()
         {
-            taskENTER_CRITICAL_FROM_ISR();
+            return taskENTER_CRITICAL_FROM_ISR();
         }
 
         /**
          *  Re-enable context switches from an interrupt context.
+         *
+         *  @param savedInterruptStatus This should be the value you 
+         *  received from calling EnterFromISR().
+         *
+         *  @note See the following for further details:
+         *  http://www.freertos.org/taskENTER_CRITICAL_FROM_ISR_taskEXIT_CRITICAL_FROM_ISR.html
          */
-        static inline void ExitFromISR();
+        static inline void ExitFromISR(BaseType_t savedInterruptStatus)
         {
-            taskEXIT_CRITICAL_FROM_ISR();
+            taskEXIT_CRITICAL_FROM_ISR(savedInterruptStatus);
         }
 
         /**
