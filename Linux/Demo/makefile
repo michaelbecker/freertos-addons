@@ -84,6 +84,9 @@ all:
 	$(MAKE) -C Linux_g++_dynamic_tasks_high_pri
 	$(MAKE) -C Linux_g++_dynamic_tasks_multistart_scheduler_off
 	$(MAKE) -C Linux_g++_dynamic_tasks_multistart_scheduler_on
+	$(MAKE) -C Linux_g++_mem_pools
+	$(MAKE) -C Linux_g++_mem_pools_add
+	$(MAKE) -C Linux_g++_mem_pools_static
 	$(MAKE) -C Linux_g++_mutex_recursive
 	$(MAKE) -C Linux_g++_mutex_recursive_no_except
 	$(MAKE) -C Linux_g++_mutex_standard
