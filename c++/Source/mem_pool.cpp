@@ -68,21 +68,24 @@
  ***************************************************************************/
 
 
-#include "mem_pool.h"
+#include <stdlib.h>
+#include "mem_pool.hpp"
 
 
 using namespace cpp_freertos;
 
 
-MemoryPool::MemoryPool(int itemSize, int itemCount)
-    : Lock(MutexStandard())
-      ItemSize(itemSize)
+MemoryPool::MemoryPool( int itemSize,
+                        int itemCount)
+    : ItemSize(itemSize)
 {
+    Lock = new MutexStandard();
+
     unsigned char *address = (unsigned char *)malloc(ItemSize * itemCount);
 
     if (address == NULL) {
 #ifndef CPP_FREERTOS_NO_EXCEPTIONS
-        throw MemoryPoolCreateException("Constructor");
+        throw MemoryPoolCreateException();
 #else
         configASSERT(!"MemoryPool Constructor Failed");
 #endif
@@ -95,16 +98,16 @@ MemoryPool::MemoryPool(int itemSize, int itemCount)
 }
 
 
-MemoryPool::MemoryPool( int itemSize, 
+MemoryPool::MemoryPool( int itemSize,
                         void *preallocatedMemory, 
                         int preallocatedMemorySize)
-    : Lock(MutexStandard()),
-      ItemSize(itemSize)
+    : ItemSize(itemSize)
 {
+    Lock = new MutexStandard();
+
     unsigned char *address = (unsigned char *)preallocatedMemory;
 
-    while ((preallocatedMemorySize > 0)
-            && (itemSize <= preallocatedMemorySize)) {
+    while (preallocatedMemorySize >= itemSize) {
 
         FreeItems.push_back(address);
         address += ItemSize;
@@ -115,7 +118,7 @@ MemoryPool::MemoryPool( int itemSize,
 
 void *MemoryPool::Allocate()
 {
-    LockGuard guard(Lock);
+    LockGuard guard(*Lock);
 
     if (FreeItems.empty())
         return NULL;
@@ -129,7 +132,7 @@ void *MemoryPool::Allocate()
 
 void MemoryPool::Free(void *item)
 {
-    LockGuard guard(Lock);
+    LockGuard guard(*Lock);
     FreeItems.push_back(item);
 }
 
@@ -140,7 +143,7 @@ void MemoryPool::AddMemory(int itemCount)
 
     if (address == NULL) {
 #ifndef CPP_FREERTOS_NO_EXCEPTIONS
-        throw MemoryPoolCreateException("AddMemory");
+        throw MemoryPoolCreateException();
 #else
         configASSERT(!"MemoryPool AddMemory Failed");
 #endif
@@ -148,7 +151,7 @@ void MemoryPool::AddMemory(int itemCount)
 
     for (int i = 0; i < itemCount; i++) {
     
-        LockGuard guard(Lock);
+        LockGuard guard(*Lock);
         
         FreeItems.push_back(address);
         address += ItemSize;
@@ -156,15 +159,14 @@ void MemoryPool::AddMemory(int itemCount)
 }
 
 
-MemoryPool::AddMemory(  void *preallocatedMemory,
-                        int preallocatedMemorySize)
+void MemoryPool::AddMemory( void *preallocatedMemory,
+                            int preallocatedMemorySize)
 {
     unsigned char *address = (unsigned char *)preallocatedMemory;
 
-    while ((preallocatedMemorySize > 0)
-            && (itemSize <= preallocatedMemorySize)) {
+    while (preallocatedMemorySize >= ItemSize) {
 
-        LockGuard guard(Lock);
+        LockGuard guard(*Lock);
         
         FreeItems.push_back(address);
         address += ItemSize;

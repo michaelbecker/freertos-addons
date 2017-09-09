@@ -69,26 +69,76 @@
 #ifndef MEM_POOL_HPP_
 #define MEM_POOL_HPP_
 
-
+/**
+ *  C++ exceptions are used by default when constructors fail.
+ *  If you do not want this behavior, define the following in your makefile
+ *  or project. Note that in most / all cases when a constructor fails,
+ *  it's a fatal error. In the cases when you've defined this, the new 
+ *  default behavior will be to issue a configASSERT() instead.
+ */
+#ifndef CPP_FREERTOS_NO_EXCEPTIONS
+#include <exception>
+#include <string>
+#include <cstdio>
+#ifdef CPP_FREERTOS_NO_CPP_STRINGS
+#error "FreeRTOS-Addons require C++ Strings if you are using exceptions"
+#endif
+#endif
 #include <list>
 #include "FreeRTOS.h"
 #include "mutex.hpp"
 
-
 namespace cpp_freertos {
+
+
+#ifndef CPP_FREERTOS_NO_EXCEPTIONS
+/**
+ *  This is the exception that is thrown if a MemoryPool constructor fails.
+ */
+class MemoryPoolCreateException : public std::exception {
+
+    public:
+        /**
+         *  Create the exception.
+         */
+        MemoryPoolCreateException()
+        {
+            sprintf(errorString, "MemoryPool Constructor Failed");
+        }
+
+        /**
+         *  Get what happened as a string.
+         *  We are overriding the base implementation here.
+         */
+        virtual const char *what() const throw()
+        {
+            return errorString;
+        }
+
+    private:
+        /**
+         *  A text string representing what failed.
+         */
+        char errorString[80];
+};
+#endif
 
 
 class MemoryPool {
 
     public:
 
-        MemoryPool(int itemSize, int itemCount);
+        MemoryPool( int itemSize, 
+                    int itemCount);
 
-        MemoryPool(int itemSize, void *preallocatedMemory);
+        MemoryPool( int itemSize, 
+                    void *preallocatedMemory, 
+                    int preallocatedMemorySize);
 
         void AddMemory(int itemCount);
 
-        void AddMemory(void *preallocatedMemory, int preallocatedMemorySize);
+        void AddMemory( void *preallocatedMemory, 
+                        int preallocatedMemorySize);
 
         void *Allocate();
 
@@ -96,13 +146,15 @@ class MemoryPool {
 
     private:
 
-        Mutex &Lock;
+        Mutex *Lock;
 
         const int ItemSize;
 
         std::list<void *>FreeItems;
 };
 
+
+}
 
 #endif
 
