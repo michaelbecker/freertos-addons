@@ -24,6 +24,9 @@ After working with FreeRTOS for over 7 years now, I've decided to start adding f
 
 ## Releases
 
+### Version 1.4.0
++ Fixed size memory pools and associated unit tests.
+
 ### Version 1.3.2
 + https://github.com/michaelbecker/freertos-addons/releases/tag/v1.3.2
 + Bug fixes to 1.3.1 regarding the critical section wrapper. Code prior to this version in critical.hpp will not compile successfully. 
@@ -77,7 +80,6 @@ This is my todo list for this project. If there's something you'd like to see do
 
 ### New Value Added
 + In Timers, add OnStop / OnStart / mutex sync with these methods?
-+ Fixed size Memory pools (In progress)
 + Priority queues
 + Tick Hooks - option to round robin hooks, one per tick
 
