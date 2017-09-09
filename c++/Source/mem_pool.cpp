@@ -85,9 +85,9 @@ MemoryPool::MemoryPool( int itemSize,
 
     if (address == NULL) {
 #ifndef CPP_FREERTOS_NO_EXCEPTIONS
-        throw MemoryPoolCreateException();
+        throw MemoryPoolMallocException();
 #else
-        configASSERT(!"MemoryPool Constructor Failed");
+        configASSERT(!"MemoryPool malloc Failed");
 #endif
     }
 
@@ -143,7 +143,7 @@ void MemoryPool::AddMemory(int itemCount)
 
     if (address == NULL) {
 #ifndef CPP_FREERTOS_NO_EXCEPTIONS
-        throw MemoryPoolCreateException();
+        throw MemoryPoolMallocException();
 #else
         configASSERT(!"MemoryPool AddMemory Failed");
 #endif

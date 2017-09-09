@@ -91,15 +91,15 @@ MemoryPool *pool_7;
 MemoryPool *pool_8;
 MemoryPool *pool_9;
 
-#define NUM_POOL_1_ITEMS    10
-#define NUM_POOL_2_ITEMS    10
-#define NUM_POOL_3_ITEMS    10
-#define NUM_POOL_4_ITEMS    10
-#define NUM_POOL_5_ITEMS    10
-#define NUM_POOL_6_ITEMS    10
-#define NUM_POOL_7_ITEMS    10
-#define NUM_POOL_8_ITEMS    10
-#define NUM_POOL_9_ITEMS    10
+int numPoolItems1 = 10;
+int numPoolItems2 = 10;
+int numPoolItems3 = 10;
+int numPoolItems4 = 10;
+int numPoolItems5 = 10;
+int numPoolItems6 = 10;
+int numPoolItems7 = 10;
+int numPoolItems8 = 10;
+int numPoolItems9 = 10;
 
 
 class TestThread : public Thread {
@@ -133,19 +133,46 @@ class TestThread : public Thread {
                 ticks = Ticks::MsToTicks(1);
                 Delay(ticks);
 
-                StressPool(pool_1, NUM_POOL_1_ITEMS, 1);
-                StressPool(pool_2, NUM_POOL_2_ITEMS, 2);
-                StressPool(pool_3, NUM_POOL_3_ITEMS, 3);
-                StressPool(pool_4, NUM_POOL_4_ITEMS, 4);
-                StressPool(pool_5, NUM_POOL_5_ITEMS, 5);
-                StressPool(pool_6, NUM_POOL_6_ITEMS, 6);
-                StressPool(pool_7, NUM_POOL_7_ITEMS, 7);
-                StressPool(pool_8, NUM_POOL_8_ITEMS, 8);
-                StressPool(pool_9, NUM_POOL_9_ITEMS, 9);
+                StressPool(pool_1, numPoolItems1, 1);
+                pool_1->AddMemory(PatternStart);
+                numPoolItems1 += PatternStart;
 
-                if (run_cnt++ > 1) {
-                    run_cnt = 0;
-                    cout << "Running thread " << GetName() << endl;
+                StressPool(pool_2, numPoolItems2, 2);
+                pool_2->AddMemory(PatternStart);
+                numPoolItems2 += PatternStart;
+
+                StressPool(pool_3, numPoolItems3, 3);
+                pool_3->AddMemory(PatternStart);
+                numPoolItems3 += PatternStart;
+
+                StressPool(pool_4, numPoolItems4, 4);
+                pool_4->AddMemory(PatternStart);
+                numPoolItems4 += PatternStart;
+
+                StressPool(pool_5, numPoolItems5, 5);
+                pool_5->AddMemory(PatternStart);
+                numPoolItems5 += PatternStart;
+
+                StressPool(pool_6, numPoolItems6, 6);
+                pool_6->AddMemory(PatternStart);
+                numPoolItems6 += PatternStart;
+
+                StressPool(pool_7, numPoolItems7, 7);
+                pool_7->AddMemory(PatternStart);
+                numPoolItems7 += PatternStart;
+
+                StressPool(pool_8, numPoolItems8, 8);
+                pool_8->AddMemory(PatternStart);
+                numPoolItems8 += PatternStart;
+
+                StressPool(pool_9, numPoolItems9, 9);
+                pool_9->AddMemory(PatternStart);
+                numPoolItems9 += PatternStart;
+
+
+                if (run_cnt++ > 5) {
+                    cout << "suspending thread " << GetName() << endl;
+                    Suspend();
                 }
             }
         };
@@ -236,15 +263,15 @@ int main (void)
     TestThread thread4("Thread_4", 1, 7);
     TestThread thread5("Thread_5", 1, 11);
 
-    pool_1 = new MemoryPool(1, NUM_POOL_1_ITEMS);
-    pool_2 = new MemoryPool(2, NUM_POOL_2_ITEMS);
-    pool_3 = new MemoryPool(3, NUM_POOL_3_ITEMS);
-    pool_4 = new MemoryPool(4, NUM_POOL_4_ITEMS);
-    pool_5 = new MemoryPool(5, NUM_POOL_5_ITEMS);
-    pool_6 = new MemoryPool(6, NUM_POOL_6_ITEMS);
-    pool_7 = new MemoryPool(7, NUM_POOL_7_ITEMS);
-    pool_8 = new MemoryPool(8, NUM_POOL_8_ITEMS);
-    pool_9 = new MemoryPool(9, NUM_POOL_9_ITEMS);
+    pool_1 = new MemoryPool(1, numPoolItems1);
+    pool_2 = new MemoryPool(2, numPoolItems2);
+    pool_3 = new MemoryPool(3, numPoolItems3);
+    pool_4 = new MemoryPool(4, numPoolItems4);
+    pool_5 = new MemoryPool(5, numPoolItems5);
+    pool_6 = new MemoryPool(6, numPoolItems6);
+    pool_7 = new MemoryPool(7, numPoolItems7);
+    pool_8 = new MemoryPool(8, numPoolItems8);
+    pool_9 = new MemoryPool(9, numPoolItems9);
 
     Thread::StartScheduler();
 

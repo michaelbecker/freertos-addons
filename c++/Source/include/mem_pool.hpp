@@ -93,17 +93,17 @@ namespace cpp_freertos {
 
 #ifndef CPP_FREERTOS_NO_EXCEPTIONS
 /**
- *  This is the exception that is thrown if a MemoryPool constructor fails.
+ *  This is the exception that is thrown if a MemoryPool malloc fails.
  */
-class MemoryPoolCreateException : public std::exception {
+class MemoryPoolMallocException : public std::exception {
 
     public:
         /**
          *  Create the exception.
          */
-        MemoryPoolCreateException()
+        MemoryPoolMallocException()
         {
-            sprintf(errorString, "MemoryPool Constructor Failed");
+            sprintf(errorString, "MemoryPool malloc Failed");
         }
 
         /**
@@ -124,33 +124,138 @@ class MemoryPoolCreateException : public std::exception {
 #endif
 
 
+/**
+ *  Memory Pools are fixed size allocations to prevent fragmentation.
+ *
+ *  This is a new feature to FreeRTOS Wrappers and is not in and of 
+ *  itself a wrapper.
+ *
+ *  Memory Pools are thread safe, but cannot be used in ISR context. 
+ *  The OS must be running, because these use Mutexes to protect internal
+ *  data structures.
+ */
 class MemoryPool {
 
+    /////////////////////////////////////////////////////////////////////////
+    //
+    //  Public API
+    //
+    /////////////////////////////////////////////////////////////////////////
     public:
 
+        /**
+         *  Constructor to create a Memory Pool.
+         *
+         *  This constructor uses the system malloc to actually obtain 
+         *  the memory.
+         *  
+         *  @param itemSize How big is each item you want to allocate.
+         *  @param itemCount How many items max do you want to allocate 
+         *                   at once.
+         *  @throws MemoryPoolMallocException on failure.
+         */
         MemoryPool( int itemSize, 
                     int itemCount);
 
+        /**
+         *  Constructor to create a Memory Pool.
+         *
+         *  This constructor uses memory you pass in to actually create 
+         *  the pool. This constructor does not throw.
+         *  
+         *  @param itemSize How big is each item you want to allocate.
+         *  @param preallocatedMemory Pointer to the preallocated memory 
+         *  you are dedicating to this pool.
+         *  @param preallocatedMemorySize How big is the buffer you are 
+         *  passing in.
+         */
         MemoryPool( int itemSize, 
                     void *preallocatedMemory, 
                     int preallocatedMemorySize);
 
+        /**
+         *  Allows you to add memory to a MemoryPool.
+         *  
+         *  Items will be the same size as you initially asked for.
+         *
+         *  @param itemCount How many more items max do you want to allocate
+         *  @throws MemoryPoolMallocException on failure.
+         */
         void AddMemory(int itemCount);
 
+        /**
+         *  Allows you to add memory to a MemoryPool.
+         *  
+         *  Items will be the same size as you initially asked for.
+         *
+         *  @param preallocatedMemory Pointer to the preallocated memory 
+         *  you are dedicating to this pool.
+         *  @param preallocatedMemorySize How big is the buffer you are 
+         *  passing in.
+         */
         void AddMemory( void *preallocatedMemory, 
                         int preallocatedMemorySize);
 
+        /**
+         *  Allocate an item from the pool.
+         *  
+         *  @return Pointer of the memory or NULL if the pool is empty.
+         */
         void *Allocate();
 
+        /**
+         *  Returns the item back to it's pool.
+         *
+         *  @note There is no checking that the item is actually 
+         *  valid to be returned to this pool.
+         */
         void Free(void *item);
 
+    /////////////////////////////////////////////////////////////////////////
+    //
+    //  Private API
+    //  The internals of this class.
+    //
+    /////////////////////////////////////////////////////////////////////////
     private:
 
+        /**
+         *  Standard Mutex to allow thread safety.
+         */
         Mutex *Lock;
-
+        
+        /**
+         *  Save the item size for additions.
+         */
         const int ItemSize;
 
+        /**
+         *  All of the real work is done with STL lists.
+         */
         std::list<void *>FreeItems;
+
+//
+//  If we are using C++11 or later, take advantage of the 
+//  newer features to find bugs.
+//
+#if __cplusplus >= 201103L
+        /**
+         *  To correctly delete a Memory Pool, we'd have to guarantee that
+         *  all allocations had been returned to us. We side step this issue
+         *  as well as all the associated overhead with supporting this by 
+         *  not allowing destructors.
+         */
+        ~MemoryPool() = delete;
+#else
+        /**
+         *  To correctly delete a Memory Pool, we'd have to guarantee that
+         *  all allocations had been returned to us. We side step this issue 
+         *  by making the destructor private so it can't be accessed.
+         */
+        ~MemoryPool();
+#endif
+
+
 };
 
 
