@@ -1,7 +1,7 @@
 <map id="workqueue.hpp" name="workqueue.hpp">
-<area shape="rect" id="node2" href="$thread_8hpp.html" title="thread.hpp" alt="" coords="287,80,368,107"/>
-<area shape="rect" id="node10" href="$semaphore_8hpp.html" title="semaphore.hpp" alt="" coords="315,229,425,256"/>
-<area shape="rect" id="node13" href="$queue_8hpp.html" title="queue.hpp" alt="" coords="451,229,532,256"/>
-<area shape="rect" id="node6" href="$mutex_8hpp.html" title="mutex.hpp" alt="" coords="208,229,289,256"/>
-<area shape="rect" id="node11" href="$condition__variable_8hpp.html" title="condition_variable.hpp" alt="" coords="139,155,289,181"/>
+<area shape="rect" id="node2" href="$thread_8hpp.html" title="thread.hpp" alt="" coords="287,80,369,107"/>
+<area shape="rect" id="node10" href="$semaphore_8hpp.html" title="semaphore.hpp" alt="" coords="315,229,426,256"/>
+<area shape="rect" id="node13" href="$queue_8hpp.html" title="queue.hpp" alt="" coords="451,229,533,256"/>
+<area shape="rect" id="node6" href="$mutex_8hpp.html" title="mutex.hpp" alt="" coords="208,229,291,256"/>
+<area shape="rect" id="node11" href="$condition__variable_8hpp.html" title="condition_variable.hpp" alt="" coords="139,155,290,181"/>
 </map>

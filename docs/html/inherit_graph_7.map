@@ -1,5 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classcpp__freertos_1_1_semaphore.html" title="cpp_freertos::Semaphore" alt="" coords="5,31,173,57"/>
-<area shape="rect" id="node2" href="$classcpp__freertos_1_1_binary_semaphore.html" title="cpp_freertos::BinarySemaphore" alt="" coords="229,5,435,32"/>
-<area shape="rect" id="node3" href="$classcpp__freertos_1_1_counting_semaphore.html" title="cpp_freertos::CountingSemaphore" alt="" coords="222,56,442,83"/>
+<area shape="rect" id="node1" href="$classcpp__freertos_1_1_read_write_lock.html" title="cpp_freertos::ReadWriteLock" alt="" coords="5,46,197,73"/>
+<area shape="rect" id="node2" href="$classcpp__freertos_1_1_read_write_lock_prefer_reader.html" title="cpp_freertos::ReadWriteLock\lPreferReader" alt="" coords="245,5,437,47"/>
+<area shape="rect" id="node3" href="$classcpp__freertos_1_1_read_write_lock_prefer_writer.html" title="cpp_freertos::ReadWriteLock\lPreferWriter" alt="" coords="245,71,437,112"/>
 </map>

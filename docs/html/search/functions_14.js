@@ -2,6 +2,7 @@ var searchData=
 [
   ['_7ecworkerthread',['~CWorkerThread',['../classcpp__freertos_1_1_work_queue_1_1_c_worker_thread.html#a1f8f7ce484c63f2771591292979d6427',1,'cpp_freertos::WorkQueue::CWorkerThread']]],
   ['_7elockguard',['~LockGuard',['../classcpp__freertos_1_1_lock_guard.html#acf9fd2e90ecd3b193b6292989a644c2c',1,'cpp_freertos::LockGuard']]],
+  ['_7ememorypool',['~MemoryPool',['../classcpp__freertos_1_1_memory_pool.html#ac1355e823a11aa0d941408b08a4e2e9b',1,'cpp_freertos::MemoryPool']]],
   ['_7emutex',['~Mutex',['../classcpp__freertos_1_1_mutex.html#ac9e9182407f5f74892318607888e9be4',1,'cpp_freertos::Mutex']]],
   ['_7equeue',['~Queue',['../classcpp__freertos_1_1_queue.html#a00d119db8fa3050da37746e82cbcf94f',1,'cpp_freertos::Queue']]],
   ['_7ereadwritelock',['~ReadWriteLock',['../classcpp__freertos_1_1_read_write_lock.html#a09a4e382675ac3d576a5f93393a7a6b0',1,'cpp_freertos::ReadWriteLock']]],
