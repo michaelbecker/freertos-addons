@@ -25,6 +25,7 @@ After working with FreeRTOS for over 7 years now, I've decided to start adding f
 ## Releases
 
 ### Version 1.4.0
++ https://github.com/michaelbecker/freertos-addons/releases/tag/v1.4.0
 + Added new feature, fixed size memory pools and associated unit tests.
 
 ### Version 1.3.2
