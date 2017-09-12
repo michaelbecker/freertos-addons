@@ -25,7 +25,7 @@ After working with FreeRTOS for over 7 years now, I've decided to start adding f
 ## Releases
 
 ### Version 1.4.0
-+ Fixed size memory pools and associated unit tests.
++ Added new feature, fixed size memory pools and associated unit tests.
 
 ### Version 1.3.2
 + https://github.com/michaelbecker/freertos-addons/releases/tag/v1.3.2
