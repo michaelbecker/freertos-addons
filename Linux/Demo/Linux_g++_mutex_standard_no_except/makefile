@@ -66,6 +66,7 @@
 #   information accuracy).
 #   
 #############################################################################
+include ../os_specific_linker_options.mk
 
 FREERTOS_SRC_DIR=../../../../FreeRTOS/Source
 FREERTOS_INC_DIR=../../../../FreeRTOS/Source/include
@@ -80,7 +81,6 @@ CXX = g++
 
 CFLAGS += -Wall -Werror -Wextra -Wpedantic -pthread -O0 -g 
 CXXFLAGS += -Wall -Werror -Wextra -Wpedantic -pthread -O0 -g -DCPP_FREERTOS_NO_EXCEPTIONS
-LDFLAGS += -Wall -Werror -Wextra -Wpedantic -pthread -O0 -g
 
 
 

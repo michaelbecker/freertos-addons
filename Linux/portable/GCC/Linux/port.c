@@ -95,6 +95,86 @@
 #include "portmacro.h"
 
 
+#if defined(__APPLE__) || defined(__MACH__)
+# define PREDEF_PLATFORM_OSX
+#endif
+
+
+#ifdef PREDEF_PLATFORM_OSX
+  /* Darwin specific headers */
+  #include <sys/sysctl.h>
+  #include <mach/thread_policy.h>
+  #include <mach/thread_act.h>
+
+#endif
+
+
+#ifdef PREDEF_PLATFORM_OSX
+/* Darwin specific functionality) */
+
+  #define SYSCTL_CORE_COUNT   "machdep.cpu.core_count"
+
+  #define UNUSED(x) (void)(x)
+
+  typedef struct cpu_set {
+    uint32_t    count;
+  } cpu_set_t;
+
+  static inline void
+  CPU_ZERO(cpu_set_t *cs) { cs->count = 0; }
+
+  static inline void
+  CPU_SET(int num, cpu_set_t *cs) { cs->count |= (1 << num); }
+
+  static inline int
+  CPU_ISSET(int num, cpu_set_t *cs) { return (cs->count & (1 << num)); }
+
+  int sched_getaffinity(pid_t pid, size_t cpu_size, cpu_set_t *cpu_set)
+  {
+    UNUSED(pid);
+    UNUSED(cpu_size);
+    int32_t core_count = 0;
+    size_t  len = sizeof(core_count);
+    int ret = sysctlbyname(SYSCTL_CORE_COUNT, &core_count, &len, 0, 0);
+    if (ret) {
+      printf("error while get core count %d\n", ret);
+      return -1;
+    }
+    cpu_set->count = 0;
+    for (int i = 0; i < core_count; i++) {
+      cpu_set->count |= (1 << i);
+    }  
+
+    return 0;
+  }
+
+  int pthread_setaffinity_np(pthread_t thread, size_t cpu_size,
+                             cpu_set_t *cpu_set)
+  {
+    thread_port_t mach_thread;
+    #ifdef PREDEF_PLATFORM_OSX
+    unsigned long core = 0;
+    #else
+    int core = 0;
+    #endif
+
+    for (core = 0; core < 8 * cpu_size; core++) {
+      if (CPU_ISSET(core, cpu_set)) break;
+    }
+    #ifdef PREDEF_PLATFORM_OSX
+      printf("binding to core %lu\n", core);
+    #else
+      printf("binding to core %d\n", core);
+    #endif
+    thread_affinity_policy_data_t policy = { core };
+    mach_thread = pthread_mach_thread_np(thread);
+    thread_policy_set(mach_thread, THREAD_AFFINITY_POLICY,
+                      (thread_policy_t)&policy, 1);
+    return 0;
+  }
+
+#endif
+
 /* Each task maintains its own interrupt status in the critical nesting variable. */
 typedef struct ThreadState_t_
 {
@@ -519,11 +599,17 @@ static void prvSetupTimerInterrupt( void )
     itimer.it_value.tv_usec = MicroSeconds;
 
     printf("Timer Setup:\n");
+    #ifdef PREDEF_PLATFORM_OSX
+    printf("  Interval: %ld seconds, %d useconds\n", 
+            itimer.it_interval.tv_sec, itimer.it_interval.tv_usec);
+    printf("  Current: %ld seconds, %d useconds\n", 
+            itimer.it_value.tv_sec, itimer.it_value.tv_usec);
+    #else
     printf("  Interval: %ld seconds, %ld useconds\n", 
             itimer.it_interval.tv_sec, itimer.it_interval.tv_usec);
     printf("  Current: %ld seconds, %ld useconds\n", 
             itimer.it_value.tv_sec, itimer.it_value.tv_usec);
-
+    #endif
     /* Set-up the timer interrupt. */
     rc = setitimer( TIMER_TYPE, &itimer, &oitimer );
     assert(rc == 0);
