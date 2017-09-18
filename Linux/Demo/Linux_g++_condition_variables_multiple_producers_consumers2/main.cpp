@@ -81,6 +81,8 @@
 using namespace cpp_freertos;
 using namespace std;
 
+#define UNUSED(x) (void)(x)
+
 
 //
 //  Simple implementation of a bounded queue, to demonstrate
@@ -204,6 +206,7 @@ class ConsumerThread : public Thread {
         ConsumerThread(string name, int delay_seed)
            : Thread(name, 100, 1), DelaySeed(delay_seed), runIterations(0)
         {
+            UNUSED(DelaySeed);
             //
             //  Now that construction is completed, we
             //  can safely start the thread.

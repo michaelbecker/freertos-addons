@@ -78,6 +78,8 @@
 using namespace cpp_freertos;
 using namespace std;
 
+#define UNUSED(x) (void)(x)
+
 
 
 class TestTasklet : public Tasklet {
@@ -144,6 +146,7 @@ class TestThread : public Thread {
         TestThread()
            : Thread("Thread", 100, configMAX_PRIORITIES - 1)
         {
+            UNUSED(DelayInSeconds);
             Start();
         };
 
