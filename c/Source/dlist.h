@@ -1,26 +1,30 @@
-
-#ifndef SLIST_H_
-#define SLIST_H_
+#ifndef DLIST_H_
+#define DLIST_H_
 
 
 /**
- *  The singly linked list structure.
+ *  The doubly linked list structure.
+ *
  *  This is designed to be embedded within your data 
  *  structure(s).
  */
-typedef struct SlNode_t_ {
+typedef struct DlNode_t_ {
 
-    struct SlNode_t_ *Next;
+    struct DlNode_t_ *Next;
+    struct DlNode_t_ *Prev;
 
-} SlNode_t;
+} DlNode_t;
 
 
 /**
  *  Macro to initialize a list head.
  *  @param _head The list head.
  */
-#define SlInitHead(_head) \
-    (_head)->Next = NULL;
+#define DLInitHead(_head)       \
+{                               \
+    (_head)->Next = (_head);    \
+    (_head)->Prev = (_head);    \
+}
 
 
 /**
@@ -30,19 +34,19 @@ typedef struct SlNode_t_ {
  *  @param Head Existing list head.
  *  @param Node The node you are adding to the head.
  */
-#define SlAddNodeToHead(_head, _node) \
-    SlInsertNodeAfter(_head, _node)
+void DlAddNodeToHead(   DlNode_t *Head, 
+                        DlNode_t *Node);
 
 
 /**
  *  Add a node to the list tail.
- *  Runs in O(n) time.
+ *  Runs in O(1) time.
  *  
  *  @param Head Existing list head.
  *  @param Node The node you are adding to the tail.
  */
-void SlAddNodeToTail(   SlNode_t *Head,
-                        SlNode_t *Node);
+void DlAddNodeToTail(   DlNode_t *Head,
+                        DlNode_t *Node);
 
 
 /**
@@ -52,17 +56,17 @@ void SlAddNodeToTail(   SlNode_t *Head,
  *  @param Head Existing list head.
  *  @return The node removed, or NULL for an empty list.
  */
-SlNode_t *SlRemoveNodeFromHead(SlNode_t *Head);
+DlNode_t *DlRemoveNodeFromHead(DlNode_t *Head);
 
 
 /**
  *  Removes the node from the list tail.
- *  Runs in O(n) time.
+ *  Runs in O(1) time.
  *  
  *  @param Head Existing list head.
  *  @return The node removed, or NULL for an empty list.
  */
-SlNode_t *SlRemoveNodeFromTail(SlNode_t *Head);
+DlNode_t *DlRemoveNodeFromTail(DlNode_t *Head);
 
 
 /**
@@ -70,8 +74,8 @@ SlNode_t *SlRemoveNodeFromTail(SlNode_t *Head);
  *
  *  @return true if the list is empty, false otherwise.
  */
-#define SlIsListEmpty(_head) \
-    ((_head)->Next == NULL)
+#define DlIsListEmpty(_head) \
+    ((_head)->Next == _head)
 
 
 /**
@@ -81,32 +85,32 @@ SlNode_t *SlRemoveNodeFromTail(SlNode_t *Head);
  *  @param marker Node you are inserting after. Cannot be NULL.
  *  @param n The node you are inserting. Cannot be NULL.
  */
-void SlInsertNodeAfter( SlNode_t *Marker,
-                        SlNode_t *Node);
+void DlInsertNodeAfter( DlNode_t *Marker,
+                        DlNode_t *Node);
 
 
 /**
  *  Inserts a new node into the list right before the marker element.
- *  Runs in O(n) time.
+ *  Runs in O(1) time.
  *
  *  @param head Existing list head.
  *  @param marker Node you are inserting after. Cannot be NULL.
  *  @param n The node you are inserting. Cannot be NULL.
  */
-void SlInsertNodeBefore(SlNode_t *Head, 
-                        SlNode_t *Marker, 
-                        SlNode_t *Node);
+void DlInsertNodeBefore(DlNode_t *Head, 
+                        DlNode_t *Marker, 
+                        DlNode_t *Node);
 
 
 /**
  *  Removes a node from the list.
- *  Runs in O(n) time.
+ *  Runs in O(1) time.
  *
  *  @param head Existing list head.
  *  @param n The node you are removing.
  */
-void SlRemoveNode(  SlNode_t *Head, 
-                    SlNode_t *Node);
+void DlRemoveNode(  DlNode_t *Head, 
+                    DlNode_t *Node);
 
 
 /**
@@ -139,10 +143,18 @@ void SlRemoveNode(  SlNode_t *Head,
  *  Macro to ease walking through all of the nodes in a list.
  *  @param _head The List head, cannot be NULL.
  *  @param _node An undefined symbol that will be defined by the macro.
- */ 
-#define SlForEachNode(_head, _node) \
-    for (SlNode_t *_node = _head->Next; _node != NULL; _node = _node->Next)
+ */
+#define DlForEachNode(_head, _node) \
+    for (DlNode_t *_node = _head->Next; _node != _head; _node = _node->Next)
 
+/**
+ *  Macro to ease walking through all of the nodes in a list.
+ *  @param _head The List head, cannot be NULL.
+ *  @param _node An undefined symbol that will be defined by the macro.
+ */
+#define DlForEachNodeReverse(_head, _node) \
+    for (DlNode_t *_node = _head->Prev; _node != _head; _node = _node->Prev)
 
 #endif
+
 
