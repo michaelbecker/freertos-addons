@@ -66,36 +66,44 @@
  *  information accuracy).
  *  
  ***************************************************************************/
-#ifndef SLIST_H_
-#define SLIST_H_
+#ifndef DLIST_H_
+#define DLIST_H_
 
 
 /**
- *  The singly linked list structure.
+ *  The doubly linked list structure.
  *
  *  This is designed to be embedded within your data 
  *  structure(s).
  *
- *  These lists offer the smallest storage overhead (one pointer per item),
- *  but many operations may take O(n) time.
+ *  These lists require more storage overhead than a singly linked list 
+ *  (two pointers per item), but almost all operations take O(1) time.
  */
-typedef struct SlNode_t_ {
-    
-    /**
-     *  A pointer to ourselves.
-     */
-    struct SlNode_t_ *Next;
+typedef struct DlNode_t_ {
 
-} SlNode_t;
+    /**
+     *  Pointer to the next item in the list.
+     */
+    struct DlNode_t_ *Next;
+
+    /**
+     *  Pointer to the previous item in the list.
+     */
+    struct DlNode_t_ *Prev;
+
+} DlNode_t;
 
 
 /**
  *  Macro to initialize a list head.
  *
- *  @param _head A pointer to the list head.
+ *  @param _head Pointer to the list head.
  */
-#define SlInitHead(_head) \
-    (_head)->Next = NULL;
+#define DlInitHead(_head)       \
+{                               \
+    (_head)->Next = (_head);    \
+    (_head)->Prev = (_head);    \
+}
 
 
 /**
@@ -105,19 +113,19 @@ typedef struct SlNode_t_ {
  *  @param Head A pointer to the existing list head.
  *  @param Node A pointer to the node you are adding.
  */
-#define SlAddNodeToHead(_head, _node) \
-    SlInsertNodeAfter(_head, _node)
+void DlAddNodeToHead(   DlNode_t *Head, 
+                        DlNode_t *Node);
 
 
 /**
  *  Add a node to the list tail.
- *  Runs in O(n) time.
+ *  Runs in O(1) time.
  *  
  *  @param Head A pointer to the existing list head.
  *  @param Node A pointer to the node you are adding.
  */
-void SlAddNodeToTail(   SlNode_t *Head,
-                        SlNode_t *Node);
+void DlAddNodeToTail(   DlNode_t *Head,
+                        DlNode_t *Node);
 
 
 /**
@@ -127,17 +135,17 @@ void SlAddNodeToTail(   SlNode_t *Head,
  *  @param Head A pointer to the existing list head.
  *  @return The node removed, or NULL for an empty list.
  */
-SlNode_t *SlRemoveNodeFromHead(SlNode_t *Head);
+DlNode_t *DlRemoveNodeFromHead(DlNode_t *Head);
 
 
 /**
  *  Removes the node from the list tail.
- *  Runs in O(n) time.
+ *  Runs in O(1) time.
  *  
  *  @param Head A pointer to the existing list head.
  *  @return The node removed, or NULL for an empty list.
  */
-SlNode_t *SlRemoveNodeFromTail(SlNode_t *Head);
+DlNode_t *DlRemoveNodeFromTail(DlNode_t *Head);
 
 
 /**
@@ -146,8 +154,8 @@ SlNode_t *SlRemoveNodeFromTail(SlNode_t *Head);
  *  @param _head A pointer to the existing list head.
  *  @return true if the list is empty, false otherwise.
  */
-#define SlIsListEmpty(_head) \
-    ((_head)->Next == NULL)
+#define DlIsListEmpty(_head) \
+    ((_head)->Next == _head)
 
 
 /**
@@ -157,32 +165,28 @@ SlNode_t *SlRemoveNodeFromTail(SlNode_t *Head);
  *  @param Marker The node you are inserting after. Cannot be NULL.
  *  @param Node The node you are inserting. Cannot be NULL.
  */
-void SlInsertNodeAfter( SlNode_t *Marker,
-                        SlNode_t *Node);
+void DlInsertNodeAfter( DlNode_t *Marker,
+                        DlNode_t *Node);
 
 
 /**
  *  Inserts a new node into the list right before the marker element.
- *  Runs in O(n) time.
+ *  Runs in O(1) time.
  *
- *  @param Head Pointer to the list head.
  *  @param Marker Node you are inserting before. Cannot be NULL.
  *  @param Node The node you are inserting. Cannot be NULL.
  */
-void SlInsertNodeBefore(SlNode_t *Head, 
-                        SlNode_t *Marker, 
-                        SlNode_t *Node);
+void DlInsertNodeBefore(DlNode_t *Marker, 
+                        DlNode_t *Node);
 
 
 /**
  *  Removes a node from the list.
- *  Runs in O(n) time worst case.
+ *  Runs in O(1) time.
  *
- *  @param head Pointer to the list head.
  *  @param Node The node you are removing.
  */
-void SlRemoveNode(  SlNode_t *Head, 
-                    SlNode_t *Node);
+void DlRemoveNode(DlNode_t *Node);
 
 
 /**
@@ -215,15 +219,24 @@ void SlRemoveNode(  SlNode_t *Head,
  *  Macro to ease walking through all of the nodes in a list.
  *  Runs in O(n) time.
  *
- *  This will work for an empty list.
- *
  *  @param _head A pointer to the list head. Cannot be NULL.
- *  @param _node An SlNode_t pointer that you need to define before calling
+ *  @param _node An DlNode_t pointer that you need to define before calling
  *                  this macro.
  */
-#define SlForEachNode(_head, _node) \
-    for ((_node) = (_head)->Next; (_node) != NULL; (_node) = (_node)->Next)
+#define DlForEachNode(_head, _node) \
+    for ((_node) = (_head)->Next; (_node) != (_head); (_node) = (_node)->Next)
 
+/**
+ *  Macro to ease walking through all of the nodes in a list.
+ *  Runs in O(n) time.
+ *
+ *  @param _head A pointer to the list head. Cannot be NULL.
+ *  @param _node An DlNode_t pointer that you need to define before calling
+ *                  this macro.
+ */
+#define DlForEachNodeReverse(_head, _node) \
+    for ((_node) = (_head)->Prev; (_node) != (_head); (_node) = (_node)->Prev)
 
 #endif
+
 

@@ -66,4 +66,47 @@
  *  information accuracy).
  *  
  ***************************************************************************/
+#include <stdlib.h>
+#include "queue_simple.h"
+
+
+void InitQueue(Queue_t *Queue)
+{
+    if (Queue == NULL)
+        return;
+
+    Queue->Count = 0;
+    DlInitHead(&Queue->Head);
+}
+
+
+void Enqueue(Queue_t *Queue, DlNode_t *Node)
+{
+    if (Queue == NULL)
+        return;
+
+    if (Node == NULL)
+        return;
+
+    Queue->Count++;
+    DlAddNodeToHead(&Queue->Head, Node);
+}
+
+
+DlNode_t *Dequeue(Queue_t *Queue)
+{
+    DlNode_t *Node;
+
+    if (Queue == NULL)
+        return NULL;
+
+    if (Queue->Count <= 0)
+        return NULL;
+
+    Queue->Count--;
+    Node = DlRemoveNodeFromTail(&Queue->Head);
+
+    return Node;
+}
+
 

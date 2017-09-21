@@ -126,7 +126,7 @@ FREERTOS_CPP_SRC= \
 				  ctimer.cpp \
 				  ctickhook.cpp \
 				  cworkqueue.cpp \
-				  mem_pool.cpp \
+				  cmem_pool.cpp \
 
 
 OBJ = ${SRC:.cpp=.o} 

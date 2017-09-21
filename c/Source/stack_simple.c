@@ -66,4 +66,48 @@
  *  information accuracy).
  *  
  ***************************************************************************/
+#include <stdlib.h>
+#include "stack_simple.h"
+
+
+void InitStack(Stack_t *Stack)
+{
+    Stack->Count = 0;
+    SlInitHead(&Stack->Head);
+}
+
+
+void PushOnStack(   Stack_t *Stack, 
+                    SlNode_t *Node)
+{
+    if (!Stack)
+        return;
+
+    if (!Node)
+        return;
+
+    SlAddNodeToHead(&Stack->Head, Node);
+    Stack->Count++;
+}
+
+
+SlNode_t *PopOffStack(Stack_t *Stack)
+{
+    SlNode_t *Node;    
+
+    if (!Stack)
+        return NULL;
+
+    if (Stack->Count == 0) {
+        return NULL;
+    }
+    else {
+        Stack->Count--;
+    }
+
+    Node = SlRemoveNodeFromHead(&Stack->Head);
+    
+    return Node;
+}
+
 
