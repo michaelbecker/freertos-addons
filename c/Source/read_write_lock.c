@@ -88,7 +88,7 @@ typedef struct RWLockPreferReader_t_ {
     /**
      *  Specify a type as well as using this as a signature.
      */
-    ReaderWriterLockType Type;
+    enum ReaderWriterLockType Type;
 
     /**
      *  How many active readers are there.
@@ -115,7 +115,7 @@ typedef struct RWLockPreferWriter_t_ {
      *  --------------------------------------------------------
      *  THIS PORTION MUST MIRROR THE PREFER READER STRUCTURE
      */
-    ReaderWriterLockType Type;
+    enum ReaderWriterLockType Type;
 
     /**
      *  How many active readers are there.
@@ -283,7 +283,7 @@ ReadWriteLock_t *CreateReadWriteLockPreferWriter(void)
      *  of unlocks when multiple threads hold the reader lock. 
      *  Semaphores are not subject to this constraint.
      */
-    lock->BlockReadersLock = xSemaphoreCreateMutex();
+    lock->BlockReadersLock = xSemaphoreCreateBinary();
     if (lock->BlockReadersLock == NULL) {
         goto ERROR;
     }

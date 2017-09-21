@@ -138,9 +138,9 @@ class WriterThread : public Thread {
                 Delay(Ticks::SecondsToTicks(DelayInSeconds));
 
                 Lock.WriterLock();
-                cout << "[ W "<< id << " ] Starting Write" << endl;
+                cout << "[ W "<< id << " ] Starting Write ******** " << endl;
                 Delay(Ticks::SecondsToTicks(2));
-                cout << "[ W "<< id << " ] Ending Write" << endl;
+                cout << "[ W "<< id << " ] Ending Write ******** " << endl;
                 Lock.WriterUnlock();
             }
         };

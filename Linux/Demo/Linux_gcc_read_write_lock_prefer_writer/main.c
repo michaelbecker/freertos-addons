@@ -96,7 +96,7 @@ void ReaderThread(void *parameters)
 
         ReaderLock(Lock);
         printf("[ R %d ] starting read\n", my_parameters->id);
-        vTaskDelay(1000);
+        vTaskDelay(2000);
         printf("[ R %d ] ending read\n", my_parameters->id);
         ReaderUnlock(Lock);
     }
@@ -117,7 +117,7 @@ void WriterThread(void *parameters)
         
         WriterLock(Lock);
         printf("[ W %d ] starting write\n", my_parameters->id);
-        vTaskDelay(2000);
+        vTaskDelay(1000);
         printf("[ W %d ] ending write\n", my_parameters->id);
         WriterUnlock(Lock);
     }
@@ -147,13 +147,13 @@ int main (void)
                                         {4, 5000},
                                         {5, 5000} };
 
-    struct thread_parameters w[2] = { {10, 2000}, {11, 3000} };
+    struct thread_parameters w[2] = { {10, 6000}, {11, 7000} };
 
 
     printf("Testing Reader / Writer locks - prefering reader\n");
 
 
-    Lock = CreateReadWriteLockPreferReader();
+    Lock = CreateReadWriteLockPreferWriter();
 
 
     for (i = 0; i < 5; i++) {

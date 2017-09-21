@@ -94,7 +94,7 @@ VPATH += ${FREERTOS_SRC_DIR} \
 		 ${FREERTOS_C_ADDONS_SRC_DIR} \
 
 
-TARGET = Linux_gcc_read_write_lock_prefer_reader
+TARGET = Linux_gcc_read_write_lock_prefer_writer
 
 default: all
 
