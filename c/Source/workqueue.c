@@ -66,4 +66,178 @@
  *  information accuracy).
  *  
  ***************************************************************************/
+#include "workqueue.h"
+#include "queue_simple.h"
+
+
+/**
+ *  Work Item, what we actually use internally.
+ */
+typedef struct pvtWorkItem_t_ {
+
+    /**
+     *  How we link into the WorkQueue.
+     */
+    DlNode_t Node;
+
+    /**
+     *  The actual function pointer.
+     */
+    WorkItem_t Function;
+
+    /**
+     *  User supplier data.
+     */
+    void *UserData;
+
+} pvtWorkItem_t;
+
+
+typedef struct pvtWorkQueue_t_ {
+
+    Queue_t Queue;
+
+    /**
+     *  FreeRTOS semaphore handle.
+     */
+    SemaphoreHandle_t ThreadComplete;
+
+    SemaphoreHandle_t QueueHasData;
+
+    /**
+     *  Mutex protection
+     */
+    SemaphoreHandle_t Lock;
+
+    /**
+     *  Reference to the underlying task handle for this thread.
+     *  Can be obtained from GetHandle().
+     */
+    TaskHandle_t WorkerThread;
+
+} pvtWorkQueue_t;
+
+
+
+static void WqWorkerThread(void *parameters)
+{
+    /***************************/
+    pvtWorkQueue_t *wq;
+    DlNode_t *Node;
+    pvtWorkItem_t *wi;
+    /***************************/
+
+
+    wq = (pvtWorkQueue_t*)parameters;
+
+
+    while (true) {
+
+        xSemaphoreTake(WorkQueue->QueueHasData);
+
+        /**
+         *  Lock the queue
+         */
+        xSemaphoreTake(WorkQueue->Lock, portMAX_DELAY);
+
+        while ( !IsQueueEmpty(&wq->Queue)) {
+            /**
+             *  
+             */
+            Node = Dequeue(&WorkQueue->Queue);
+
+            /**
+             *  Unlock the queue
+             */
+            xSemaphoreGive(WorkQueue->Lock);
+
+            wi = CONTAINING_RECORD(Node, pvtWorkItem_t, Node);
+
+            wi->Function(wi->UserData);
+
+            free(wi);
+
+            /**
+             *  Lock the queue
+             */
+            xSemaphoreTake(WorkQueue->Lock, portMAX_DELAY);
+        }
+
+        /**
+         *  Unlock the queue
+         */
+        xSemaphoreGive(WorkQueue->Lock);
+    }
+}
+
+
+
+WorkQueue_t CreateWorkQueueEx(  const char * const Name,
+                                uint16_t StackSize,
+                                UBaseType_t Priority,
+                                UBaseType_t maxWorkItems)
+{
+    pvtWorkQueue_t *wq = (pvtWorkQueue_t *)malloc(sizeof(pvtWorkQueue_t));
+    
+    if (wq == NULL)
+        return NULL;
+
+    InitQueue(&wq->Queue);
+
+    wq->ThreadComplete = xSemaphoreCreateBinary();
+    wq->QueueHasData = xSemaphoreCreateBinary();
+    wq->Lock = xSemaphoreCreateMutex();
+
+    BaseType_t rc = xTaskCreate(WqWorkerThread,
+                                Name,
+                                StackSize,
+                                wq,
+                                Priority,
+                                &wq->WorkerThread);
+
+    return wq;
+}
+
+
+#if (INCLUDE_vTaskDelete == 1)
+
+void DestroyWorkQueue(WorkQueue_t WorkQueue)
+{
+}
+
+#endif
+
+
+int QueueWorkItem(WorkQueue_t WorkQueue, WorkItem_t WorkItem, void *UserData)
+{
+    /*********************/
+    pvtWorkItem_t *wi;
+    /*********************/
+
+    wi = (pvtWorkItem_t *)malloc(sizeof(pvtWorkItem_t));
+
+    wi->Function = WorkItem;
+    wi->UserData = UserData;
+
+    /**
+     *  Lock the queue
+     */
+    xSemaphoreTake(WorkQueue->Lock, portMAX_DELAY);
+
+    /**
+     *  Put the work item on the queue.
+     */
+    Enqueue(&WorkQueue->Queue, wi->Node);
+    
+    /**
+     *  Flag that the queue is non-empty.
+     */
+    xSemaphoreGive(WorkQueue->QueueHasData, portMAX_DELAY);
+
+    /**
+     *  Unlock the queue
+     */
+    xSemaphoreGive(WorkQueue->Lock);
+}
+
 

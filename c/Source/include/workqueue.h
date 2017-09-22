@@ -104,11 +104,7 @@ void DestroyWorkQueue(WorkQueue_t WorkQueue);
 #endif
 
 
-int QueueWorkItemEx(WorkQueue_t WorkQueue, WorkItem_t WorkItem, void *UserData, int FreeAfterComplete);
-
-
-#define QueueWorkItem(_work_queue, _work_item, _user_data) \
-    QueueWorkItemEx(_work_queue, _work_item, _user_data, 0)
+int QueueWorkItem(WorkQueue_t WorkQueue, WorkItem_t WorkItem, void *UserData);
 
 
 #endif
