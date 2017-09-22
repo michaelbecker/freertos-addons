@@ -66,7 +66,50 @@
  *  information accuracy).
  *  
  ***************************************************************************/
+#ifndef WORKQUEUE_H_
+#define WORKQUEUE_H_
+
+#include "FreeRTOS.h"
+#include "semphr.h"
 
 
+typedef void (* WorkItem_t)(void *UserData);
 
+
+typedef void * WorkQueue_t;
+
+
+#define DEFAULT_MAX_WORK_ITEMS          10
+#define DEFAULT_WORK_QUEUE_STACK_SIZE   (configMINIMAL_STACK_SIZE * 2)
+#define DEFAULT_WORK_QUEUE_PRIORITY     (tskIDLE_PRIORITY + 1)
+
+
+WorkQueue_t CreateWorkQueueEx(  const char * const Name,
+                                uint16_t StackSize,
+                                UBaseType_t Priority,
+                                UBaseType_t maxWorkItems);
+
+
+#define CreateWorkQueue()                   \
+    CreateWorkQueueEx("wq",                 \
+            DEFAULT_WORK_QUEUE_STACK_SIZE,  \
+            DEFAULT_WORK_QUEUE_PRIORITY,    \
+            DEFAULT_MAX_WORK_ITEMS)
+
+
+#if (INCLUDE_vTaskDelete == 1)
+
+void DestroyWorkQueue(WorkQueue_t WorkQueue);
+
+#endif
+
+
+int QueueWorkItemEx(WorkQueue_t WorkQueue, WorkItem_t WorkItem, void *UserData, int FreeAfterComplete);
+
+
+#define QueueWorkItem(_work_queue, _work_item, _user_data) \
+    QueueWorkItemEx(_work_queue, _work_item, _user_data, 0)
+
+
+#endif
 
