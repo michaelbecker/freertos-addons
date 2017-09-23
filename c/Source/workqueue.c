@@ -312,7 +312,11 @@ WorkQueue_t CreateWorkQueueEx(  const char * const Name,
         return NULL;
     }
 
+#if (INCLUDE_vTaskDelete == 1)
+ 
     WorkQueue->ExitThread = 0;
+
+#endif
 
     rc = xTaskCreate(   WorkerThread,
                         Name,
