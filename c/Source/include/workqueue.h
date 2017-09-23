@@ -69,42 +69,81 @@
 #ifndef WORKQUEUE_H_
 #define WORKQUEUE_H_
 
+
 #include "FreeRTOS.h"
 #include "semphr.h"
 
 
+/**
+ *  All your work items are actually functions that take a 
+ *  void * parameter.
+ */
 typedef void (* WorkItem_t)(void *UserData);
 
 
+/**
+ *  Handle for the actual work queue.
+ */
 typedef void * WorkQueue_t;
 
 
-#define DEFAULT_MAX_WORK_ITEMS          10
+/**
+ *  Default stack size of the Worker Task.
+ */
 #define DEFAULT_WORK_QUEUE_STACK_SIZE   (configMINIMAL_STACK_SIZE * 2)
+
+
+/**
+ *  Default task priority of the Worker Task.
+ */
 #define DEFAULT_WORK_QUEUE_PRIORITY     (tskIDLE_PRIORITY + 1)
 
 
+/**
+ *  Create a WorkQueue, specifying all options.
+ *
+ *  @param Name The name of the worker thread.
+ *  @param StackSize The size of the worker thread stack, in words.
+ *  @param Priority The priority of the worker thread.
+ *  @return A handle, or NULL on error.
+ */
 WorkQueue_t CreateWorkQueueEx(  const char * const Name,
                                 uint16_t StackSize,
-                                UBaseType_t Priority,
-                                UBaseType_t maxWorkItems);
+                                UBaseType_t Priority);
 
 
+/**
+ *  Create a WorkQueue using the defaults.
+ *
+ *  @return A handle, or NULL on error.
+ */
 #define CreateWorkQueue()                   \
     CreateWorkQueueEx("wq",                 \
             DEFAULT_WORK_QUEUE_STACK_SIZE,  \
-            DEFAULT_WORK_QUEUE_PRIORITY,    \
-            DEFAULT_MAX_WORK_ITEMS)
+            DEFAULT_WORK_QUEUE_PRIORITY)    \
 
 
 #if (INCLUDE_vTaskDelete == 1)
 
+/**
+ *  Destroy a WorkQueue, if allowed.
+ *
+ *  @param WorkQueue The work queue.
+ */
 void DestroyWorkQueue(WorkQueue_t WorkQueue);
 
 #endif
 
-
-int QueueWorkItem(WorkQueue_t WorkQueue, WorkItem_t WorkItem, void *UserData);
+/**
+ *  Add an item of work onto the queue.
+ *
+ *  @param WorkQueue The work queue.
+ *  @param WorkItem The function you want called.
+ *  @param UserData A value passed back to you.
+ */
+int QueueWorkItem(  WorkQueue_t WorkQueue, 
+                    WorkItem_t WorkItem, 
+                    void *UserData);
 
 
 #endif
