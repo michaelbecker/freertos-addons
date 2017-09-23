@@ -69,57 +69,92 @@
 #include <stdio.h>
 #include "FreeRTOS.h"
 #include "task.h"
-#include "read_write_lock.h"
+#include "workqueue.h"
 
 
-/**
- *  Specify a struct to send information to different threads.
- */
-struct thread_parameters {
-    int id;
-    int delay;
-};
-
-
-ReadWriteLock_t *Lock;
-
-
-void ReaderThread(void *parameters)
+void WorkItemFunction(void *parameter)
 {
-    struct thread_parameters *my_parameters;
-    my_parameters = (struct thread_parameters *)parameters;
-    printf("Reader #%d starting...\n", my_parameters->id);
-
-    while(1) {
-
-        vTaskDelay(my_parameters->delay);
-
-        ReaderLock(Lock);
-        printf("[ R %d ] starting read\n", my_parameters->id);
-        vTaskDelay(1000);
-        printf("[ R %d ] ending read\n", my_parameters->id);
-        ReaderUnlock(Lock);
-    }
-
-    configASSERT(!"CANNOT EXIT FROM A TASK");
+    int id = (intptr_t)parameter;
+    printf("[w:%d] active\n", id);
 }
 
 
-void WriterThread(void *parameters)
+void TestThread(void *parameters)
 {
-    struct thread_parameters *my_parameters;
-    my_parameters = (struct thread_parameters *)parameters;
-    printf("Writer #%d starting...\n", my_parameters->id);
+    WorkQueue_t lowPriWorkQueue;
+    WorkQueue_t highPriWorkQueue;
+    int rc;
+    int lowCount;
+    int highCount;
+
+    (void)parameters;
+    printf("Test Thread starting...\n");
+
 
     while(1) {
 
-        vTaskDelay(my_parameters->delay);
+        lowCount = 0;
+        highCount = 1000;
+
+        printf("[t] creating queues\n");
         
-        WriterLock(Lock);
-        printf("[ W %d ] starting write\n", my_parameters->id);
-        vTaskDelay(2000);
-        printf("[ W %d ] ending write\n", my_parameters->id);
-        WriterUnlock(Lock);
+        lowPriWorkQueue = CreateWorkQueue();
+        configASSERT(lowPriWorkQueue != NULL);
+
+        highPriWorkQueue = CreateWorkQueueEx(   "wq", 
+                                                DEFAULT_WORK_QUEUE_STACK_SIZE,
+                                                6);
+        configASSERT(highPriWorkQueue != NULL);
+
+        while(1) {
+
+            rc = QueueWorkItem(lowPriWorkQueue, WorkItemFunction, (void *)(intptr_t)lowCount++);
+            configASSERT(rc == pdPASS);
+
+            rc = QueueWorkItem(highPriWorkQueue, WorkItemFunction, (void *)(intptr_t)highCount++);
+            configASSERT(rc == pdPASS);
+
+            rc = QueueWorkItem(lowPriWorkQueue, WorkItemFunction, (void *)(intptr_t)lowCount++);
+            configASSERT(rc == pdPASS);
+
+            rc = QueueWorkItem(highPriWorkQueue, WorkItemFunction, (void *)(intptr_t)highCount++);
+            configASSERT(rc == pdPASS);
+        
+            rc = QueueWorkItem(lowPriWorkQueue, WorkItemFunction, (void *)(intptr_t)lowCount++);
+            configASSERT(rc == pdPASS);
+
+            rc = QueueWorkItem(highPriWorkQueue, WorkItemFunction, (void *)(intptr_t)highCount++);
+            configASSERT(rc == pdPASS);
+
+            rc = QueueWorkItem(lowPriWorkQueue, WorkItemFunction, (void *)(intptr_t)lowCount++);
+            configASSERT(rc == pdPASS);
+
+            rc = QueueWorkItem(highPriWorkQueue, WorkItemFunction, (void *)(intptr_t)highCount++);
+            configASSERT(rc == pdPASS);
+
+            printf("[t] pausing\n");
+            vTaskDelay(500);
+
+            if (lowCount > 100) {
+
+                printf("[t] resetting queues\n");
+
+                DestroyWorkQueue(highPriWorkQueue);
+                
+                rc = QueueWorkItem(lowPriWorkQueue, WorkItemFunction, (void *)(intptr_t)lowCount++);
+                configASSERT(rc == pdPASS);
+                rc = QueueWorkItem(lowPriWorkQueue, WorkItemFunction, (void *)(intptr_t)lowCount++);
+                configASSERT(rc == pdPASS);
+                rc = QueueWorkItem(lowPriWorkQueue, WorkItemFunction, (void *)(intptr_t)lowCount++);
+                configASSERT(rc == pdPASS);
+                rc = QueueWorkItem(lowPriWorkQueue, WorkItemFunction, (void *)(intptr_t)lowCount++);
+                configASSERT(rc == pdPASS);
+                
+                DestroyWorkQueue(lowPriWorkQueue);
+                
+                break;
+            }
+        }
     }
 
     configASSERT(!"CANNOT EXIT FROM A TASK");
@@ -128,60 +163,21 @@ void WriterThread(void *parameters)
 
 int main (void)
 {
-    int i;
     BaseType_t rc;
-    const uint16_t stack_depth = 1000;
 
+    printf("Testing Work Queues\n");
+
+    rc = xTaskCreate(   TestThread, 
+                        "test",
+                        1000,
+                        NULL,
+                        3,
+                        NULL);
     /**
-     *  We are passing pointers to these structs for the tasks to use.
-     *  Note that the storage for these is actually on the main() stack.
-     *  Usually this is a "bad" idea, passing pointers from one task 
-     *  callstack to another task, however in this case we know that 
-     *  main() will effectively be blocked forever unless we actually 
-     *  choose to exit from FreeRTOS, so as long as we aren't too clever 
-     *  and try and reclaim this stack memory, this works ok.
+     *  Make sure out task was created.
      */
-    struct thread_parameters r[5] = {   {1, 1000},
-                                        {2, 1000},
-                                        {3, 1000},
-                                        {4, 5000},
-                                        {5, 5000} };
+    configASSERT(rc == pdPASS);
 
-    struct thread_parameters w[2] = { {10, 2000}, {11, 3000} };
-
-
-    printf("Testing Reader / Writer locks - prefering reader\n");
-
-
-    Lock = CreateReadWriteLockPreferReader();
-
-
-    for (i = 0; i < 5; i++) {
-        rc = xTaskCreate(   ReaderThread, 
-                            "Reader",
-                            stack_depth,
-                            &r[i],
-                            1,
-                            NULL);
-        /**
-         *  Make sure out task was created.
-         */
-        configASSERT(rc == pdPASS);
-    }
-
-
-    for (i = 0; i < 2; i++) {
-        rc = xTaskCreate(   WriterThread, 
-                            "Writer",
-                            stack_depth,
-                            &w[i],
-                            1,
-                            NULL);
-        /**
-         *  Make sure out task was created.
-         */
-        configASSERT(rc == pdPASS);
-    }
 
     /**
      *  Start FreeRTOS here.

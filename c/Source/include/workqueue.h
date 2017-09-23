@@ -140,6 +140,7 @@ void DestroyWorkQueue(WorkQueue_t WorkQueue);
  *  @param WorkQueue The work queue.
  *  @param WorkItem The function you want called.
  *  @param UserData A value passed back to you.
+ *  @return pdPASS on success, pdFAIL on error.
  */
 int QueueWorkItem(  WorkQueue_t WorkQueue, 
                     WorkItem_t WorkItem, 
