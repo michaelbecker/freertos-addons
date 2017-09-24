@@ -66,29 +66,25 @@
  *  information accuracy).
  *  
  ***************************************************************************/
-
-
+#include <stdlib.h>
 #include "FreeRTOS.h"
 #include "semphr.h"
 #include "mem_pool.h"
-
+#include "stack_simple.h"
 
 
 typedef struct MemPool_t_ {
 
-    /**
-     *  FreeRTOS semaphore handle.
-     */
-    SemaphoreHandle_t handle;
+    SemaphoreHandle_t Lock;
     
+    Stack_t Stack;
+
     /**
      *  Save the item size for additions.
      */
-    const int ItemSize;
+    int ItemSize;
 
-    int NumAvailable;
-
-    unsigned char *List;
+    int Alignment;
 
     unsigned char Buffer[1];
 
@@ -98,24 +94,27 @@ typedef struct MemPool_t_ {
 
 MemoryPool_t *CreateMemoryPool( int itemSize, 
                                 int itemCount,
-                                int alignment)
+                                int Alignment)
 {
     /*********************************/
-    MemPool_t *memPool;
-    unsigned char *Buffer;
+    MemPool_t *MemPool;
     int i;
     int realItemSize;
     int alignmentBit = 0x1;
-    int alignmentSlice;
+    int alignmentCount;
     unsigned char *ptr;
+    SlNode_t *Node;
     /*********************************/
 
-    if (alignment < sizeof(unsigned char *)) {
-        alignment = sizeof(unsigned char *);
+    /**
+     *  Guarantee that the alignment is the size of a pointer.
+     */
+    if (Alignment < (int)sizeof(unsigned char *)) {
+        Alignment = (int)sizeof(unsigned char *);
     }
 
     for (i = 0; i < 31; i++) {
-        if (alignment == alignmentBit) {
+        if (Alignment == alignmentBit) {
             break;
         }
         alignmentBit <<= 1; 
@@ -125,99 +124,110 @@ MemoryPool_t *CreateMemoryPool( int itemSize,
         return NULL;
     }
 
-    if (itemSize <= alignment) {
-        realItemSize = alignment + sizeof(unsigned char *);
+    if (itemSize <= Alignment) {
+        /**
+         *  The 2* accounts for the SList struct inside it.
+         */
+        realItemSize = 2 * Alignment;
     }
     else {
-        alignmentSlice = itemSize / alignment;
-        if (itemSize % alignment != 0) {
-            alignmentSlice++;
+        alignmentCount = itemSize / Alignment;
+        if (itemSize % Alignment != 0) {
+            alignmentCount++;
         }
-        realItemSize = (alignmentSlice * alignment) + sizeof(unsigned char *);
+        /**
+         *  The +1 accounts for the SList struct inside it.
+         */
+        realItemSize = ((alignmentCount + 1) * Alignment);
     }
+       
+    realItemSize += sizeof(unsigned char *);
 
     int memPoolSize = sizeof(MemPool_t) - sizeof(unsigned char)
                     + (itemCount * realItemSize);
 
-    memPool = (MemPool_t *)malloc(memPoolSize);
-    if (!memPool) {
+    MemPool = (MemPool_t *)malloc(memPoolSize);
+    if (!MemPool) {
         return NULL;
     }
 
-    memPool->handle = xSemaphoreCreateMutex();
-    if (memPool->handle == NULL) {
-        free(memPool);
+    MemPool->Lock = xSemaphoreCreateMutex();
+    if (MemPool->Lock == NULL) {
+        free(MemPool);
         return NULL;
     }
 
-    pool->ItemSize = realItemSize;
-    pool->NumAvailable = itemCount;
-    memPool->List = &memPool->&Buffer[0];
-    ptr = &memPool->&Buffer[0];
+    InitStack(&MemPool->Stack);
+    MemPool->ItemSize = realItemSize;
+    MemPool->Alignment = Alignment;
 
-    for (i = 0; i < (itemCount - 1); i++) {
-        *ptr = ptr + realItemSize;
-        ptr += realItemSize;
-    }
-    *ptr = NULL;
+    ptr = MemPool->Buffer;
+
+    for (i = 0; i < itemCount; i++) {
+        
+        Node = (SlNode_t *)ptr;
     
-    return (MemoryPool_t *)memPool;
-}
+        PushOnStack(&MemPool->Stack, Node);
 
-
-
-MemoryPool_t *CreateMemoryPoolStatic(   int itemSize,
-                                        void *preallocatedMemory, 
-                                        int preallocatedMemorySize)
-{
+        ptr += MemPool->ItemSize;
+    }
+    
+    return (MemoryPool_t *)MemPool;
 }
 
 
 void AddMemory( MemoryPool_t *pool, 
                 int itemCount)
 {
-}
-
-
-void AddMemory( MemoryPool_t *pool,
-                void *preallocatedMemory, 
-                int preallocatedMemorySize)
-{
+    (void)pool;
+    (void)itemCount;
 }
 
 
 void *MemoryPoolAllocate(MemoryPool_t *pool)
 {
-    MemPool_t *memPool = (MemPool_t *)pool;
+    MemPool_t *MemPool;
+    SlNode_t *Node;
     unsigned char *ptr;
 
-    xSemaphoreTake(memPool->handle, portMAX_DELAY);
 
-    if (memPool->List == NULL) {
-        xSemaphoreGive(memPool->handle);
+    MemPool = (MemPool_t *)pool;
+
+    xSemaphoreTake(MemPool->Lock, portMAX_DELAY);
+
+    if (MemPool->Stack.Count == 0) {
+        xSemaphoreGive(MemPool->Lock);
         return NULL;
     }
 
-    ptr = memPool->List;
-    memPool->List = ptr; 
+    Node = PopOffStack(&MemPool->Stack);
 
-    xSemaphoreGive(memPool->handle);
+    xSemaphoreGive(MemPool->Lock);
 
-    
+    ptr = ((unsigned char *)Node) + MemPool->Alignment;
 
-    return 
+    return (void *)ptr;
 }
 
 
 void MemoryPoolFree(MemoryPool_t *pool, void *memory)
 {
-    MemPool_t *memPool = (MemPool_t *)pool;
+    MemPool_t *MemPool;
+    SlNode_t *Node;
+    unsigned char *ptr;
 
-    xSemaphoreTake(memPool->handle, portMAX_DELAY);
 
+    MemPool = (MemPool_t *)pool;
 
+    ptr = ((unsigned char *)memory) - MemPool->Alignment;
 
-    xSemaphoreGive(memPool->handle);
+    Node = (SlNode_t *)ptr;
+
+    xSemaphoreTake(MemPool->Lock, portMAX_DELAY);
+
+    PushOnStack(&MemPool->Stack, Node);
+
+    xSemaphoreGive(MemPool->Lock);
 }
 
 
