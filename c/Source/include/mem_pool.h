@@ -66,28 +66,64 @@
  *  information accuracy).
  *  
  ***************************************************************************/
-
 #ifndef MEM_POOL_H_
 #define MEM_POOL_H_
 
 
+/**
+ *  Handle for memory pools. 
+ *
+ *  These are fixed allocation size memory areas.
+ */
 typedef void * MemoryPool_t;
 
 
+/**
+ *  Create a MemoryPool
+ *
+ *  @param itemSize How big is an allocation.
+ *  @param itemCount What's the maximum number of allocations allowed?
+ *  @param Alignment Power of 2 value denoting on which address boundary the 
+ *  memory will be aligned to. Must be at least sizeof(unsigned char *).
+ *  @return A Handle to the pool, or NULL on failure.
+ */
 MemoryPool_t *CreateMemoryPool( int itemSize, 
                                 int itemCount,
                                 int Alignment);
 
 
+/**
+ *  There is no DeleteMemoryPool() by design!
+ */
 
-// No DeleteMemoryPool() on purpose!
 
+/**
+ *  tbd
+ */
 void AddMemory( MemoryPool_t *pool, 
                 int itemCount);
 
 
+/**
+ *  Get a memory buffer from the pool.
+ *
+ *  Note that this can block, and cannnot be used from ISR context.
+ *
+ *  @param pool A handle to a MemoryPool.
+ *  @return A pointer or NULL on failure.
+ */
 void *MemoryPoolAllocate(MemoryPool_t *pool);
 
+
+/**
+ *  Return a memory buffer to the pool.
+ *
+ *  @note This can block, and cannnot be used from ISR context.
+ *  @note There is no check that the memory passed in is valid.
+ *
+ *  @param pool A handle to a MemoryPool.
+ *  @param memory memory obtained from MemoryPoolAllocate().
+ */
 void MemoryPoolFree(MemoryPool_t *pool, void *memory);
 
 
