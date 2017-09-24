@@ -73,10 +73,21 @@
 #include "stack_simple.h"
 
 
+/**
+ *  The actual Memory Pool data structure.
+ *
+ *  This is a variable length data structure.
+ */
 typedef struct MemPool_t_ {
 
+    /**
+     *  We need a lock to make this thread safe.
+     */
     SemaphoreHandle_t Lock;
     
+    /**
+     *  Memory blocks are stored on a stack.
+     */
     Stack_t Stack;
 
     /**
@@ -84,22 +95,28 @@ typedef struct MemPool_t_ {
      */
     int ItemSize;
 
+    /**
+     *  The overall alignment of an item.
+     */
     int Alignment;
 
+    /**
+     *  The begining of the actual memory pool itself.
+     */
     unsigned char Buffer[1];
 
 } MemPool_t;
 
 
 
-MemoryPool_t *CreateMemoryPool( int itemSize, 
-                                int itemCount,
+MemoryPool_t *CreateMemoryPool( int ItemSize, 
+                                int ItemCount,
                                 int Alignment)
 {
     /*********************************/
     MemPool_t *MemPool;
+    int MemPoolSize;
     int i;
-    int realItemSize;
     int alignmentBit = 0x1;
     int alignmentCount;
     unsigned char *ptr;
@@ -124,29 +141,27 @@ MemoryPool_t *CreateMemoryPool( int itemSize,
         return NULL;
     }
 
-    if (itemSize <= Alignment) {
+    if (ItemSize <= Alignment) {
         /**
-         *  The 2* accounts for the SList struct inside it.
+         *  The 2* accounts for the SList struct inside each memory block.
          */
-        realItemSize = 2 * Alignment;
+        ItemSize = 2 * Alignment;
     }
     else {
-        alignmentCount = itemSize / Alignment;
-        if (itemSize % Alignment != 0) {
+        alignmentCount = ItemSize / Alignment;
+        if (ItemSize % Alignment != 0) {
             alignmentCount++;
         }
         /**
-         *  The +1 accounts for the SList struct inside it.
+         *  The +1 accounts for the SList struct inside each memory block.
          */
-        realItemSize = ((alignmentCount + 1) * Alignment);
+        ItemSize = ((alignmentCount + 1) * Alignment);
     }
        
-    realItemSize += sizeof(unsigned char *);
+    MemPoolSize = sizeof(MemPool_t) - sizeof(unsigned char)
+                    + (ItemCount * ItemSize);
 
-    int memPoolSize = sizeof(MemPool_t) - sizeof(unsigned char)
-                    + (itemCount * realItemSize);
-
-    MemPool = (MemPool_t *)malloc(memPoolSize);
+    MemPool = (MemPool_t *)malloc(MemPoolSize);
     if (!MemPool) {
         return NULL;
     }
@@ -158,12 +173,12 @@ MemoryPool_t *CreateMemoryPool( int itemSize,
     }
 
     InitStack(&MemPool->Stack);
-    MemPool->ItemSize = realItemSize;
+    MemPool->ItemSize = ItemSize;
     MemPool->Alignment = Alignment;
 
     ptr = MemPool->Buffer;
 
-    for (i = 0; i < itemCount; i++) {
+    for (i = 0; i < ItemCount; i++) {
         
         Node = (SlNode_t *)ptr;
     
@@ -176,20 +191,50 @@ MemoryPool_t *CreateMemoryPool( int itemSize,
 }
 
 
-void AddMemory( MemoryPool_t *pool, 
-                int itemCount)
+int AddExtraMemoryToPool(   MemoryPool_t *pool, 
+                            int ItemCount)
 {
-    (void)pool;
-    (void)itemCount;
+    /*********************************/
+    MemPool_t *MemPool;
+    SlNode_t *Node;
+    unsigned char *ptr;
+    int i;
+    int AdditionalPoolSize;
+    /*********************************/
+
+    MemPool = (MemPool_t *)pool;
+
+    AdditionalPoolSize = ItemCount * MemPool->ItemSize;
+
+    ptr = (unsigned char *)malloc(AdditionalPoolSize);
+    if (ptr == NULL) {
+        return pdFAIL;
+    }
+
+    for (i = 0; i < ItemCount; i++) {
+        
+        Node = (SlNode_t *)ptr;
+    
+        xSemaphoreTake(MemPool->Lock, portMAX_DELAY);
+        
+        PushOnStack(&MemPool->Stack, Node);
+
+        xSemaphoreGive(MemPool->Lock);
+    
+        ptr += MemPool->ItemSize;
+    }
+
+    return pdPASS;
 }
 
 
 void *MemoryPoolAllocate(MemoryPool_t *pool)
 {
+    /*********************************/
     MemPool_t *MemPool;
     SlNode_t *Node;
     unsigned char *ptr;
-
+    /*********************************/
 
     MemPool = (MemPool_t *)pool;
 
@@ -212,10 +257,11 @@ void *MemoryPoolAllocate(MemoryPool_t *pool)
 
 void MemoryPoolFree(MemoryPool_t *pool, void *memory)
 {
+    /*********************************/
     MemPool_t *MemPool;
     SlNode_t *Node;
     unsigned char *ptr;
-
+    /*********************************/
 
     MemPool = (MemPool_t *)pool;
 

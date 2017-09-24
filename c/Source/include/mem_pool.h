@@ -98,10 +98,14 @@ MemoryPool_t *CreateMemoryPool( int itemSize,
 
 
 /**
- *  tbd
+ *  Allows you to add extra memory to a pool.
+ *
+ *  @param pool An existing memory pool.
+ *  @param ItemCount How many more items you want to add.
+ *  @return pdPASS on success, pdFAIL on error.
  */
-void AddMemory( MemoryPool_t *pool, 
-                int itemCount);
+int AddExtraMemoryToPool(   MemoryPool_t *pool, 
+                            int ItemCount);
 
 
 /**
