@@ -3,6 +3,12 @@
 After working with FreeRTOS for over 7 years now, I've decided to start adding features and implementations that I wish would have been there at the beginning. 
 
 ## Current Features
++ C Add-on Wrappers
+  - A collection of C Add-on functionality for FreeRTOS. Right now they consist of
+  - Memory Pools: Fixed size memory allocation buffers. Using these elminates the possibility of memory fragmentation. There is overhead associated with these, so it's better if you are maximizing the size of each allocation.
+  - Reader / Writer Locks: These allow multiple threads to simultaneously access a shared resource all as readers. If something needs to change, then a Writer lock needs to be taken which will allow a singe thread to modify the shared resource.
+  - Workqueues: These allow you to queue "work" (i.e. a function) to a different thread. Useful if you have a lot of "one off" things that need to be done in different threads but they happen very asynchronous.
+  - In addition, to support these there are implemenations of standard optimized compter science singly linked lists, doubly linked circular lists, queues, and stacks.
 
 + C++ Wrappers [![Coverity Scan Build Status](https://scan.coverity.com/projects/9669/badge.svg)](https://scan.coverity.com/projects/michaelbecker-freertos-addons)
   - A collection of C++ wrappers encapsulating FreeRTOS functionality, allowing you to write your RTOS application in C++ while still using FreeRTOS. This wrapper layer does all the integration work for you.
@@ -23,6 +29,10 @@ After working with FreeRTOS for over 7 years now, I've decided to start adding f
 
 
 ## Releases
+
+### Version 1.5.0
++ https://github.com/michaelbecker/freertos-addons/releases/tag/v1.5.0
++ Added new major feature, C Add-ons.
 
 ### Version 1.4.0
 + https://github.com/michaelbecker/freertos-addons/releases/tag/v1.4.0
