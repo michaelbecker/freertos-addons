@@ -215,7 +215,7 @@ class Semaphore {
          *  We do not want a Semaphore ctor. This class should never be
          *  directly created, this is a base class only.
          */
-        Semaphore();
+        Semaphore(SemaphoreHandle_t pHandle);
 };
 
 
