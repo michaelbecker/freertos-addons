@@ -89,35 +89,39 @@
 
 namespace cpp_freertos {
 
+
 #ifndef CPP_FREERTOS_NO_EXCEPTIONS
 /**
  *  This is the exception that is thrown if a Mutex constructor fails.
  */
-class MutexCreateException: public std::exception {
+class MutexCreateException : public std::exception {
 
-public:
-	/**
-	 *  Create the exception.
-	 */
-	MutexCreateException() {
-		sprintf(errorString, "Mutex Constructor Failed");
-	}
+    public:
+        /**
+         *  Create the exception.
+         */
+        MutexCreateException()
+        {
+            sprintf(errorString, "Mutex Constructor Failed");
+        }
 
-	/**
-	 *  Get what happened as a string.
-	 *  We are overriding the base implementation here.
-	 */
-	virtual const char *what() const throw () {
-		return errorString;
-	}
+        /**
+         *  Get what happened as a string.
+         *  We are overriding the base implementation here.
+         */
+        virtual const char *what() const throw()
+        {
+            return errorString;
+        }
 
-private:
-	/**
-	 *  A text string representing what failed.
-	 */
-	char errorString[80];
+    private:
+        /**
+         *  A text string representing what failed.
+         */
+        char errorString[80];
 };
 #endif
+
 
 /**
  *  Base wrapper class around FreeRTOS's implementation of mutexes.
@@ -131,56 +135,56 @@ private:
  */
 class Mutex {
 
-	/////////////////////////////////////////////////////////////////////////
-	//
-	//  Public API
-	//
-	/////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////
+    //
+    //  Public API
+    //
+    /////////////////////////////////////////////////////////////////////////
+		Mutex(const Mutex&) = delete;
+		Mutex& operator=(const Mutex&) = delete;
+    public:
+        /**
+         *  Lock the Mutex.
+         *
+         *  Each type of Mutex implements it's own locking code as per the
+         *  FreeRTOS API.
+         *
+         *  @param Timeout How long to wait to get the Lock until giving up.
+         *  @return true if the Lock was acquired, false if it timed out.
+         */
+        virtual bool Lock(TickType_t Timeout = portMAX_DELAY) = 0;
 
-	Mutex(const Mutex&) = delete;
-	Mutex& operator=(const Mutex&) = delete;
-public:
-	/**
-	 *  Lock the Mutex.
-	 *
-	 *  Each type of Mutex implements it's own locking code as per the
-	 *  FreeRTOS API.
-	 *
-	 *  @param Timeout How long to wait to get the Lock until giving up.
-	 *  @return true if the Lock was acquired, false if it timed out.
-	 */
-	virtual bool Lock(TickType_t Timeout = portMAX_DELAY) = 0;
+        /**
+         *  Unlock the Mutex.
+         *
+         *  @return true if the Lock was released, false if it failed. (Hint,
+         *           if it fails, did you call Lock() first?)
+         */
+        virtual bool Unlock() = 0;
 
-	/**
-	 *  Unlock the Mutex.
-	 *
-	 *  @return true if the Lock was released, false if it failed. (Hint,
-	 *           if it fails, did you call Lock() first?)
-	 */
-	virtual bool Unlock() = 0;
+        /**
+         *  Our destructor
+         */
+        virtual ~Mutex();
 
-	/**
-	 *  Our destructor
-	 */
-	virtual ~Mutex();
+    /////////////////////////////////////////////////////////////////////////
+    //
+    //  Protected API
+    //  Not intended for use by application code.
+    //
+    /////////////////////////////////////////////////////////////////////////
+    protected:
+        /**
+         *  FreeRTOS semaphore handle.
+         */
+        SemaphoreHandle_t handle;
 
-	/////////////////////////////////////////////////////////////////////////
-	//
-	//  Protected API
-	//  Not intended for use by application code.
-	//
-	/////////////////////////////////////////////////////////////////////////
-protected:
-	/**
-	 *  FreeRTOS semaphore handle.
-	 */
-	SemaphoreHandle_t handle;
-
-	/**
-	 *  This constructor should not be public.
-	 */
-	Mutex();
+        /**
+         *  This constructor should not be public.
+         */
+        Mutex(SemaphoreHandle_t pHandle);
 };
+
 
 /**
  *  Standard usage Mutex.
@@ -193,37 +197,38 @@ protected:
  *        should typically use this type of Mutex, unless you have a strong
  *        need for a MutexRecursive mutex.
  */
-class MutexStandard: public Mutex {
+class MutexStandard : public Mutex {
 
-	/////////////////////////////////////////////////////////////////////////
-	//
-	//  Public API
-	//
-	/////////////////////////////////////////////////////////////////////////
-public:
-	/**
-	 *  Create a standard, non-recursize Mutex.
-	 *
-	 *  @throws ThreadMutexException on failure.
-	 */
-	MutexStandard();
+    /////////////////////////////////////////////////////////////////////////
+    //
+    //  Public API
+    //
+    /////////////////////////////////////////////////////////////////////////
+    public:
+        /**
+         *  Create a standard, non-recursize Mutex.
+         *
+         *  @throws ThreadMutexException on failure.
+         */
+        MutexStandard();
 
-	/**
-	 *  Lock the Mutex.
-	 *
-	 *  @param Timeout How long to wait to get the Lock until giving up.
-	 *  @return true if the Lock was acquired, false if it timed out.
-	 */
-	virtual bool Lock(TickType_t Timeout = portMAX_DELAY);
+        /**
+         *  Lock the Mutex.
+         *
+         *  @param Timeout How long to wait to get the Lock until giving up.
+         *  @return true if the Lock was acquired, false if it timed out.
+         */
+        virtual bool Lock(TickType_t Timeout = portMAX_DELAY);
 
-	/**
-	 *  Unlock the Mutex.
-	 *
-	 *  @return true if the Lock was released, false if it failed. (Hint,
-	 *           if it fails, did you call Lock() first?)
-	 */
-	virtual bool Unlock();
+        /**
+         *  Unlock the Mutex.
+         *
+         *  @return true if the Lock was released, false if it failed. (Hint,
+         *           if it fails, did you call Lock() first?)
+         */
+        virtual bool Unlock();
 };
+
 
 #if (configUSE_RECURSIVE_MUTEXES == 1)
 
@@ -242,37 +247,38 @@ public:
  */
 class MutexRecursive : public Mutex {
 
-	/////////////////////////////////////////////////////////////////////////
-	//
-	//  Public API
-	//
-	/////////////////////////////////////////////////////////////////////////
-public:
-	/**
-	 *  Create a recursize Mutex.
-	 *
-	 *  @throws ThreadMutexException on failure.
-	 */
-	MutexRecursive();
+    /////////////////////////////////////////////////////////////////////////
+    //
+    //  Public API
+    //
+    /////////////////////////////////////////////////////////////////////////
+    public:
+        /**
+         *  Create a recursize Mutex.
+         *
+         *  @throws ThreadMutexException on failure.
+         */
+        MutexRecursive();
 
-	/**
-	 *  Lock the Mutex.
-	 *
-	 *  @param Timeout How long to wait to get the Lock until giving up.
-	 *  @return true if the Lock was acquired, false if it timed out.
-	 */
-	virtual bool Lock(TickType_t Timeout = portMAX_DELAY);
+        /**
+         *  Lock the Mutex.
+         *
+         *  @param Timeout How long to wait to get the Lock until giving up.
+         *  @return true if the Lock was acquired, false if it timed out.
+         */
+        virtual bool Lock(TickType_t Timeout = portMAX_DELAY);
 
-	/**
-	 *  Unlock the Mutex.
-	 *
-	 *  @return true if the Lock was released, false if it failed. (Hint,
-	 *           if it fails, did you call Lock() first?)
-	 */
-	virtual bool Unlock();
+        /**
+         *  Unlock the Mutex.
+         *
+         *  @return true if the Lock was released, false if it failed. (Hint,
+         *           if it fails, did you call Lock() first?)
+         */
+        virtual bool Unlock();
 };
 
 #endif
+
 
 /**
  *  Synchronization helper class that leverages the C++ language to help
@@ -286,44 +292,45 @@ public:
  */
 class LockGuard {
 
-	/////////////////////////////////////////////////////////////////////////
-	//
-	//  Public API
-	//
-	/////////////////////////////////////////////////////////////////////////
-public:
-	/**
-	 *  Create a LockGuard with a specific Mutex.
-	 *
-	 *  @post The Mutex will be locked.
-	 *  @note There is an infinite timeout for acquiring the Lock.
-	 */
-	explicit LockGuard(Mutex& m);
+    /////////////////////////////////////////////////////////////////////////
+    //
+    //  Public API
+    //
+    /////////////////////////////////////////////////////////////////////////
+    public:
+        /**
+         *  Create a LockGuard with a specific Mutex.
+         *
+         *  @post The Mutex will be locked.
+         *  @note There is an infinite timeout for acquiring the Lock.
+         */
+        explicit LockGuard(Mutex& m);
 
-	/**
-	 *  Destroy a LockGuard.
-	 *
-	 *  @post The Mutex will be unlocked.
-	 */
-	~LockGuard();
+        /**
+         *  Destroy a LockGuard.
+         *
+         *  @post The Mutex will be unlocked.
+         */
+        ~LockGuard();
 
-	/////////////////////////////////////////////////////////////////////////
-	//
-	//  Private API
-	//
-	/////////////////////////////////////////////////////////////////////////
-private:
-	/**
-	 *  We do not want a copy constructor.
-	 */
-	LockGuard(const LockGuard&);
+        /////////////////////////////////////////////////////////////////////////
+        //
+        //  Private API
+        //
+        /////////////////////////////////////////////////////////////////////////
+    private:
+        /**
+         *  We do not want a copy constructor.
+         */
+        LockGuard(const LockGuard&);
 
-	/**
-	 *  Reference to the Mutex we locked, so it can be unlocked
-	 *  in the destructor.
-	 */
-	Mutex& mutex;
+        /**
+         *  Reference to the Mutex we locked, so it can be unlocked
+         *  in the destructor.
+         */
+        Mutex& mutex;
 };
+
 
 }
 #endif

@@ -169,19 +169,19 @@ bool WorkQueue::QueueWork(WorkItem *work)
 }
 
 
-WorkQueue::CWorkerThread::CWorkerThread(const char * const pName,
-                                        uint16_t pStackDepth,
-                                        UBaseType_t pPriority,
+WorkQueue::CWorkerThread::CWorkerThread(const char * const Name,
+                                        uint16_t StackDepth,
+                                        UBaseType_t Priority,
                                         WorkQueue *Parent)
-    : Thread(pName, pStackDepth, pPriority), ParentWorkQueue(Parent)
+    : Thread(Name, StackDepth, Priority), ParentWorkQueue(Parent)
 {
 }
 
 
-WorkQueue::CWorkerThread::CWorkerThread(uint16_t pStackDepth,
-                                        UBaseType_t pPriority,
-                                        WorkQueue *pParent)
-    : Thread(pStackDepth, pPriority), ParentWorkQueue(pParent)
+WorkQueue::CWorkerThread::CWorkerThread(uint16_t StackDepth,
+                                        UBaseType_t Priority,
+                                        WorkQueue *Parent)
+    : Thread(StackDepth, Priority), ParentWorkQueue(Parent)
 {
 }
 
