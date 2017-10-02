@@ -119,7 +119,7 @@ Semaphore::Semaphore(SemaphoreHandle_t pHandle) :
 #ifndef CPP_FREERTOS_NO_EXCEPTIONS
         throw SemaphoreCreateException();
 #else
-        configASSERT(!"BinarySemaphore Constructor Failed");
+        configASSERT(!"Semaphore Constructor Failed");
 #endif
     }
 }
