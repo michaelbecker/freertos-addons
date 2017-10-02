@@ -84,28 +84,33 @@ MutexStandard Thread::StartGuardLock;
 
 Thread::Thread( const std::string pcName,
                 uint16_t usStackDepth,
-                UBaseType_t uxPriority)
-    :   Name(pcName), 
+                UBaseType_t uxPriority) :
+		handle(NULL),
+    	Name(pcName), 
         StackDepth(usStackDepth), 
         Priority(uxPriority),
         ThreadStarted(false)
-{
 #if (INCLUDE_vTaskDelayUntil == 1)
-    delayUntilInitialized = false;
+				,
+		delayUntilInitialized(false),
+		delayUntilPreviousWakeTime(0)
 #endif
+{
+
 }
 
-
-Thread::Thread( uint16_t usStackDepth,
-                UBaseType_t uxPriority)
-    :   Name("Default"), 
-        StackDepth(usStackDepth), 
-        Priority(uxPriority),
-        ThreadStarted(false)
-{
+Thread::Thread(uint16_t usStackDepth, UBaseType_t uxPriority) :
+		handle(NULL),
+		Name("Default"),
+		StackDepth(usStackDepth),
+		Priority(uxPriority),
+		ThreadStarted(false)
 #if (INCLUDE_vTaskDelayUntil == 1)
-    delayUntilInitialized = false;
+				,
+		delayUntilInitialized(false),
+		delayUntilPreviousWakeTime(0)
 #endif
+{
 }
 
 //

@@ -112,6 +112,8 @@ class Thread {
     //  if they are operating on a thread.
     //
     /////////////////////////////////////////////////////////////////////////
+    	Thread(const Thread&) = delete;
+		Thread& operator=(const Thread&) = delete;
     public:
         /**
          *  Constructor to create a named thread.
@@ -419,7 +421,9 @@ class Thread {
         /**
          *  Stack depth of this Thread, in words.
          */
+	protected:
         const uint16_t StackDepth;
+	private:
 
         /**
          *  A saved / cached copy of what the Thread's priority is.

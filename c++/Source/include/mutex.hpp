@@ -140,6 +140,8 @@ class Mutex {
     //  Public API
     //
     /////////////////////////////////////////////////////////////////////////
+		Mutex(const Mutex&) = delete;
+		Mutex& operator=(const Mutex&) = delete;
     public:
         /**
          *  Lock the Mutex.
@@ -180,7 +182,7 @@ class Mutex {
         /**
          *  This constructor should not be public.
          */
-        Mutex();
+        Mutex(SemaphoreHandle_t pHandle);
 };
 
 
