@@ -112,8 +112,16 @@ bool Semaphore::GiveFromISR(BaseType_t *pxHigherPriorityTaskWoken)
 }
 
 
-Semaphore::Semaphore()
+Semaphore::Semaphore(SemaphoreHandle_t pHandle) :
+		handle(pHandle)
 {
+    if (handle == NULL) {
+#ifndef CPP_FREERTOS_NO_EXCEPTIONS
+        throw SemaphoreCreateException();
+#else
+        configASSERT(!"BinarySemaphore Constructor Failed");
+#endif
+    }
 }
 
 
@@ -123,51 +131,29 @@ Semaphore::~Semaphore()
 }
 
 
-BinarySemaphore::BinarySemaphore(bool set)
+BinarySemaphore::BinarySemaphore(bool set) :
+		Semaphore(xSemaphoreCreateBinary())
 {
-    handle = xSemaphoreCreateBinary();
-
-    if (handle == NULL) {
-#ifndef CPP_FREERTOS_NO_EXCEPTIONS
-        throw SemaphoreCreateException();
-#else
-        configASSERT(!"BinarySemaphore Constructor Failed");
-#endif
-    }
-
     if (set) {
         xSemaphoreGive(handle);
     }
 }
 
+UBaseType_t throwError(const char* str) {
+#ifndef CPP_FREERTOS_NO_EXCEPTIONS
+        throw SemaphoreCreateException(str);
+#else
+        configASSERT(!str);
+#endif
+        return 0; //fake return
+}
 
-CountingSemaphore::CountingSemaphore(UBaseType_t maxCount, UBaseType_t initialCount)
+
+CountingSemaphore::CountingSemaphore(UBaseType_t maxCount, UBaseType_t initialCount) :
+		Semaphore(xSemaphoreCreateCounting(
+				maxCount == 0 ? throwError("bad maxCount") : maxCount,
+				initialCount > maxCount ? throwError("bad initialCount") : initialCount))
 {
-    if (maxCount == 0) {
-#ifndef CPP_FREERTOS_NO_EXCEPTIONS
-        throw SemaphoreCreateException("bad maxCount");
-#else
-        configASSERT(!"CountingSemaphore Constructor bad maxCount");
-#endif
-    }
-
-    if (initialCount > maxCount) {
-#ifndef CPP_FREERTOS_NO_EXCEPTIONS
-        throw SemaphoreCreateException("bad initialCount");
-#else
-        configASSERT(!"CountingSemaphore Constructor bad initialCount");
-#endif
-    }
-
-    handle = xSemaphoreCreateCounting(maxCount, initialCount);
-
-    if (handle == NULL) {
-#ifndef CPP_FREERTOS_NO_EXCEPTIONS
-        throw SemaphoreCreateException();
-#else
-        configASSERT(!"CountingSemaphore Constructor Failed");
-#endif
-    }
 }
 
 
