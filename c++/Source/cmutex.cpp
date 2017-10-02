@@ -71,9 +71,15 @@
 
 using namespace cpp_freertos;
 
-
-Mutex::Mutex()
-{
+Mutex::Mutex(SemaphoreHandle_t pHandle) :
+		handle(pHandle) {
+if (handle == NULL) {
+#ifndef CPP_FREERTOS_NO_EXCEPTIONS
+        throw MutexCreateException();
+#else
+        configASSERT(!"Mutex Constructor Failed");
+#endif
+    }
 }
 
 
@@ -83,17 +89,8 @@ Mutex::~Mutex()
 }
 
 
-MutexStandard::MutexStandard()
-{
-    handle = xSemaphoreCreateMutex();
-
-    if (handle == NULL) {
-#ifndef CPP_FREERTOS_NO_EXCEPTIONS
-        throw MutexCreateException();
-#else
-        configASSERT(!"Mutex Constructor Failed");
-#endif
-    }
+MutexStandard::MutexStandard() :
+		Mutex(xSemaphoreCreateMutex()) {
 }
 
 
@@ -113,17 +110,8 @@ bool MutexStandard::Unlock()
 
 #if (configUSE_RECURSIVE_MUTEXES == 1)
 
-MutexRecursive::MutexRecursive()
-{
-    handle = xSemaphoreCreateRecursiveMutex();
-
-    if (handle == NULL) {
-#ifndef CPP_FREERTOS_NO_EXCEPTIONS
-        throw MutexCreateException();
-#else
-        configASSERT(!"Mutex Constructor Failed");
-#endif
-    }
+MutexRecursive::MutexRecursive() :
+		Mutex(xSemaphoreCreateRecursiveMutex()) {
 }
 
 

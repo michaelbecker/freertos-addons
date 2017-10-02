@@ -184,15 +184,21 @@ void Queue::Flush()
 }
 
 
-UBaseType_t Queue::NumItems()
-{
-    return uxQueueMessagesWaiting(handle);
+UBaseType_t Queue::NumItems() const {
+	return uxQueueMessagesWaiting(handle);
+}
+
+UBaseType_t Queue::NumItemsFromISR() const {
+	return uxQueueMessagesWaitingFromISR(handle);
 }
 
 
-UBaseType_t Queue::NumSpacesLeft()
-{
-    return uxQueueSpacesAvailable(handle);
+UBaseType_t Queue::NumSpacesLeft() const {
+	return uxQueueSpacesAvailable(handle);
+}
+
+UBaseType_t Queue::NumSpacesLeftFromISR() const {
+	return uxQueueSpacesAvailableFromISR(this->handle);
 }
 
 

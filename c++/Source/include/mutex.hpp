@@ -96,29 +96,28 @@ namespace cpp_freertos {
  */
 class MutexCreateException : public std::exception {
 
+    /**
+     *  A text string representing what failed.
+     */
+    std::string errorString;
+
     public:
         /**
          *  Create the exception.
          */
-        MutexCreateException()
+        MutexCreateException() : errorString("Mutex Constructor Failed")
         {
-            sprintf(errorString, "Mutex Constructor Failed");
+
         }
 
         /**
          *  Get what happened as a string.
          *  We are overriding the base implementation here.
          */
-        virtual const char *what() const throw()
+        virtual const char *what() const noexcept
         {
-            return errorString;
+            return errorString.c_str();
         }
-
-    private:
-        /**
-         *  A text string representing what failed.
-         */
-        char errorString[80];
 };
 #endif
 
@@ -140,6 +139,8 @@ class Mutex {
     //  Public API
     //
     /////////////////////////////////////////////////////////////////////////
+		Mutex(const Mutex&) = delete;
+		Mutex& operator=(const Mutex&) = delete;
     public:
         /**
          *  Lock the Mutex.
@@ -180,7 +181,7 @@ class Mutex {
         /**
          *  This constructor should not be public.
          */
-        Mutex();
+        Mutex(SemaphoreHandle_t pHandle);
 };
 
 

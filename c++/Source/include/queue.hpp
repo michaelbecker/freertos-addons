@@ -148,6 +148,8 @@ class Queue {
     //  Public API
     //
     /////////////////////////////////////////////////////////////////////////
+    	Queue(const Queue&) = delete;
+		Queue& operator=(const Queue&) = delete;
     public:
         /**
          *  Our constructor.
@@ -255,13 +257,15 @@ class Queue {
          *  How many items are currently in the queue.
          *  @return the number of items in the queue.
          */
-        UBaseType_t NumItems();
+        UBaseType_t NumItems() const;
+		UBaseType_t NumItemsFromISR() const;
 
         /**
          *  How many empty spaves are currently left in the queue.
          *  @return the number of remaining spaces.
          */
-        UBaseType_t NumSpacesLeft();
+        UBaseType_t NumSpacesLeft() const;
+		UBaseType_t NumSpacesLeftFromISR() const;
 
     /////////////////////////////////////////////////////////////////////////
     //
