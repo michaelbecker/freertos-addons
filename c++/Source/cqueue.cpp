@@ -67,8 +67,6 @@
  *  
  ***************************************************************************/
 #include "queue.hpp"
-#include "task.h"
-#include "queue.h"
 
 
 using namespace cpp_freertos;
