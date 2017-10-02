@@ -152,6 +152,8 @@ class Semaphore {
     //  Public API
     //
     /////////////////////////////////////////////////////////////////////////
+    	Semaphore(const Semaphore&) = delete;
+		Semaphore& operator=(const Semaphore&) = delete;
     public:
         /**
          *  Aquire (take) a semaphore.

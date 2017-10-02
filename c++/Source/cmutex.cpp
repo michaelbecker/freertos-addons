@@ -71,9 +71,8 @@
 
 using namespace cpp_freertos;
 
-
-Mutex::Mutex()
-{
+Mutex::Mutex(SemaphoreHandle_t pHandle) :
+		handle(pHandle) {
 }
 
 
@@ -83,8 +82,8 @@ Mutex::~Mutex()
 }
 
 
-MutexStandard::MutexStandard()
-{
+MutexStandard::MutexStandard() :
+		Mutex(xSemaphoreCreateMutex()) {
     handle = xSemaphoreCreateMutex();
 
     if (handle == NULL) {
@@ -113,9 +112,8 @@ bool MutexStandard::Unlock()
 
 #if (configUSE_RECURSIVE_MUTEXES == 1)
 
-MutexRecursive::MutexRecursive()
-{
-    handle = xSemaphoreCreateRecursiveMutex();
+MutexRecursive::MutexRecursive() :
+		Mutex(xSemaphoreCreateRecursiveMutex()) {
 
     if (handle == NULL) {
 #ifndef CPP_FREERTOS_NO_EXCEPTIONS
