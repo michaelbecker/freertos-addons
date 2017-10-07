@@ -257,15 +257,15 @@ int main (void)
     TestThread thread4("Thread_4", 1, 7);
     TestThread thread5("Thread_5", 1, 11);
 
-    pool_1 = new MemoryPool(POOL_1_ITEM_SIZE, Buffer1, sizeof(Buffer1));
-    pool_2 = new MemoryPool(POOL_2_ITEM_SIZE, Buffer2, sizeof(Buffer2));
-    pool_3 = new MemoryPool(POOL_3_ITEM_SIZE, Buffer3, sizeof(Buffer3));
-    pool_4 = new MemoryPool(POOL_4_ITEM_SIZE, Buffer4, sizeof(Buffer4));
-    pool_5 = new MemoryPool(POOL_5_ITEM_SIZE, Buffer5, sizeof(Buffer5));
-    pool_6 = new MemoryPool(POOL_6_ITEM_SIZE, Buffer6, sizeof(Buffer6));
-    pool_7 = new MemoryPool(POOL_7_ITEM_SIZE, Buffer7, sizeof(Buffer7));
-    pool_8 = new MemoryPool(POOL_8_ITEM_SIZE, Buffer8, sizeof(Buffer8));
-    pool_9 = new MemoryPool(POOL_9_ITEM_SIZE, Buffer9, sizeof(Buffer9));
+    pool_1 = new MemoryPool(POOL_1_ITEM_SIZE, Buffer1, sizeof(Buffer1), 1);
+    pool_2 = new MemoryPool(POOL_2_ITEM_SIZE, Buffer2, sizeof(Buffer2), 2);
+    pool_3 = new MemoryPool(POOL_3_ITEM_SIZE, Buffer3, sizeof(Buffer3), 4);
+    pool_4 = new MemoryPool(POOL_4_ITEM_SIZE, Buffer4, sizeof(Buffer4), 8);
+    pool_5 = new MemoryPool(POOL_5_ITEM_SIZE, Buffer5, sizeof(Buffer5), 16);
+    pool_6 = new MemoryPool(POOL_6_ITEM_SIZE, Buffer6, sizeof(Buffer6), 32);
+    pool_7 = new MemoryPool(POOL_7_ITEM_SIZE, Buffer7, sizeof(Buffer7), 64);
+    pool_8 = new MemoryPool(POOL_8_ITEM_SIZE, Buffer8, sizeof(Buffer8), 128);
+    pool_9 = new MemoryPool(POOL_9_ITEM_SIZE, Buffer9, sizeof(Buffer9), 256);
 
 
     Thread::StartScheduler();

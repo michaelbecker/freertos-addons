@@ -236,15 +236,15 @@ int main (void)
     TestThread thread4("Thread_4", 1, 7);
     TestThread thread5("Thread_5", 1, 11);
 
-    pool_1 = new MemoryPool(1, NUM_POOL_1_ITEMS);
-    pool_2 = new MemoryPool(2, NUM_POOL_2_ITEMS);
-    pool_3 = new MemoryPool(3, NUM_POOL_3_ITEMS);
-    pool_4 = new MemoryPool(4, NUM_POOL_4_ITEMS);
-    pool_5 = new MemoryPool(5, NUM_POOL_5_ITEMS);
-    pool_6 = new MemoryPool(6, NUM_POOL_6_ITEMS);
-    pool_7 = new MemoryPool(7, NUM_POOL_7_ITEMS);
-    pool_8 = new MemoryPool(8, NUM_POOL_8_ITEMS);
-    pool_9 = new MemoryPool(9, NUM_POOL_9_ITEMS);
+    pool_1 = new MemoryPool(1, NUM_POOL_1_ITEMS, 4);
+    pool_2 = new MemoryPool(2, NUM_POOL_2_ITEMS, 8);
+    pool_3 = new MemoryPool(3, NUM_POOL_3_ITEMS, 2);
+    pool_4 = new MemoryPool(4, NUM_POOL_4_ITEMS, 16);
+    pool_5 = new MemoryPool(5, NUM_POOL_5_ITEMS, 32);
+    pool_6 = new MemoryPool(6, NUM_POOL_6_ITEMS, 64);
+    pool_7 = new MemoryPool(7, NUM_POOL_7_ITEMS, 128);
+    pool_8 = new MemoryPool(8, NUM_POOL_8_ITEMS, 256);
+    pool_9 = new MemoryPool(9, NUM_POOL_9_ITEMS, 512);
 
     Thread::StartScheduler();
 
