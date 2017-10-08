@@ -108,19 +108,11 @@ typedef struct MemPool_t_ {
 } MemPool_t;
 
 
-
-MemoryPool_t *CreateMemoryPool( int ItemSize, 
-                                int ItemCount,
-                                int Alignment)
+static int CalculateAndVerifyAlignment(int Alignment)
 {
     /*********************************/
-    MemPool_t *MemPool;
-    int MemPoolSize;
     int i;
     int alignmentBit = 0x1;
-    int alignmentCount;
-    unsigned char *ptr;
-    SlNode_t *Node;
     /*********************************/
 
     /**
@@ -138,8 +130,20 @@ MemoryPool_t *CreateMemoryPool( int ItemSize,
     }
 
     if (i >= 31) {
-        return NULL;
+        return 0;
     }
+    else {
+        return Alignment;
+    }
+}
+
+
+static int CalculateItemSize(   int ItemSize,
+                                int Alignment)
+{
+    /*********************************/
+    int alignmentCount;
+    /*********************************/
 
     if (ItemSize <= Alignment) {
         /**
@@ -157,7 +161,31 @@ MemoryPool_t *CreateMemoryPool( int ItemSize,
          */
         ItemSize = ((alignmentCount + 1) * Alignment);
     }
-       
+    
+    return ItemSize;
+}
+    
+
+MemoryPool_t *CreateMemoryPool( int ItemSize,
+                                int ItemCount,
+                                int Alignment)
+{
+    /*********************************/
+    MemPool_t *MemPool;
+    int MemPoolSize;
+    unsigned char *ptr;
+    SlNode_t *Node;
+    int i;
+    /*********************************/
+
+    Alignment = CalculateAndVerifyAlignment(Alignment);
+
+    if (Alignment == 0) {
+        return NULL;
+    }
+
+    ItemSize = CalculateItemSize(ItemSize, Alignment);
+
     MemPoolSize = sizeof(MemPool_t) - sizeof(unsigned char)
                     + (ItemCount * ItemSize);
 
@@ -221,6 +249,87 @@ int AddExtraMemoryToPool(   MemoryPool_t *pool,
 
         xSemaphoreGive(MemPool->Lock);
     
+        ptr += MemPool->ItemSize;
+    }
+
+    return pdPASS;
+}
+
+
+MemoryPool_t *CreateMemoryPoolStatic(   int ItemSize,
+                                        void *PreallocatedMemory,
+                                        int PreallocatedMemorySize,
+                                        int Alignment)
+{
+    /*********************************/
+    MemPool_t *MemPool;
+    int MemPoolSize;
+    unsigned char *ptr;
+    SlNode_t *Node;
+    /*********************************/
+
+    Alignment = CalculateAndVerifyAlignment(Alignment);
+
+    if (Alignment == 0) {
+        return NULL;
+    }
+
+    ItemSize = CalculateItemSize(ItemSize, Alignment);
+
+    MemPoolSize = sizeof(MemPool_t) - sizeof(unsigned char);
+
+    MemPool = (MemPool_t *)malloc(MemPoolSize);
+    if (!MemPool) {
+        return NULL;
+    }
+
+    MemPool->Lock = xSemaphoreCreateMutex();
+    if (MemPool->Lock == NULL) {
+        free(MemPool);
+        return NULL;
+    }
+
+    InitStack(&MemPool->Stack);
+    MemPool->ItemSize = ItemSize;
+    MemPool->Alignment = Alignment;
+
+    ptr = (unsigned char *)PreallocatedMemory;
+
+    while (PreallocatedMemorySize >= ItemSize) {
+        
+        Node = (SlNode_t *)ptr;
+        PushOnStack(&MemPool->Stack, Node);
+        ptr += MemPool->ItemSize;
+        PreallocatedMemorySize -= MemPool->ItemSize;
+    }
+    
+    return (MemoryPool_t *)MemPool;
+}
+
+
+int AddExtraMemoryToPoolStatic( MemoryPool_t *pool, 
+                                void *PreallocatedMemory,
+                                int PreallocatedMemorySize)
+{
+    /*********************************/
+    MemPool_t *MemPool;
+    SlNode_t *Node;
+    unsigned char *ptr;
+    /*********************************/
+
+    MemPool = (MemPool_t *)pool;
+    ptr = (unsigned char *)PreallocatedMemory;
+
+    while (PreallocatedMemorySize >= MemPool->ItemSize) {
+
+        Node = (SlNode_t *)ptr;
+
+        xSemaphoreTake(MemPool->Lock, portMAX_DELAY);
+        
+        PushOnStack(&MemPool->Stack, Node);
+
+        xSemaphoreGive(MemPool->Lock);
+
         ptr += MemPool->ItemSize;
     }
 

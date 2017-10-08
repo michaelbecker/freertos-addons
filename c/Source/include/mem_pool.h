@@ -109,6 +109,39 @@ int AddExtraMemoryToPool(   MemoryPool_t *pool,
 
 
 /**
+ *  Create a MemoryPool
+ *
+ *  @param itemSize How big is an allocation.
+ *  @param PreallocatedMemory Pointer to the preallocated memory
+ *  you are dedicating to this pool.
+ *  @param PreallocatedMemorySize How big is the buffer you are
+ *  passing in.
+ *  @param Alignment Power of 2 value denoting on which address boundary the 
+ *  memory will be aligned to. Must be at least sizeof(unsigned char *).
+ *  @return A Handle to the pool, or NULL on failure.
+ */
+MemoryPool_t *CreateMemoryPoolStatic(   int ItemSize,
+                                        void *PreallocatedMemory,
+                                        int PreallocatedMemorySize,
+                                        int Alignment);
+
+
+/**
+ *  Allows you to add extra memory to a pool.
+ *
+ *  @param pool An existing memory pool.
+ *  @param PreallocatedMemory Pointer to the preallocated memory
+ *  you are dedicating to this pool.
+ *  @param PreallocatedMemorySize How big is the buffer you are
+ *  passing in.
+ *  @return pdPASS on success, pdFAIL on error.
+ */
+int AddExtraMemoryToPoolStatic( MemoryPool_t *pool, 
+                                void *PreallocatedMemory,
+                                int PreallocatedMemorySize);
+
+
+/**
  *  Get a memory buffer from the pool.
  *
  *  Note that this can block, and cannnot be used from ISR context.
