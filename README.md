@@ -4,11 +4,12 @@ After working with FreeRTOS for over 7 years now, I've decided to start adding f
 
 ## Current Features
 + C Add-on Wrappers
-  - A collection of C Add-on functionality for FreeRTOS. Right now they consist of
+  - A collection of C Add-on functionality for FreeRTOS. Right now these consist of:
   - Memory Pools: Fixed size memory allocation buffers. Using these elminates the possibility of memory fragmentation. There is overhead associated with these, so it's better if you are maximizing the size of each allocation.
   - Reader / Writer Locks: These allow multiple threads to simultaneously access a shared resource all as readers. If something needs to change, then a Writer lock needs to be taken which will allow a singe thread to modify the shared resource.
   - Workqueues: These allow you to queue "work" (i.e. a function) to a different thread. Useful if you have a lot of "one off" things that need to be done in different threads but they happen very asynchronous.
-  - In addition, to support these there are implemenations of standard optimized compter science singly linked lists, doubly linked circular lists, queues, and stacks.
+  - In addition, to support these there are implementations of standard optimized compter science singly linked lists, doubly linked circular lists, queues, and stacks.
+  - [Full cross-referenced documentation](http://michaelbecker.github.io/freertos-addons/cdocs/html/index.html). Documents were auto-generated and cross-referenced using Doxygen.
 
 + C++ Wrappers [![Coverity Scan Build Status](https://scan.coverity.com/projects/9669/badge.svg)](https://scan.coverity.com/projects/michaelbecker-freertos-addons)
   - A collection of C++ wrappers encapsulating FreeRTOS functionality, allowing you to write your RTOS application in C++ while still using FreeRTOS. This wrapper layer does all the integration work for you.
@@ -17,7 +18,7 @@ After working with FreeRTOS for over 7 years now, I've decided to start adding f
   - There are numerous demo / unit test projects using these wrappers and various features they provide. (Last count we are at 42 Demo projects showing how you might use the C++ Wrapper library.
   - Licensing is a modified GPLv2, the same as FreeRTOS.
   - [Project web page](http://michaelbecker.github.io/freertos-addons/)
-  - [Full cross-referenced documentation](http://michaelbecker.github.io/freertos-addons/docs/html/index.html). Documents were auto-generated and cross-referenced using Doxygen.
+  - [Full cross-referenced documentation](http://michaelbecker.github.io/freertos-addons/cppdocs/html/index.html). Documents were auto-generated and cross-referenced using Doxygen.
 
 + Updated Linux port
   - Licensing is GPLv2 (this is a derivative work).
@@ -28,11 +29,25 @@ After working with FreeRTOS for over 7 years now, I've decided to start adding f
   - Thanks to William Davy who wrote the original Posix FreeRTOS port. He did amazing work simulating a real-time system under Linux.
 
 
-## Releases
+## Overall Releases
+
+### Version 1.5.1
++ https://github.com/michaelbecker/freertos-addons/releases/tag/v1.5.1
++ C++ Wrappers 1.5.0:
+  - Added alignment requirements to memory pools.
+  - Updated doxygen documentation.
++ C Add-ons 1.0.1:
+  - Added static allocated fixed size memory pools.
+  - Updated doxygen documentation.
 
 ### Version 1.5.0
++ Starting to independently version the overall project vs the unique packages within it.
 + https://github.com/michaelbecker/freertos-addons/releases/tag/v1.5.0
-+ Added new major feature, C Add-ons.
++ Added new major feature, C Add-ons. This is version 1.0.0 of the C Add-ons.
++ C Add-ons include:
+  - Fixed size memory pools
+  - Read / Write locks
+  - Work queues
 
 ### Version 1.4.0
 + https://github.com/michaelbecker/freertos-addons/releases/tag/v1.4.0
