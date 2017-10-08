@@ -70,15 +70,13 @@
 #define VERSION_C_ADDONS_H_
 
 
-namespace cpp_freertos {
-
 #define C_ADDONS_VERSION_MAJOR      1
 #define C_ADDONS_VERSION_MINOR      0
 #define C_ADDONS_VERSION_RELEASE    1
 
 #define C_ADDONS_VERSION_STRING "1.0.1"
 
-}
+
 #endif
 
 

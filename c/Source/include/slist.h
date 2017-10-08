@@ -102,8 +102,8 @@ typedef struct SlNode_t_ {
  *  Add a node to the list head.
  *  Runs in O(1) time.
  *
- *  @param Head A pointer to the existing list head.
- *  @param Node A pointer to the node you are adding.
+ *  @param _head A pointer to the existing list head.
+ *  @param _node A pointer to the node you are adding.
  */
 #define SlAddNodeToHead(_head, _node) \
     SlInsertNodeAfter(_head, _node)
@@ -178,7 +178,7 @@ void SlInsertNodeBefore(SlNode_t *Head,
  *  Removes a node from the list.
  *  Runs in O(n) time worst case.
  *
- *  @param head Pointer to the list head.
+ *  @param Head Pointer to the list head.
  *  @param Node The node you are removing.
  */
 void SlRemoveNode(  SlNode_t *Head, 

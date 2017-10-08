@@ -111,7 +111,7 @@ int AddExtraMemoryToPool(   MemoryPool_t *pool,
 /**
  *  Create a MemoryPool
  *
- *  @param itemSize How big is an allocation.
+ *  @param ItemSize How big is an allocation.
  *  @param PreallocatedMemory Pointer to the preallocated memory
  *  you are dedicating to this pool.
  *  @param PreallocatedMemorySize How big is the buffer you are

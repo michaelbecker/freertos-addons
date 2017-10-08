@@ -108,7 +108,7 @@ void FreeReadWriteLock(ReadWriteLock_t *lock);
  *  This allows you shared read only access to whatever is being 
  *  protected by this lock.
  *
- *  @param lock The lock you are taking.
+ *  @param Lock The lock you are taking.
  */
 void ReaderLock(ReadWriteLock_t *Lock);
 
@@ -117,7 +117,7 @@ void ReaderLock(ReadWriteLock_t *Lock);
  *
  *  You should have already locked this using ReaderLock().
  *
- *  @param lock The lock you are releasing.
+ *  @param Lock The lock you are releasing.
  */
 void ReaderUnlock(ReadWriteLock_t *Lock);
 
@@ -127,7 +127,7 @@ void ReaderUnlock(ReadWriteLock_t *Lock);
  *  This allows you exclusive read / write access to whatever is being
  *  protected by this lock.
  *
- *  @param lock The lock you are taking.
+ *  @param Lock The lock you are taking.
  */
 void WriterLock(ReadWriteLock_t *Lock);
 
@@ -136,7 +136,7 @@ void WriterLock(ReadWriteLock_t *Lock);
  *
  *  You should have already locked this using WriterLock().
  *
- *  @param lock The lock you are releasing.
+ *  @param Lock The lock you are releasing.
  */
 void WriterUnlock(ReadWriteLock_t *Lock);
 
