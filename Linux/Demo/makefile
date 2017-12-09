@@ -71,7 +71,15 @@
 all:
 	$(MAKE) -C Linux_g++_binary_semaphore
 	$(MAKE) -C Linux_g++_binary_semaphore_no_except
+	$(MAKE) -C Linux_gcc_mem_pools
+	$(MAKE) -C Linux_gcc_mem_pools_add_extra
+	$(MAKE) -C Linux_gcc_mem_pools_static
+	$(MAKE) -C Linux_gcc_read_write_lock_prefer_reader
+	$(MAKE) -C Linux_gcc_read_write_lock_prefer_writer
 	$(MAKE) -C Linux_gcc_simple_tasks
+	$(MAKE) -C Linux_gcc_workqueues
+	$(MAKE) -C Linux_gcc_workqueues_no_delete
+	$(MAKE) -C Linux_gcc_zero_copy_queue
 	$(MAKE) -C Linux_g++_condition_variables
 	$(MAKE) -C Linux_g++_condition_variables2
 	$(MAKE) -C Linux_g++_condition_variables_multiple_producers_consumers
