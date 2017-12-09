@@ -3,7 +3,7 @@
 #
 # MIT License
 # 
-# Copyright (c) 2016, Michael Becker (michael.f.becker@gmail.com)
+# Copyright (c) 2017, Michael Becker (michael.f.becker@gmail.com)
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a 
 # copy of this software and associated documentation files (the "Software"),
@@ -101,7 +101,10 @@ def read_file(filename):
     a list of lines
     """
     f = open(filename, "r")
-    lines = f.readlines()
+    try:
+        lines = f.readlines()
+    except:
+        print ("Failed reading " + filename)
     f.close()
     return lines
 

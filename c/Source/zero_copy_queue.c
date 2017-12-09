@@ -2,7 +2,7 @@
  *
  *  Copyright (c) 2017, Michael Becker (michael.f.becker@gmail.com)
  *
- *  This file is part of the FreeRTOS C Add-ons project.
+ *  This file is part of the FreeRTOS Add-ons project.
  *  
  *  Source Code:
  *  https://github.com/michaelbecker/freertos-addons
@@ -13,21 +13,27 @@
  *  On-line Documentation:
  *  http://michaelbecker.github.io/freertos-addons/docs/html/index.html
  *
- *  The FreeRTOS C Add-ons project is free software: you can redistribute
- *  it and/or modify it under the terms of the GNU General Public License as
- *  published by the Free Software Foundation, either version 2
- *  of the License, or (at your option) any later version.
+ *  Permission is hereby granted, free of charge, to any person obtaining a 
+ *  copy of this software and associated documentation files (the "Software"),
+ *  to deal in the Software without restriction, including without limitation
+ *  the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *  and/or sell copies of the Software, and to permit persons to whom the 
+ *  Software is furnished to do so,subject to the following conditions:
  *
- *  The FreeRTOS C Add-ons project is distributed in the hope that it will
- *  be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  + The above copyright notice and this permission notice shall be included
+ *    in all copies or substantial portions of the Software.
+ *  + Credit is appreciated, but not required, if you find this project useful
+ *    enough to include in your application, product, device, etc.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with the FreeRTOS C Add-ons project.
- *  If not, see <http://www.gnu.org/licenses/>.
+ *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ *  FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ *  COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ *  IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ *  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  ***************************************************************************/
+
 #include <stdlib.h>
 #include "FreeRTOS.h"
 #include "queue.h"
