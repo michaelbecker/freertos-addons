@@ -33,10 +33,13 @@ import sys
 import argparse
 
 
-def find_all_files(directory, filename_filter = None, dirname_filter = None):
+def find_all_files(directory, filename_filter = None, dirname_filter = None, 
+                    ignore_dot_files = True):
     """ Return a list of all normal files in the directory
         as well as all subdirs. This performs a breath first 
         search because, well, I've never programed one before.
+        By default, we will ignore any file or directory that 
+        starts with a dot, as per Unix convention.
     """
     
     # Normalize the initial directory.
@@ -47,6 +50,9 @@ def find_all_files(directory, filename_filter = None, dirname_filter = None):
     file_list = []
 
     for e in os.listdir(directory):
+
+        if ignore_dot_files and e[0] == ".":
+            continue
 
         if os.path.isfile(e):
             e = os.path.realpath(e)
@@ -324,6 +330,14 @@ def update_all_makefiles(start_dir, new_header):
         write_file(f, lines)
 
 
+def debug_print_all(start_dir):
+    """ Debugging, print all files / dirs found.
+    """
+
+    file_list = find_all_files(start_dir)
+    for f in file_list:
+        print(f)
+
 # Script proper starts here.
 
 parser = argparse.ArgumentParser()
@@ -356,6 +370,9 @@ elif (args.file_type == "hpp"):
 
 elif (args.file_type == "makefile"):
     update_all_makefiles(start_dir, header_lines)
+
+elif (args.file_type == "debugprintall"):
+    debug_print_all(start_dir)
 
 else:
     print("Unsupported file type")
