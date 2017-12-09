@@ -78,7 +78,7 @@
 /**
  *  Generic function to stress a memory pool.
  */
-void StressPool(MemoryPool_t *p, int NumPoolItems, int dataSize, int PatternStart) 
+void StressPool(MemoryPool_t p, int NumPoolItems, int dataSize, int PatternStart) 
 {
     unsigned char **addr;
     int localStart;
@@ -139,15 +139,15 @@ typedef struct ThreadParameters_t_ {
 
 
 
-MemoryPool_t *pool_1;
-MemoryPool_t *pool_2;
-MemoryPool_t *pool_3;
-MemoryPool_t *pool_4;
-MemoryPool_t *pool_5;
-MemoryPool_t *pool_6;
-MemoryPool_t *pool_7;
-MemoryPool_t *pool_8;
-MemoryPool_t *pool_9;
+MemoryPool_t pool_1;
+MemoryPool_t pool_2;
+MemoryPool_t pool_3;
+MemoryPool_t pool_4;
+MemoryPool_t pool_5;
+MemoryPool_t pool_6;
+MemoryPool_t pool_7;
+MemoryPool_t pool_8;
+MemoryPool_t pool_9;
 
 
 #define NUM_POOL_1_ITEMS    10

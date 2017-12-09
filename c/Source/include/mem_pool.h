@@ -87,7 +87,7 @@ typedef void * MemoryPool_t;
  *  memory will be aligned to. Must be at least sizeof(unsigned char *).
  *  @return A Handle to the pool, or NULL on failure.
  */
-MemoryPool_t *CreateMemoryPool( int itemSize, 
+MemoryPool_t CreateMemoryPool(  int itemSize, 
                                 int itemCount,
                                 int Alignment);
 
@@ -104,7 +104,7 @@ MemoryPool_t *CreateMemoryPool( int itemSize,
  *  @param ItemCount How many more items you want to add.
  *  @return pdPASS on success, pdFAIL on error.
  */
-int AddExtraMemoryToPool(   MemoryPool_t *pool, 
+int AddExtraMemoryToPool(   MemoryPool_t pool, 
                             int ItemCount);
 
 
@@ -120,10 +120,10 @@ int AddExtraMemoryToPool(   MemoryPool_t *pool,
  *  memory will be aligned to. Must be at least sizeof(unsigned char *).
  *  @return A Handle to the pool, or NULL on failure.
  */
-MemoryPool_t *CreateMemoryPoolStatic(   int ItemSize,
-                                        void *PreallocatedMemory,
-                                        int PreallocatedMemorySize,
-                                        int Alignment);
+MemoryPool_t CreateMemoryPoolStatic(int ItemSize,
+                                    void *PreallocatedMemory,
+                                    int PreallocatedMemorySize,
+                                    int Alignment);
 
 
 /**
@@ -136,7 +136,7 @@ MemoryPool_t *CreateMemoryPoolStatic(   int ItemSize,
  *  passing in.
  *  @return pdPASS on success, pdFAIL on error.
  */
-int AddExtraMemoryToPoolStatic( MemoryPool_t *pool, 
+int AddExtraMemoryToPoolStatic( MemoryPool_t pool, 
                                 void *PreallocatedMemory,
                                 int PreallocatedMemorySize);
 
@@ -149,7 +149,7 @@ int AddExtraMemoryToPoolStatic( MemoryPool_t *pool,
  *  @param pool A handle to a MemoryPool.
  *  @return A pointer or NULL on failure.
  */
-void *MemoryPoolAllocate(MemoryPool_t *pool);
+void *MemoryPoolAllocate(MemoryPool_t pool);
 
 
 /**
@@ -161,7 +161,7 @@ void *MemoryPoolAllocate(MemoryPool_t *pool);
  *  @param pool A handle to a MemoryPool.
  *  @param memory memory obtained from MemoryPoolAllocate().
  */
-void MemoryPoolFree(MemoryPool_t *pool, void *memory);
+void MemoryPoolFree(MemoryPool_t pool, void *memory);
 
 
 #endif

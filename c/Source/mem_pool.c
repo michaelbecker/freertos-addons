@@ -166,7 +166,7 @@ static int CalculateItemSize(   int ItemSize,
 }
     
 
-MemoryPool_t *CreateMemoryPool( int ItemSize,
+MemoryPool_t CreateMemoryPool(  int ItemSize,
                                 int ItemCount,
                                 int Alignment)
 {
@@ -215,11 +215,11 @@ MemoryPool_t *CreateMemoryPool( int ItemSize,
         ptr += MemPool->ItemSize;
     }
     
-    return (MemoryPool_t *)MemPool;
+    return (MemoryPool_t)MemPool;
 }
 
 
-int AddExtraMemoryToPool(   MemoryPool_t *pool, 
+int AddExtraMemoryToPool(   MemoryPool_t pool, 
                             int ItemCount)
 {
     /*********************************/
@@ -256,10 +256,10 @@ int AddExtraMemoryToPool(   MemoryPool_t *pool,
 }
 
 
-MemoryPool_t *CreateMemoryPoolStatic(   int ItemSize,
-                                        void *PreallocatedMemory,
-                                        int PreallocatedMemorySize,
-                                        int Alignment)
+MemoryPool_t CreateMemoryPoolStatic(int ItemSize,
+                                    void *PreallocatedMemory,
+                                    int PreallocatedMemorySize,
+                                    int Alignment)
 {
     /*********************************/
     MemPool_t *MemPool;
@@ -303,11 +303,11 @@ MemoryPool_t *CreateMemoryPoolStatic(   int ItemSize,
         PreallocatedMemorySize -= MemPool->ItemSize;
     }
     
-    return (MemoryPool_t *)MemPool;
+    return (MemoryPool_t)MemPool;
 }
 
 
-int AddExtraMemoryToPoolStatic( MemoryPool_t *pool, 
+int AddExtraMemoryToPoolStatic( MemoryPool_t pool, 
                                 void *PreallocatedMemory,
                                 int PreallocatedMemorySize)
 {
@@ -337,7 +337,7 @@ int AddExtraMemoryToPoolStatic( MemoryPool_t *pool,
 }
 
 
-void *MemoryPoolAllocate(MemoryPool_t *pool)
+void *MemoryPoolAllocate(MemoryPool_t pool)
 {
     /*********************************/
     MemPool_t *MemPool;
@@ -364,7 +364,7 @@ void *MemoryPoolAllocate(MemoryPool_t *pool)
 }
 
 
-void MemoryPoolFree(MemoryPool_t *pool, void *memory)
+void MemoryPoolFree(MemoryPool_t pool, void *memory)
 {
     /*********************************/
     MemPool_t *MemPool;
