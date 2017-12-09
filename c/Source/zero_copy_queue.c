@@ -28,6 +28,7 @@
  *  If not, see <http://www.gnu.org/licenses/>.
  *
  ***************************************************************************/
+#include <stdlib.h>
 #include "FreeRTOS.h"
 #include "queue.h"
 #include "mem_pool.h"
@@ -64,7 +65,7 @@ ZeroCopyQueue_t ZcqCreateQueue( int ItemSize,
     zcq->Pool = CreateMemoryPool(ItemSize, ItemCount, Alignment);
     if (zcq->Pool == NULL) {
         free(zcq);
-        vQueueDelete(handle);
+        vQueueDelete(zcq->Handle);
         return NULL;
     }
 
@@ -100,7 +101,7 @@ void ZcqFreeItem(   ZeroCopyQueue_t z,
 }
 
 
-int ZcqEnqueueItem( ZeroCopyQueue_t zcq, 
+int ZcqEnqueueItem( ZeroCopyQueue_t z, 
                     void *Item, 
                     TickType_t Timeout)
 {
@@ -117,7 +118,7 @@ int ZcqEnqueueItem( ZeroCopyQueue_t zcq,
 }
 
 
-void *ZcqDequeueItem(   ZeroCopyQueue_t zcq,
+void *ZcqDequeueItem(   ZeroCopyQueue_t z,
                         TickType_t Timeout)
 {
     /******************************/
@@ -128,7 +129,7 @@ void *ZcqDequeueItem(   ZeroCopyQueue_t zcq,
 
     zcq = (PvtZeroCopyQueue_t *)z;
 
-    success = xQueueReceive(zcq->Handle, Item, Timeout);
+    success = xQueueReceive(zcq->Handle, &Item, Timeout);
 
     return success == pdTRUE ? Item : NULL;
 }

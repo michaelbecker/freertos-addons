@@ -32,20 +32,72 @@
 #define ZERO_COPY_QUEUE_H_
 
 
+/**
+ *  Handle for ZeroCopyQueues. 
+ *
+ *  These queues only copy a single pointer instead of the 
+ *  entire data structure, which is how FreeRTOS works by default.
+ */
 typedef void * ZeroCopyQueue_t;
 
 
+/**
+ *  Create a Zero Copy Queue.
+ *
+ *  @param itemSize Maximum size of the item.
+ *  @param itemCount What's the maximum number of items allowed?
+ *  @param Alignment Power of 2 value denoting on which address boundary the 
+ *  memory will be aligned to. Must be at least sizeof(unsigned char *).
+ *  @return A Handle to the ZeroCopyQueue, or NULL on failure.
+ */
 ZeroCopyQueue_t ZcqCreateQueue( int itemSize,
                                 int itemCount,
                                 int Alignment);
 
+
+/**
+ *  Allocate an item to use or queue.
+ *
+ *  Note that this can block, and cannnot be used from ISR context.
+ *
+ *  @param zcq A handle to a ZeroCopyQueue_t.
+ *  @return A pointer or NULL on failure.
+ */
 void *ZcqAllocateItem(ZeroCopyQueue_t zcq);
 
+
+/**
+ *  Free a previously allocated item back into the base pool.
+ *
+ *  @note This can block, and cannnot be used from ISR context.
+ *  @note There is no check that the memory passed in is valid.
+ *
+ *  @param zcq A handle to a ZeroCopyQueue_t.
+ *  @param item An item obtained from ZcqAllocateItem().
+ */
 void ZcqFreeItem(ZeroCopyQueue_t zcq, void *item);
 
-void ZcqEnqueueItem(ZeroCopyQueue_t zcq, void *item, TickType_t Timeout);
 
-void ZcqDequeueItem(ZeroCopyQueue_t zcq, void *item, TickType_t Timeout);
+/**
+ *  Queue an item obtained from ZcqAllocateItem().
+ *
+ *  @param zcq A handle to a ZeroCopyQueue_t.
+ *  @param item An item obtained from ZcqAllocateItem().
+ *  @param Timeout Timeout in FreeRTOS ticks.
+ *  @return 1 on success, 0 on failure.
+ */
+int ZcqEnqueueItem(ZeroCopyQueue_t zcq, void *item, TickType_t Timeout);
+
+
+/**
+ *  Dequeue an item from ZcqEnqueueItem().
+ *
+ *  @param zcq A handle to a ZeroCopyQueue_t.
+ *  @param Timeout Timeout in FreeRTOS ticks.
+ *  @return An item obtained from ZcqAllocateItem() on success.
+ *  NULL on failure.
+ */
+void *ZcqDequeueItem(ZeroCopyQueue_t zcq, TickType_t Timeout);
 
 
 #endif
