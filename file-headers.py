@@ -80,7 +80,7 @@ def make_file_extension_match(extension):
     """Return a function that searches for filename extensions.
     """
     def is_file_match(filename):
-        match = re.search("." + extension + "$", filename)
+        match = re.search("\." + extension + "$", filename)
         if match:
             return True
         else:
