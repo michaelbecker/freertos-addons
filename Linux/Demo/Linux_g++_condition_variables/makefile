@@ -34,6 +34,7 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 #############################################################################
+include ../os_specific_linker_options.mk
 
 
 FREERTOS_SRC_DIR=../../../../FreeRTOS/Source
@@ -49,7 +50,6 @@ CXX = g++
 
 CFLAGS += -Wall -Werror -Wextra -Wpedantic -pthread -O0 -g
 CXXFLAGS += -Wall -Werror -Wextra -Wpedantic -pthread -O0 -g -DCPP_FREERTOS_CONDITION_VARIABLES
-LDFLAGS += -Wall -Werror -Wextra -Wpedantic -pthread -O0 -g
 
 
 
