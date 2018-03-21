@@ -34,6 +34,7 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 #############################################################################
+include ../os_specific_linker_options.mk
 
 
 FREERTOS_SRC_DIR=../../../../FreeRTOS/Source
@@ -45,7 +46,6 @@ PORTABLE_SRC_MEM_MANG_DIR=../../../../FreeRTOS/Source/portable/MemMang
 CC = gcc
 
 CFLAGS += -Wall -Werror -Wextra -Wpedantic -pthread -O0 -g
-LDFLAGS += -Wall -Werror -Wextra -Wpedantic -pthread -O0 -g
 
 
 
