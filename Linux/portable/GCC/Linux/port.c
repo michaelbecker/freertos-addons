@@ -157,6 +157,13 @@ static void DeleteThreadCleanupRoutine( void *Parameter )
         uxCriticalNesting = 0;
         vPortEnableInterrupts();
     }
+
+	/* Allocate memory and save the pthread ID of the deleted task */
+	struct DeletedThreadListEntry *e = malloc(sizeof(struct DeletedThreadListEntry));
+	e->Thread = State->Thread;
+	pthread_mutex_lock(&xDeletedThreadsListMutex);
+	LIST_INSERT_HEAD(&hDeletedThreadsListHead, e, Entry);
+	pthread_mutex_unlock(&xDeletedThreadsListMutex);
 }
 
 
@@ -556,6 +563,9 @@ portBASE_TYPE xPortStartScheduler( void )
     sigset_t xSignalsBlocked;
     pthread_t FirstThread;
     int success;
+	
+	/* Initialize the list which holds pthreads' IDs which must be joined on the scheduler end */
+	LIST_INIT(&hDeletedThreadsListHead);
 
     /* Establish the signals to block before they are needed. */
     sigfillset( &xSignalToBlock );
@@ -638,6 +648,17 @@ void vPortJoinSchedulerEndCaller()
 	/* Cancel the thread which called vTaskEndScheduler and join it. */
 	pthread_cancel(hEndSchedulerCallerThread);
 	pthread_join(hEndSchedulerCallerThread, NULL);
+
+	pthread_mutex_lock(&xDeletedThreadsListMutex);
+	while (hDeletedThreadsListHead.lh_first != NULL)
+	{
+		/* Join each deleted thread and cleanup the list entry */
+		struct DeletedThreadListEntry *p = hDeletedThreadsListHead.lh_first;
+		pthread_join(p->Thread, NULL);
+		LIST_REMOVE(p, Entry);
+		free(p);
+	}
+	pthread_mutex_unlock(&xDeletedThreadsListMutex);
 
 	pthread_mutex_destroy(&xDeletedThreadsListMutex);
 }
