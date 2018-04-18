@@ -611,10 +611,19 @@ portBASE_TYPE xPortStartScheduler( void )
     return 0;
 }
 
-
 void vPortEndScheduler( void )
 {
     int i;
+
+	/* Ignore next or pending SIG_TICK, it mustn't execute anymore */
+    struct sigaction sigtickdeinit;
+    sigtickdeinit.sa_flags = 0;
+    sigtickdeinit.sa_handler = SIG_IGN;
+    sigfillset( &sigtickdeinit.sa_mask );
+    if ( 0 != sigaction( SIG_TICK, &sigtickdeinit, NULL ) )
+    {
+        printf( "Problem deinstalling SIG_TICK\n" );
+    }
 
     for (i = 0; i < MAX_NUMBER_OF_TASKS; i++)
     {
