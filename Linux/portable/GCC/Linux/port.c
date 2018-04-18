@@ -652,7 +652,7 @@ void vPortEndScheduler( void )
 }
 
 /* This must be called from main thread (the thread which called vTaskStartScheduler). */
-void vPortJoinSchedulerEndCaller()
+void vPortCleanup()
 {
 	/* Cancel the thread which called vTaskEndScheduler and join it. */
 	pthread_cancel(hEndSchedulerCallerThread);
