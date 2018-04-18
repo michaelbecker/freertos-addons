@@ -621,6 +621,11 @@ void vPortEndScheduler( void )
     pthread_kill( hMainThread, SIG_RESUME );
 }
 
+/* This must be called from main thread (the thread which called vTaskStartScheduler). */
+void vPortJoinSchedulerEndCaller()
+{
+	pthread_mutex_destroy(&xDeletedThreadsListMutex);
+}
 
 void vPortYieldFromISR( void )
 {
