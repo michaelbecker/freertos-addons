@@ -88,12 +88,26 @@
 #include <sys/types.h>
 #include <assert.h>
 #include <string.h>
+#include <sys/queue.h>
 
 /* Scheduler includes. */
 #include "FreeRTOS.h"
 #include "task.h"
 #include "portmacro.h"
 
+/* 
+ * This list contains pthread_t IDs for the threads which must be joined at the end of program.
+ * Those IDs are saved when a task is deleted and the underlying pthread must be joined to avoid memory leakage.
+ */
+static LIST_HEAD(listhead, DeletedThreadListEntry) hDeletedThreadsListHead =
+	LIST_HEAD_INITIALIZER(hDeletedThreadsListHead);
+struct listhead *hDeletedThreadsListHeadp;
+struct DeletedThreadListEntry
+{
+	pthread_t Thread;
+	LIST_ENTRY(DeletedThreadListEntry) Entry;
+};
+static pthread_mutex_t xDeletedThreadsListMutex = PTHREAD_MUTEX_INITIALIZER;
 
 /* Each task maintains its own interrupt status in the critical nesting variable. */
 typedef struct ThreadState_t_
