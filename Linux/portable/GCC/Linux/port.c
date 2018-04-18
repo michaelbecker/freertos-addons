@@ -100,12 +100,12 @@
  * Those IDs are saved when a task is deleted and the underlying pthread must be joined to avoid memory leakage.
  */
 static LIST_HEAD(listhead, DeletedThreadListEntry) hDeletedThreadsListHead =
-	LIST_HEAD_INITIALIZER(hDeletedThreadsListHead);
+    LIST_HEAD_INITIALIZER(hDeletedThreadsListHead);
 struct listhead *hDeletedThreadsListHeadp;
 struct DeletedThreadListEntry
 {
-	pthread_t Thread;
-	LIST_ENTRY(DeletedThreadListEntry) Entry;
+    pthread_t Thread;
+    LIST_ENTRY(DeletedThreadListEntry) Entry;
 };
 static pthread_mutex_t xDeletedThreadsListMutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -158,12 +158,12 @@ static void DeleteThreadCleanupRoutine( void *Parameter )
         vPortEnableInterrupts();
     }
 
-	/* Allocate memory and save the pthread ID of the deleted task */
-	struct DeletedThreadListEntry *e = malloc(sizeof(struct DeletedThreadListEntry));
-	e->Thread = State->Thread;
-	pthread_mutex_lock(&xDeletedThreadsListMutex);
-	LIST_INSERT_HEAD(&hDeletedThreadsListHead, e, Entry);
-	pthread_mutex_unlock(&xDeletedThreadsListMutex);
+    /* Allocate memory and save the pthread ID of the deleted task */
+    struct DeletedThreadListEntry *e = malloc(sizeof(struct DeletedThreadListEntry));
+    e->Thread = State->Thread;
+    pthread_mutex_lock(&xDeletedThreadsListMutex);
+    LIST_INSERT_HEAD(&hDeletedThreadsListHead, e, Entry);
+    pthread_mutex_unlock(&xDeletedThreadsListMutex);
 }
 
 
@@ -503,7 +503,7 @@ portSTACK_TYPE *pxPortInitialiseStack( portSTACK_TYPE *pxTopOfStack, pdTASK_CODE
         rc = pthread_setaffinity_np(pxThreads[lIndexOfLastAddedTask].Thread, 
                                     sizeof(cpu_set_t), 
                                     &cpuset);
-	    configASSERT( rc == 0 );
+        configASSERT( rc == 0 );
         pxThreads[lIndexOfLastAddedTask].Valid = 1;
     }
 
@@ -563,9 +563,9 @@ portBASE_TYPE xPortStartScheduler( void )
     sigset_t xSignalsBlocked;
     pthread_t FirstThread;
     int success;
-	
-	/* Initialize the list which holds pthreads' IDs which must be joined on the scheduler end */
-	LIST_INIT(&hDeletedThreadsListHead);
+    
+    /* Initialize the list which holds pthreads' IDs which must be joined on the scheduler end */
+    LIST_INIT(&hDeletedThreadsListHead);
 
     /* Establish the signals to block before they are needed. */
     sigfillset( &xSignalToBlock );
@@ -615,7 +615,7 @@ void vPortEndScheduler( void )
 {
     int i;
 
-	/* Ignore next or pending SIG_TICK, it mustn't execute anymore */
+    /* Ignore next or pending SIG_TICK, it mustn't execute anymore */
     struct sigaction sigtickdeinit;
     sigtickdeinit.sa_flags = 0;
     sigtickdeinit.sa_handler = SIG_IGN;
@@ -628,19 +628,19 @@ void vPortEndScheduler( void )
     for (i = 0; i < MAX_NUMBER_OF_TASKS; i++)
     {
         if ( pxThreads[i].Valid )
-	    {
-			/* Do not cancel itself */
-			if(pthread_equal(pxThreads[i].Thread, pthread_self()))
-			{
-				pxThreads[i].Valid = 0;
-				/* Set the caller pthread_t to cancel and join this thread later */
-				hEndSchedulerCallerThread = pxThreads[i].Thread;
-				continue;
-			}
+        {
+            /* Do not cancel itself */
+            if(pthread_equal(pxThreads[i].Thread, pthread_self()))
+            {
+                pxThreads[i].Valid = 0;
+                /* Set the caller pthread_t to cancel and join this thread later */
+                hEndSchedulerCallerThread = pxThreads[i].Thread;
+                continue;
+            }
 
             /* Kill all of the threads by cancelling them and then wait joining. */
-			pthread_cancel(pxThreads[i].Thread );
-			pthread_join(pxThreads[i].Thread, NULL );
+            pthread_cancel(pxThreads[i].Thread );
+            pthread_join(pxThreads[i].Thread, NULL );
             pxThreads[i].Valid = 0;
         }
     }
@@ -654,22 +654,22 @@ void vPortEndScheduler( void )
 /* This must be called from main thread (the thread which called vTaskStartScheduler). */
 void vPortCleanup()
 {
-	/* Cancel the thread which called vTaskEndScheduler and join it. */
-	pthread_cancel(hEndSchedulerCallerThread);
-	pthread_join(hEndSchedulerCallerThread, NULL);
+    /* Cancel the thread which called vTaskEndScheduler and join it. */
+    pthread_cancel(hEndSchedulerCallerThread);
+    pthread_join(hEndSchedulerCallerThread, NULL);
 
-	pthread_mutex_lock(&xDeletedThreadsListMutex);
-	while (hDeletedThreadsListHead.lh_first != NULL)
-	{
-		/* Join each deleted thread and cleanup the list entry */
-		struct DeletedThreadListEntry *p = hDeletedThreadsListHead.lh_first;
-		pthread_join(p->Thread, NULL);
-		LIST_REMOVE(p, Entry);
-		free(p);
-	}
-	pthread_mutex_unlock(&xDeletedThreadsListMutex);
+    pthread_mutex_lock(&xDeletedThreadsListMutex);
+    while (hDeletedThreadsListHead.lh_first != NULL)
+    {
+        /* Join each deleted thread and cleanup the list entry */
+        struct DeletedThreadListEntry *p = hDeletedThreadsListHead.lh_first;
+        pthread_join(p->Thread, NULL);
+        LIST_REMOVE(p, Entry);
+        free(p);
+    }
+    pthread_mutex_unlock(&xDeletedThreadsListMutex);
 
-	pthread_mutex_destroy(&xDeletedThreadsListMutex);
+    pthread_mutex_destroy(&xDeletedThreadsListMutex);
 }
 
 void vPortYieldFromISR( void )
