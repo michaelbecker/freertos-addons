@@ -131,6 +131,7 @@ static pthread_mutex_t xSuspendResumeThreadMutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t xSingleThreadMutex = PTHREAD_MUTEX_INITIALIZER;
 
 static pthread_t hMainThread;
+static pthread_t hEndSchedulerCallerThread;
 
 static volatile portBASE_TYPE xSentinel = 0;
 static volatile portBASE_TYPE xSchedulerEnd = pdFALSE;
@@ -448,9 +449,9 @@ portSTACK_TYPE *pxPortInitialiseStack( portSTACK_TYPE *pxTopOfStack, pdTASK_CODE
  
     pthread_once( &hSigSetupThread, prvSetupSignalsAndSchedulerPolicy );
 
-    /* No need to join the threads. */
+    /* Set the thread joinable if for the situation when the user wants to end scheduling. */
     pthread_attr_init( &xThreadAttributes );
-    pthread_attr_setdetachstate( &xThreadAttributes, PTHREAD_CREATE_DETACHED );
+    pthread_attr_setdetachstate( &xThreadAttributes, PTHREAD_CREATE_JOINABLE );
 
     vPortEnterCritical();
 
@@ -608,9 +609,19 @@ void vPortEndScheduler( void )
     for (i = 0; i < MAX_NUMBER_OF_TASKS; i++)
     {
         if ( pxThreads[i].Valid )
-        {
-            /* Kill all of the threads, they are in the detached state. */
-            pthread_cancel(pxThreads[i].Thread );
+	    {
+			/* Do not cancel itself */
+			if(pthread_equal(pxThreads[i].Thread, pthread_self()))
+			{
+				pxThreads[i].Valid = 0;
+				/* Set the caller pthread_t to cancel and join this thread later */
+				hEndSchedulerCallerThread = pxThreads[i].Thread;
+				continue;
+			}
+
+            /* Kill all of the threads by cancelling them and then wait joining. */
+			pthread_cancel(pxThreads[i].Thread );
+			pthread_join(pxThreads[i].Thread, NULL );
             pxThreads[i].Valid = 0;
         }
     }
@@ -624,6 +635,10 @@ void vPortEndScheduler( void )
 /* This must be called from main thread (the thread which called vTaskStartScheduler). */
 void vPortJoinSchedulerEndCaller()
 {
+	/* Cancel the thread which called vTaskEndScheduler and join it. */
+	pthread_cancel(hEndSchedulerCallerThread);
+	pthread_join(hEndSchedulerCallerThread, NULL);
+
 	pthread_mutex_destroy(&xDeletedThreadsListMutex);
 }
 
