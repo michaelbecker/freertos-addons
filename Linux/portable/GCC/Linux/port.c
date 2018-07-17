@@ -117,6 +117,8 @@ static pthread_mutex_t xSuspendResumeThreadMutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t xSingleThreadMutex = PTHREAD_MUTEX_INITIALIZER;
 
 static pthread_t hMainThread;
+static pthread_t hEndSchedulerCallerThread;
+static xTaskHandle hEndSchedulerCallerTask;
 
 static volatile portBASE_TYPE xSentinel = 0;
 static volatile portBASE_TYPE xSchedulerEnd = pdFALSE;
@@ -578,6 +580,10 @@ portBASE_TYPE xPortStartScheduler( void )
     }
 
     printf( "Cleaning Up, Exiting.\n" );
+
+    vTaskDelete(hEndSchedulerCallerTask);
+    pthread_cancel(hEndSchedulerCallerThread);
+
     /* Cleanup the mutexes */
     pthread_mutex_destroy( &xSuspendResumeThreadMutex );
     pthread_mutex_destroy( &xSingleThreadMutex );
@@ -590,14 +596,50 @@ portBASE_TYPE xPortStartScheduler( void )
 void vPortEndScheduler( void )
 {
     int i;
+    int rc;
+    struct sigaction sigtickdeinit;
+
+    /* Ignore next or pending SIG_TICK, it mustn't execute anymore. */
+    sigtickdeinit.sa_flags = 0;
+    sigtickdeinit.sa_handler = SIG_IGN;
+    sigfillset(&sigtickdeinit.sa_mask);
+
+    rc = sigaction(SIG_TICK, &sigtickdeinit, NULL);
+    assert(rc == 0);
 
     for (i = 0; i < MAX_NUMBER_OF_TASKS; i++)
     {
         if ( pxThreads[i].Valid )
         {
-            /* Kill all of the threads, they are in the detached state. */
-            pthread_cancel(pxThreads[i].Thread );
+            /* Don't kill yourself */
+            if (pthread_equal(pxThreads[i].Thread, pthread_self())) 
+            {
+                continue;
+            }
+#if ( INCLUDE_vTaskDelete == 1 )
+            vTaskDelete(pxThreads[i].hTask);
+#endif
+        }
+    }
+
+    for (i = 0; i < MAX_NUMBER_OF_TASKS; i++)
+    {
+        if ( pxThreads[i].Valid )
+        {
             pxThreads[i].Valid = 0;
+                
+            /* Don't kill yourself */
+            if (pthread_equal(pxThreads[i].Thread, pthread_self())) 
+            {
+                hEndSchedulerCallerTask = pxThreads[i].hTask;
+                hEndSchedulerCallerThread = pxThreads[i].Thread;
+                continue;
+            }
+            else
+            {
+                /* Kill all of the threads, they are in the detached state. */
+                pthread_cancel(pxThreads[i].Thread );
+            }
         }
     }
 
