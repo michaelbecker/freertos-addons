@@ -104,6 +104,7 @@ typedef struct ThreadState_t_
     portBASE_TYPE   uxCriticalNesting;
     pdTASK_CODE     pxCode;
     void            *pvParams;
+    int             index;
 
 } ThreadState_t;
 
@@ -118,7 +119,7 @@ static pthread_mutex_t xSingleThreadMutex = PTHREAD_MUTEX_INITIALIZER;
 
 static pthread_t hMainThread;
 static pthread_t hEndSchedulerCallerThread;
-static xTaskHandle hEndSchedulerCallerTask;
+int hEndSchedulerCallerThreadIndex;
 
 static volatile portBASE_TYPE xSentinel = 0;
 static volatile portBASE_TYPE xSchedulerEnd = pdFALSE;
@@ -129,6 +130,118 @@ static volatile portLONG lIndexOfLastAddedTask = 0;
 static volatile portBASE_TYPE uxCriticalNesting;
 
 
+
+/****************************************************************************
+ *
+ *              !!! vPortEndScheduler Hack !!!
+ *
+ *  This is copied directly from "task.c" from the FreeRTOS src code.
+ *  To end the scheduler cleanly, we need to free the data it allocated
+ *  when it set up the task, like their call stacks, etc. Otherwise, 
+ *  memcheckers like valgrind catch this and complain.
+ *
+ *  This will _break_ if FreeRTOS revises the TCB structure!
+ *
+ ***************************************************************************/
+/*
+ * Task control block.  A task control block (TCB) is allocated for each task,
+ * and stores task state information, including a pointer to the task's context
+ * (the task's run time environment, including register values)
+ */
+typedef struct tskTaskControlBlock
+{
+	volatile StackType_t	*pxTopOfStack;	/*< Points to the location of the last item placed on the tasks stack.  THIS MUST BE THE FIRST MEMBER OF THE TCB STRUCT. */
+
+	#if ( portUSING_MPU_WRAPPERS == 1 )
+		xMPU_SETTINGS	xMPUSettings;		/*< The MPU settings are defined as part of the port layer.  THIS MUST BE THE SECOND MEMBER OF THE TCB STRUCT. */
+	#endif
+
+	ListItem_t			xStateListItem;	/*< The list that the state list item of a task is reference from denotes the state of that task (Ready, Blocked, Suspended ). */
+	ListItem_t			xEventListItem;		/*< Used to reference a task from an event list. */
+	UBaseType_t			uxPriority;			/*< The priority of the task.  0 is the lowest priority. */
+	StackType_t			*pxStack;			/*< Points to the start of the stack. */
+	char				pcTaskName[ configMAX_TASK_NAME_LEN ];/*< Descriptive name given to the task when created.  Facilitates debugging only. */ /*lint !e971 Unqualified char types are allowed for strings and single characters only. */
+
+	#if ( ( portSTACK_GROWTH > 0 ) || ( configRECORD_STACK_HIGH_ADDRESS == 1 ) )
+		StackType_t		*pxEndOfStack;		/*< Points to the highest valid address for the stack. */
+	#endif
+
+	#if ( portCRITICAL_NESTING_IN_TCB == 1 )
+		UBaseType_t		uxCriticalNesting;	/*< Holds the critical section nesting depth for ports that do not maintain their own count in the port layer. */
+	#endif
+
+	#if ( configUSE_TRACE_FACILITY == 1 )
+		UBaseType_t		uxTCBNumber;		/*< Stores a number that increments each time a TCB is created.  It allows debuggers to determine when a task has been deleted and then recreated. */
+		UBaseType_t		uxTaskNumber;		/*< Stores a number specifically for use by third party trace code. */
+	#endif
+
+	#if ( configUSE_MUTEXES == 1 )
+		UBaseType_t		uxBasePriority;		/*< The priority last assigned to the task - used by the priority inheritance mechanism. */
+		UBaseType_t		uxMutexesHeld;
+	#endif
+
+	#if ( configUSE_APPLICATION_TASK_TAG == 1 )
+		TaskHookFunction_t pxTaskTag;
+	#endif
+
+	#if( configNUM_THREAD_LOCAL_STORAGE_POINTERS > 0 )
+		void			*pvThreadLocalStoragePointers[ configNUM_THREAD_LOCAL_STORAGE_POINTERS ];
+	#endif
+
+	#if( configGENERATE_RUN_TIME_STATS == 1 )
+		uint32_t		ulRunTimeCounter;	/*< Stores the amount of time the task has spent in the Running state. */
+	#endif
+
+	#if ( configUSE_NEWLIB_REENTRANT == 1 )
+		/* Allocate a Newlib reent structure that is specific to this task.
+		Note Newlib support has been included by popular demand, but is not
+		used by the FreeRTOS maintainers themselves.  FreeRTOS is not
+		responsible for resulting newlib operation.  User must be familiar with
+		newlib and must provide system-wide implementations of the necessary
+		stubs. Be warned that (at the time of writing) the current newlib design
+		implements a system-wide malloc() that must be provided with locks. */
+		struct	_reent xNewLib_reent;
+	#endif
+
+	#if( configUSE_TASK_NOTIFICATIONS == 1 )
+		volatile uint32_t ulNotifiedValue;
+		volatile uint8_t ucNotifyState;
+	#endif
+
+	/* See the comments above the definition of
+	tskSTATIC_AND_DYNAMIC_ALLOCATION_POSSIBLE. */
+	#if( tskSTATIC_AND_DYNAMIC_ALLOCATION_POSSIBLE != 0 ) /*lint !e731 Macro has been consolidated for readability reasons. */
+		uint8_t	ucStaticallyAllocated; 		/*< Set to pdTRUE if the task is a statically allocated to ensure no attempt is made to free the memory. */
+	#endif
+
+	#if( INCLUDE_xTaskAbortDelay == 1 )
+		uint8_t ucDelayAborted;
+	#endif
+
+} tskTCB;
+
+
+static void vPortFreeTcbData(xTaskHandle hTask)
+{
+    tskTCB *tcb;
+
+    tcb = (tskTCB *)hTask;
+
+
+    /* Remove task from the ready list. */
+	uxListRemove( &( tcb->xStateListItem ) );
+
+    free(tcb->pxStack);
+    free(tcb);
+}
+
+/****************************************************************************
+ *
+ *                  !!! vPortEndScheduler Hack End !!!
+ *
+ ***************************************************************************/
+
+
 /**
  *  pthread cleanup routine, always executed on pthread exit.
  */
@@ -136,6 +249,9 @@ static void DeleteThreadCleanupRoutine( void *Parameter )
 {
     ThreadState_t *State = (ThreadState_t *)Parameter;
 
+    printf("[%d] DeleteThreadCleanupRoutine for index\n", State->index);
+
+    vPortFreeTcbData(State->hTask);
     State->Valid = 0;
     State->hTask = (xTaskHandle)NULL;
     if ( State->uxCriticalNesting > 0 )
@@ -366,9 +482,16 @@ static void prvSetupSignalsAndSchedulerPolicy( void )
     iPolicy = SCHED_FIFO;
     iResult = pthread_setschedparam( pthread_self(), iPolicy, &iSchedulerPriority );        */
 
+    int i;
     struct sigaction sigsuspendself, sigresume, sigtick;
 
     memset(pxThreads, 0, sizeof(pxThreads));
+
+    for (i = 0; i < MAX_NUMBER_OF_TASKS; i++ )
+    {
+        pxThreads[i].index = i;
+    }
+    
 
     sigsuspendself.sa_flags = 0;
     sigsuspendself.sa_handler = SuspendSignalHandler;
@@ -410,12 +533,17 @@ static void *ThreadStartWrapper( void * pvParams )
 {
     ThreadState_t *State = (ThreadState_t *)pvParams;
 
+    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
+    pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+    
     pthread_cleanup_push( DeleteThreadCleanupRoutine, State );
 
     pthread_mutex_lock(&xSingleThreadMutex); 
     SuspendThread( pthread_self() );
 
+    printf("[%d] Starting thread\n", State->index);
     State->pxCode( State->pvParams );
+    printf("[%d] Ending thread - SHOULD NEVER SEE THIS\n", State->index);
 
     /* make sure we execute DeleteThreadCleanupRoutine */
     pthread_cleanup_pop( 1 );
@@ -470,22 +598,17 @@ portSTACK_TYPE *pxPortInitialiseStack( portSTACK_TYPE *pxTopOfStack, pdTASK_CODE
                         ThreadStartWrapper, 
                         (void *)&pxThreads[lIndexOfLastAddedTask]
                         );
-    if (rc != 0)
-    {
-        /* Thread create failed, signal the failure */
-        pxTopOfStack = 0;
-    }
-    else 
-    {
-        CPU_ZERO(&cpuset);
-        CPU_SET(0, &cpuset);
+    assert(rc == 0);
 
-        rc = pthread_setaffinity_np(pxThreads[lIndexOfLastAddedTask].Thread, 
-                                    sizeof(cpu_set_t), 
-                                    &cpuset);
-	    configASSERT( rc == 0 );
-        pxThreads[lIndexOfLastAddedTask].Valid = 1;
-    }
+    CPU_ZERO(&cpuset);
+    CPU_SET(0, &cpuset);
+
+    rc = pthread_setaffinity_np(pxThreads[lIndexOfLastAddedTask].Thread, 
+                                sizeof(cpu_set_t), 
+                                &cpuset);
+	configASSERT( rc == 0 );
+    pxThreads[lIndexOfLastAddedTask].Valid = 1;
+
 
     /* Wait until the task suspends. */
     pthread_mutex_unlock( &xSingleThreadMutex );
@@ -579,14 +702,18 @@ portBASE_TYPE xPortStartScheduler( void )
         }
     }
 
-    printf( "Cleaning Up, Exiting.\n" );
+    printf("Exiting scheduler.\n");
 
-    vTaskDelete(hEndSchedulerCallerTask);
+    printf("[%d] Canceling xTaskEndScheduler caller thread.\n", hEndSchedulerCallerThreadIndex);
     pthread_cancel(hEndSchedulerCallerThread);
+    sleep(1);
 
     /* Cleanup the mutexes */
+    printf( "Freeing OS mutexes.\n" );
     pthread_mutex_destroy( &xSuspendResumeThreadMutex );
     pthread_mutex_destroy( &xSingleThreadMutex );
+
+    sleep(1);
 
     /* Should not get here! */
     return 0;
@@ -599,6 +726,11 @@ void vPortEndScheduler( void )
     int rc;
     struct sigaction sigtickdeinit;
 
+    xInterruptsEnabled = pdFALSE;
+
+    /* Signal the scheduler to exit its loop. */
+    xSchedulerEnd = pdTRUE;
+
     /* Ignore next or pending SIG_TICK, it mustn't execute anymore. */
     sigtickdeinit.sa_flags = 0;
     sigtickdeinit.sa_handler = SIG_IGN;
@@ -607,44 +739,36 @@ void vPortEndScheduler( void )
     rc = sigaction(SIG_TICK, &sigtickdeinit, NULL);
     assert(rc == 0);
 
-    for (i = 0; i < MAX_NUMBER_OF_TASKS; i++)
-    {
-        if ( pxThreads[i].Valid )
-        {
-            /* Don't kill yourself */
-            if (pthread_equal(pxThreads[i].Thread, pthread_self())) 
-            {
-                continue;
-            }
-#if ( INCLUDE_vTaskDelete == 1 )
-            vTaskDelete(pxThreads[i].hTask);
-#endif
-        }
-    }
+    rc = sigaction(SIG_RESUME, &sigtickdeinit, NULL);
+    assert(rc == 0);
+
+    rc = sigaction(SIG_SUSPEND, &sigtickdeinit, NULL);
+    assert(rc == 0);
+    
 
     for (i = 0; i < MAX_NUMBER_OF_TASKS; i++)
     {
         if ( pxThreads[i].Valid )
         {
-            pxThreads[i].Valid = 0;
+            //pxThreads[i].Valid = 0;
                 
             /* Don't kill yourself */
             if (pthread_equal(pxThreads[i].Thread, pthread_self())) 
             {
-                hEndSchedulerCallerTask = pxThreads[i].hTask;
+                printf("[%d] Delaying canceling pthread\n", i);
                 hEndSchedulerCallerThread = pxThreads[i].Thread;
+                hEndSchedulerCallerThreadIndex = pxThreads[i].index;
                 continue;
             }
             else
             {
                 /* Kill all of the threads, they are in the detached state. */
+                printf("[%d] canceling pthread\n", i);
                 pthread_cancel(pxThreads[i].Thread );
+                sleep(1);
             }
         }
     }
-
-    /* Signal the scheduler to exit its loop. */
-    xSchedulerEnd = pdTRUE;
 
     pthread_kill( hMainThread, SIG_RESUME );
 }
