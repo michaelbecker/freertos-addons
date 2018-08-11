@@ -130,118 +130,6 @@ static volatile portLONG lIndexOfLastAddedTask = 0;
 static volatile portBASE_TYPE uxCriticalNesting;
 
 
-
-/****************************************************************************
- *
- *              !!! vPortEndScheduler Hack !!!
- *
- *  This is copied directly from "task.c" from the FreeRTOS src code.
- *  To end the scheduler cleanly, we need to free the data it allocated
- *  when it set up the task, like their call stacks, etc. Otherwise, 
- *  memcheckers like valgrind catch this and complain.
- *
- *  This will _break_ if FreeRTOS revises the TCB structure!
- *
- ***************************************************************************/
-/*
- * Task control block.  A task control block (TCB) is allocated for each task,
- * and stores task state information, including a pointer to the task's context
- * (the task's run time environment, including register values)
- */
-typedef struct tskTaskControlBlock
-{
-	volatile StackType_t	*pxTopOfStack;	/*< Points to the location of the last item placed on the tasks stack.  THIS MUST BE THE FIRST MEMBER OF THE TCB STRUCT. */
-
-	#if ( portUSING_MPU_WRAPPERS == 1 )
-		xMPU_SETTINGS	xMPUSettings;		/*< The MPU settings are defined as part of the port layer.  THIS MUST BE THE SECOND MEMBER OF THE TCB STRUCT. */
-	#endif
-
-	ListItem_t			xStateListItem;	/*< The list that the state list item of a task is reference from denotes the state of that task (Ready, Blocked, Suspended ). */
-	ListItem_t			xEventListItem;		/*< Used to reference a task from an event list. */
-	UBaseType_t			uxPriority;			/*< The priority of the task.  0 is the lowest priority. */
-	StackType_t			*pxStack;			/*< Points to the start of the stack. */
-	char				pcTaskName[ configMAX_TASK_NAME_LEN ];/*< Descriptive name given to the task when created.  Facilitates debugging only. */ /*lint !e971 Unqualified char types are allowed for strings and single characters only. */
-
-	#if ( ( portSTACK_GROWTH > 0 ) || ( configRECORD_STACK_HIGH_ADDRESS == 1 ) )
-		StackType_t		*pxEndOfStack;		/*< Points to the highest valid address for the stack. */
-	#endif
-
-	#if ( portCRITICAL_NESTING_IN_TCB == 1 )
-		UBaseType_t		uxCriticalNesting;	/*< Holds the critical section nesting depth for ports that do not maintain their own count in the port layer. */
-	#endif
-
-	#if ( configUSE_TRACE_FACILITY == 1 )
-		UBaseType_t		uxTCBNumber;		/*< Stores a number that increments each time a TCB is created.  It allows debuggers to determine when a task has been deleted and then recreated. */
-		UBaseType_t		uxTaskNumber;		/*< Stores a number specifically for use by third party trace code. */
-	#endif
-
-	#if ( configUSE_MUTEXES == 1 )
-		UBaseType_t		uxBasePriority;		/*< The priority last assigned to the task - used by the priority inheritance mechanism. */
-		UBaseType_t		uxMutexesHeld;
-	#endif
-
-	#if ( configUSE_APPLICATION_TASK_TAG == 1 )
-		TaskHookFunction_t pxTaskTag;
-	#endif
-
-	#if( configNUM_THREAD_LOCAL_STORAGE_POINTERS > 0 )
-		void			*pvThreadLocalStoragePointers[ configNUM_THREAD_LOCAL_STORAGE_POINTERS ];
-	#endif
-
-	#if( configGENERATE_RUN_TIME_STATS == 1 )
-		uint32_t		ulRunTimeCounter;	/*< Stores the amount of time the task has spent in the Running state. */
-	#endif
-
-	#if ( configUSE_NEWLIB_REENTRANT == 1 )
-		/* Allocate a Newlib reent structure that is specific to this task.
-		Note Newlib support has been included by popular demand, but is not
-		used by the FreeRTOS maintainers themselves.  FreeRTOS is not
-		responsible for resulting newlib operation.  User must be familiar with
-		newlib and must provide system-wide implementations of the necessary
-		stubs. Be warned that (at the time of writing) the current newlib design
-		implements a system-wide malloc() that must be provided with locks. */
-		struct	_reent xNewLib_reent;
-	#endif
-
-	#if( configUSE_TASK_NOTIFICATIONS == 1 )
-		volatile uint32_t ulNotifiedValue;
-		volatile uint8_t ucNotifyState;
-	#endif
-
-	/* See the comments above the definition of
-	tskSTATIC_AND_DYNAMIC_ALLOCATION_POSSIBLE. */
-	#if( tskSTATIC_AND_DYNAMIC_ALLOCATION_POSSIBLE != 0 ) /*lint !e731 Macro has been consolidated for readability reasons. */
-		uint8_t	ucStaticallyAllocated; 		/*< Set to pdTRUE if the task is a statically allocated to ensure no attempt is made to free the memory. */
-	#endif
-
-	#if( INCLUDE_xTaskAbortDelay == 1 )
-		uint8_t ucDelayAborted;
-	#endif
-
-} tskTCB;
-
-
-static void vPortFreeTcbData(xTaskHandle hTask)
-{
-    tskTCB *tcb;
-
-    tcb = (tskTCB *)hTask;
-
-
-    /* Remove task from the ready list. */
-	uxListRemove( &( tcb->xStateListItem ) );
-
-    free(tcb->pxStack);
-    free(tcb);
-}
-
-/****************************************************************************
- *
- *                  !!! vPortEndScheduler Hack End !!!
- *
- ***************************************************************************/
-
-
 /**
  *  pthread cleanup routine, always executed on pthread exit.
  */
@@ -249,9 +137,10 @@ static void DeleteThreadCleanupRoutine( void *Parameter )
 {
     ThreadState_t *State = (ThreadState_t *)Parameter;
 
+#if LINUX_PORT_DEBUG
     printf("[%d] DeleteThreadCleanupRoutine for index\n", State->index);
+#endif
 
-    vPortFreeTcbData(State->hTask);
     State->Valid = 0;
     State->hTask = (xTaskHandle)NULL;
     if ( State->uxCriticalNesting > 0 )
@@ -507,17 +396,20 @@ static void prvSetupSignalsAndSchedulerPolicy( void )
 
     if ( 0 != sigaction( SIG_SUSPEND, &sigsuspendself, NULL ) )
     {
-        printf( "Problem installing SIG_SUSPEND_SELF\n" );
+        assert( !"Problem installing SIG_SUSPEND_SELF\n" );
     }
     if ( 0 != sigaction( SIG_RESUME, &sigresume, NULL ) )
     {
-        printf( "Problem installing SIG_RESUME\n" );
+        assert( !"Problem installing SIG_RESUME\n" );
     }
     if ( 0 != sigaction( SIG_TICK, &sigtick, NULL ) )
     {
-        printf( "Problem installing SIG_TICK\n" );
+        assert( !"Problem installing SIG_TICK\n" );
     }
+
+#if LINUX_PORT_DEBUG
     printf( "Running as PID: %d\n", getpid() );
+#endif
 
     /*
      *  Also save the first thread as the main thread.
@@ -541,9 +433,15 @@ static void *ThreadStartWrapper( void * pvParams )
     pthread_mutex_lock(&xSingleThreadMutex); 
     SuspendThread( pthread_self() );
 
+#if LINUX_PORT_DEBUG
     printf("[%d] Starting thread\n", State->index);
+#endif
+
     State->pxCode( State->pvParams );
+
+#if LINUX_PORT_DEBUG
     printf("[%d] Ending thread - SHOULD NEVER SEE THIS\n", State->index);
+#endif
 
     /* make sure we execute DeleteThreadCleanupRoutine */
     pthread_cleanup_pop( 1 );
@@ -643,11 +541,13 @@ static void prvSetupTimerInterrupt( void )
     itimer.it_value.tv_sec = Seconds;
     itimer.it_value.tv_usec = MicroSeconds;
 
+#if LINUX_PORT_DEBUG
     printf("Timer Setup:\n");
     printf("  Interval: %ld seconds, %ld useconds\n", 
             itimer.it_interval.tv_sec, itimer.it_interval.tv_usec);
     printf("  Current: %ld seconds, %ld useconds\n", 
             itimer.it_value.tv_sec, itimer.it_value.tv_usec);
+#endif
 
     /* Set-up the timer interrupt. */
     rc = setitimer( TIMER_TYPE, &itimer, &oitimer );
@@ -666,6 +566,11 @@ portBASE_TYPE xPortStartScheduler( void )
     sigset_t xSignalsBlocked;
     pthread_t FirstThread;
     int success;
+
+#if LINUX_PORT_DEBUG
+    printf("\n***** LINUX PORT CONFIGURED FOR DEBUG *****\n");
+#endif    
+
 
     /* Establish the signals to block before they are needed. */
     sigfillset( &xSignalToBlock );
@@ -702,14 +607,19 @@ portBASE_TYPE xPortStartScheduler( void )
         }
     }
 
+#if LINUX_PORT_DEBUG
     printf("Exiting scheduler.\n");
-
     printf("[%d] Canceling xTaskEndScheduler caller thread.\n", hEndSchedulerCallerThreadIndex);
+#endif
+
     pthread_cancel(hEndSchedulerCallerThread);
     sleep(1);
 
     /* Cleanup the mutexes */
+#if LINUX_PORT_DEBUG
     printf( "Freeing OS mutexes.\n" );
+#endif
+
     pthread_mutex_destroy( &xSuspendResumeThreadMutex );
     pthread_mutex_destroy( &xSingleThreadMutex );
 
@@ -755,7 +665,9 @@ void vPortEndScheduler( void )
             /* Don't kill yourself */
             if (pthread_equal(pxThreads[i].Thread, pthread_self())) 
             {
+#if LINUX_PORT_DEBUG
                 printf("[%d] Delaying canceling pthread\n", i);
+#endif                
                 hEndSchedulerCallerThread = pxThreads[i].Thread;
                 hEndSchedulerCallerThreadIndex = pxThreads[i].index;
                 continue;
@@ -763,7 +675,9 @@ void vPortEndScheduler( void )
             else
             {
                 /* Kill all of the threads, they are in the detached state. */
+#if LINUX_PORT_DEBUG
                 printf("[%d] canceling pthread\n", i);
+#endif                
                 pthread_cancel(pxThreads[i].Thread );
                 sleep(1);
             }
