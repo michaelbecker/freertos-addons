@@ -18,7 +18,7 @@ After working with FreeRTOS for over 8 years now, I've decided to start adding f
   - Memory Pools: Fixed size memory allocation buffers. Using these elminates the possibility of memory fragmentation. There is overhead associated with these, so it's better if you are maximizing the size of each allocation.
   - Reader / Writer Locks: These allow multiple threads to simultaneously access a shared resource all as readers. If something needs to change, then a Writer lock needs to be taken which will allow a singe thread to modify the shared resource.
   - Workqueues: These allow you to queue "work" (i.e. a function) to a different thread. Useful if you have a lot of "one off" things that need to be done in different threads but they happen very asynchronous.
-  - Licensing now follows the MIT Open Source License, the same as FreeRTOS starting from version 10.0.0.
+  - Licensing now follows the [MIT Open Source License](https://opensource.org/licenses/MIT), the same as [FreeRTOS](https://www.freertos.org/a00114.html) starting from version 10.0.0.
   - There are numerous demo / unit test projects using these wrappers and various features they provide. Last count we are at 10 Demo projects showing how you might use the C libraries.
   - In addition, to support these there are implementations of standard optimized compter science singly linked lists, doubly linked circular lists, queues, and stacks.
   - [Full cross-referenced documentation](http://michaelbecker.github.io/freertos-addons/cdocs/html/index.html). Documents were auto-generated and cross-referenced using Doxygen.
@@ -35,14 +35,19 @@ After working with FreeRTOS for over 8 years now, I've decided to start adding f
 
 ## Overall Releases
 
-### Version 1.5.1
+### Version 1.6.0
 + https://github.com/michaelbecker/freertos-addons/releases/tag/v1.6.0
-+ C++ Wrappers 1.5.0:
++ C++ Wrappers 1.6.0:
+  - Merged in Event Groups work from Danilo Pucci Smokovitz (dnlps@hotmail.com)
   - Updated license to MIT.
   - Updated doxygen documentation.
 + C Add-ons 1.1.0:
+  - Fixed bugs in Memory Pools.
+  - Added initial implementation of Zero Copy queues.
   - Updated license to MIT.
   - Updated doxygen documentation.
++ Linux Port
+  - Merged in some of the work done by KKoovalsky to handle cleanup better. This does not solve all issues. See https://github.com/michaelbecker/freertos-addons/issues/14 for details.
 
 ### Version 1.5.1
 + https://github.com/michaelbecker/freertos-addons/releases/tag/v1.5.1
