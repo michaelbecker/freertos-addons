@@ -1,35 +1,48 @@
 # freertos-addons
 
-After working with FreeRTOS for over 7 years now, I've decided to start adding features and implementations that I wish would have been there at the beginning. 
+After working with FreeRTOS for over 8 years now, I've decided to start adding features and implementations that I wish would have been there at the beginning. 
 
 ## Current Features
++ C++ Wrappers [![Coverity Scan Build Status](https://scan.coverity.com/projects/9669/badge.svg)](https://scan.coverity.com/projects/michaelbecker-freertos-addons)
+  - A collection of C++ wrappers encapsulating FreeRTOS functionality, allowing you to write your RTOS application in C++ while still using FreeRTOS. This wrapper layer does all the integration work for you.
+  - This library is for you if you are planning on using C++ and FreeRTOS in your project but don't want to spend the time integrating the two.
+  - Everything was tested successfully using FreeRTOS versions 8.2.3, 9.0.0, and 10.0.0.
+  - There are numerous demo / unit test projects using these wrappers and various features they provide. Last count we are at 48 Demo projects showing how you might use the C++ Wrapper library.
+  - Licensing now follows the [MIT Open Source License](https://opensource.org/licenses/MIT), the same as [FreeRTOS](https://www.freertos.org/a00114.html) starting from version 10.0.0.
+  - [Project web page](http://michaelbecker.github.io/freertos-addons/)
+  - [Full cross-referenced documentation](http://michaelbecker.github.io/freertos-addons/cppdocs/html/index.html). Documents were auto-generated and cross-referenced using Doxygen.
+
+
 + C Add-on Wrappers
   - A collection of C Add-on functionality for FreeRTOS. Right now these consist of:
   - Memory Pools: Fixed size memory allocation buffers. Using these elminates the possibility of memory fragmentation. There is overhead associated with these, so it's better if you are maximizing the size of each allocation.
   - Reader / Writer Locks: These allow multiple threads to simultaneously access a shared resource all as readers. If something needs to change, then a Writer lock needs to be taken which will allow a singe thread to modify the shared resource.
   - Workqueues: These allow you to queue "work" (i.e. a function) to a different thread. Useful if you have a lot of "one off" things that need to be done in different threads but they happen very asynchronous.
+  - Licensing now follows the MIT Open Source License, the same as FreeRTOS starting from version 10.0.0.
+  - There are numerous demo / unit test projects using these wrappers and various features they provide. Last count we are at 10 Demo projects showing how you might use the C libraries.
   - In addition, to support these there are implementations of standard optimized compter science singly linked lists, doubly linked circular lists, queues, and stacks.
   - [Full cross-referenced documentation](http://michaelbecker.github.io/freertos-addons/cdocs/html/index.html). Documents were auto-generated and cross-referenced using Doxygen.
 
-+ C++ Wrappers [![Coverity Scan Build Status](https://scan.coverity.com/projects/9669/badge.svg)](https://scan.coverity.com/projects/michaelbecker-freertos-addons)
-  - A collection of C++ wrappers encapsulating FreeRTOS functionality, allowing you to write your RTOS application in C++ while still using FreeRTOS. This wrapper layer does all the integration work for you.
-  - This library is for you if you are planning on using C++ and FreeRTOS in your project but don't want to spend the time integrating the two.
-  - Everything was testing successfully using FreeRTOS versions 8.2.3 and 9.0.0.
-  - There are numerous demo / unit test projects using these wrappers and various features they provide. (Last count we are at 42 Demo projects showing how you might use the C++ Wrapper library.
-  - Licensing is a modified GPLv2, the same as FreeRTOS.
-  - [Project web page](http://michaelbecker.github.io/freertos-addons/)
-  - [Full cross-referenced documentation](http://michaelbecker.github.io/freertos-addons/cppdocs/html/index.html). Documents were auto-generated and cross-referenced using Doxygen.
 
 + Updated Linux port
-  - Licensing is GPLv2 (this is a derivative work).
+  - Licensing is GPLv2, because this is a derivative work.
   - An update of the Linux / POSIX port of FreeRTOS, for testing and debugging on a Linux PC.
-  - This update was tested successfully with FreeRTOS 8.2.3 and 9.0.0 
-  - Two Ubuntu workstations were also used, running 16.04 and 14.04, both 64-bit multicore machines. 
+  - This update was tested successfully with FreeRTOS 8.2.3, 9.0.0, and 10.0.0 
+  - Two Ubuntu workstations were also used, running 18.04, 16.04 and 14.04, 64-bit multicore machines. 
   - This revised Posix port I renamed to Linux port, since I ended up using a few Linux specific APIs in it.
   - Thanks to William Davy who wrote the original Posix FreeRTOS port. He did amazing work simulating a real-time system under Linux.
 
 
 ## Overall Releases
+
+### Version 1.5.1
++ https://github.com/michaelbecker/freertos-addons/releases/tag/v1.6.0
++ C++ Wrappers 1.5.0:
+  - Updated license to MIT.
+  - Updated doxygen documentation.
++ C Add-ons 1.1.0:
+  - Updated license to MIT.
+  - Updated doxygen documentation.
 
 ### Version 1.5.1
 + https://github.com/michaelbecker/freertos-addons/releases/tag/v1.5.1
