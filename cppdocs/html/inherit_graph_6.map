@@ -1,5 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classcpp__freertos_1_1_queue.html" title="cpp_freertos::Queue" alt="" coords="5,31,145,57"/>
-<area shape="rect" id="node2" href="$classcpp__freertos_1_1_binary_queue.html" title="cpp_freertos::BinaryQueue" alt="" coords="193,5,371,32"/>
-<area shape="rect" id="node3" href="$classcpp__freertos_1_1_deque.html" title="cpp_freertos::Deque" alt="" coords="212,56,352,83"/>
+<area shape="rect" id="node1" href="$classcpp__freertos_1_1_mutex.html" title="cpp_freertos::Mutex" alt="" coords="5,31,144,57"/>
+<area shape="rect" id="node2" href="$classcpp__freertos_1_1_mutex_recursive.html" title="cpp_freertos::MutexRecursive" alt="" coords="192,5,389,32"/>
+<area shape="rect" id="node3" href="$classcpp__freertos_1_1_mutex_standard.html" title="cpp_freertos::MutexStandard" alt="" coords="195,56,386,83"/>
 </map>

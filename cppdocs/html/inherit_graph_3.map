@@ -1,3 +1,12 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classcpp__freertos_1_1_memory_pool.html" title="cpp_freertos::MemoryPool" alt="" coords="5,5,180,32"/>
+<area shape="rect" id="node1" title="STL class. " alt="" coords="5,274,109,301"/>
+<area shape="rect" id="node2" href="$classcpp__freertos_1_1_event_group_create_exception.html" title="cpp_freertos::EventGroup\lCreateException" alt="" coords="175,5,346,47"/>
+<area shape="rect" id="node3" href="$classcpp__freertos_1_1_memory_pool_bad_alignment_exception.html" title="cpp_freertos::MemoryPool\lBadAlignmentException" alt="" coords="173,71,348,112"/>
+<area shape="rect" id="node4" href="$classcpp__freertos_1_1_memory_pool_malloc_exception.html" title="cpp_freertos::MemoryPool\lMallocException" alt="" coords="173,136,348,177"/>
+<area shape="rect" id="node5" href="$classcpp__freertos_1_1_mutex_create_exception.html" title="cpp_freertos::MutexCreate\lException" alt="" coords="172,201,349,243"/>
+<area shape="rect" id="node6" href="$classcpp__freertos_1_1_queue_create_exception.html" title="cpp_freertos::QueueCreate\lException" alt="" coords="171,267,350,308"/>
+<area shape="rect" id="node7" href="$classcpp__freertos_1_1_read_write_lock_create_exception.html" title="cpp_freertos::ReadWriteLock\lCreateException" alt="" coords="165,332,357,373"/>
+<area shape="rect" id="node8" href="$classcpp__freertos_1_1_semaphore_create_exception.html" title="cpp_freertos::SemaphoreCreate\lException" alt="" coords="157,397,364,439"/>
+<area shape="rect" id="node9" href="$classcpp__freertos_1_1_tasklet_create_exception.html" title="cpp_freertos::TaskletCreate\lException" alt="" coords="169,463,353,504"/>
+<area shape="rect" id="node10" href="$classcpp__freertos_1_1_timer_create_exception.html" title="cpp_freertos::TimerCreate\lException" alt="" coords="173,528,348,569"/>
 </map>

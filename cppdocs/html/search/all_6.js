@@ -1,5 +1,7 @@
 var searchData=
 [
+  ['getbits',['GetBits',['../classcpp__freertos_1_1_event_group.html#a077779e0d377357eac0369b38b60454a',1,'cpp_freertos::EventGroup']]],
+  ['getbitsfromisr',['GetBitsFromISR',['../classcpp__freertos_1_1_event_group.html#a06cbcf19e4210c4f15058f42f3ee6387',1,'cpp_freertos::EventGroup']]],
   ['gethandle',['GetHandle',['../classcpp__freertos_1_1_thread.html#a1053a1c4f291a9a9a5dbf4ead7e96ae7',1,'cpp_freertos::Thread']]],
   ['getname',['GetName',['../classcpp__freertos_1_1_thread.html#a51469110641ad7ba19a32364dd18c213',1,'cpp_freertos::Thread']]],
   ['getpriority',['GetPriority',['../classcpp__freertos_1_1_thread.html#ace92214a082dd8fd49e48af680e9bee5',1,'cpp_freertos::Thread']]],

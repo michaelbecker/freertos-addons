@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['addextramemorytopool',['AddExtraMemoryToPool',['../mem__pool_8h.html#a2c059d90268c65c87f26dde0d11c8c93',1,'AddExtraMemoryToPool(MemoryPool_t *pool, int ItemCount):&#160;mem_pool.c'],['../mem__pool_8c.html#a2c059d90268c65c87f26dde0d11c8c93',1,'AddExtraMemoryToPool(MemoryPool_t *pool, int ItemCount):&#160;mem_pool.c']]],
-  ['addextramemorytopoolstatic',['AddExtraMemoryToPoolStatic',['../mem__pool_8h.html#a25133277ff7123ef8dd1f44c864e4607',1,'AddExtraMemoryToPoolStatic(MemoryPool_t *pool, void *PreallocatedMemory, int PreallocatedMemorySize):&#160;mem_pool.c'],['../mem__pool_8c.html#a25133277ff7123ef8dd1f44c864e4607',1,'AddExtraMemoryToPoolStatic(MemoryPool_t *pool, void *PreallocatedMemory, int PreallocatedMemorySize):&#160;mem_pool.c']]]
+  ['addextramemorytopool',['AddExtraMemoryToPool',['../mem__pool_8h.html#a37c69c5040450419166cb9fd1ae68869',1,'AddExtraMemoryToPool(MemoryPool_t pool, int ItemCount):&#160;mem_pool.c'],['../mem__pool_8c.html#a37c69c5040450419166cb9fd1ae68869',1,'AddExtraMemoryToPool(MemoryPool_t pool, int ItemCount):&#160;mem_pool.c']]],
+  ['addextramemorytopoolstatic',['AddExtraMemoryToPoolStatic',['../mem__pool_8h.html#af26e8133e530ca2340e3affdd2ed659e',1,'AddExtraMemoryToPoolStatic(MemoryPool_t pool, void *PreallocatedMemory, int PreallocatedMemorySize):&#160;mem_pool.c'],['../mem__pool_8c.html#af26e8133e530ca2340e3affdd2ed659e',1,'AddExtraMemoryToPoolStatic(MemoryPool_t pool, void *PreallocatedMemory, int PreallocatedMemorySize):&#160;mem_pool.c']]]
 ];

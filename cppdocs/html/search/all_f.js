@@ -4,11 +4,10 @@ var searchData=
   ['schedulefromisr',['ScheduleFromISR',['../classcpp__freertos_1_1_tasklet.html#a4cbb17881f3cb7a69450bc65743da56b',1,'cpp_freertos::Tasklet']]],
   ['scheduleractive',['SchedulerActive',['../classcpp__freertos_1_1_thread.html#a0e7a2a751db4b7cb2a22ca722b39fc94',1,'cpp_freertos::Thread']]],
   ['secondstoticks',['SecondsToTicks',['../classcpp__freertos_1_1_ticks.html#a7afe69afdf61a4cb9ce638a38d5f945e',1,'cpp_freertos::Ticks']]],
-  ['semaphore',['Semaphore',['../classcpp__freertos_1_1_semaphore.html#ae32c955336ae9e60e20a3facde270714',1,'cpp_freertos::Semaphore']]],
-  ['semaphore',['Semaphore',['../classcpp__freertos_1_1_semaphore.html',1,'cpp_freertos']]],
+  ['semaphore',['Semaphore',['../classcpp__freertos_1_1_semaphore.html',1,'cpp_freertos::Semaphore'],['../classcpp__freertos_1_1_semaphore.html#ae32c955336ae9e60e20a3facde270714',1,'cpp_freertos::Semaphore::Semaphore()']]],
   ['semaphore_2ehpp',['semaphore.hpp',['../semaphore_8hpp.html',1,'']]],
-  ['semaphorecreateexception',['SemaphoreCreateException',['../classcpp__freertos_1_1_semaphore_create_exception.html',1,'cpp_freertos']]],
-  ['semaphorecreateexception',['SemaphoreCreateException',['../classcpp__freertos_1_1_semaphore_create_exception.html#a6d9bd8c9435361be4add21c327838c34',1,'cpp_freertos::SemaphoreCreateException::SemaphoreCreateException()'],['../classcpp__freertos_1_1_semaphore_create_exception.html#a16413ee983f224cc57415b0ae9035c40',1,'cpp_freertos::SemaphoreCreateException::SemaphoreCreateException(const char *info)']]],
+  ['semaphorecreateexception',['SemaphoreCreateException',['../classcpp__freertos_1_1_semaphore_create_exception.html',1,'cpp_freertos::SemaphoreCreateException'],['../classcpp__freertos_1_1_semaphore_create_exception.html#a6d9bd8c9435361be4add21c327838c34',1,'cpp_freertos::SemaphoreCreateException::SemaphoreCreateException()'],['../classcpp__freertos_1_1_semaphore_create_exception.html#a16413ee983f224cc57415b0ae9035c40',1,'cpp_freertos::SemaphoreCreateException::SemaphoreCreateException(const char *info)']]],
+  ['setbits',['SetBits',['../classcpp__freertos_1_1_event_group.html#a72f524b57d52b1f311d750ab260cdd05',1,'cpp_freertos::EventGroup']]],
   ['setperiod',['SetPeriod',['../classcpp__freertos_1_1_timer.html#aa86f6d14b67157711e6e3001a8d79e65',1,'cpp_freertos::Timer']]],
   ['setperiodfromisr',['SetPeriodFromISR',['../classcpp__freertos_1_1_timer.html#a0f072ddbcaba51714bdebe9d107e747f',1,'cpp_freertos::Timer']]],
   ['setpriority',['SetPriority',['../classcpp__freertos_1_1_thread.html#a5e40076f0050bdcfcf949506f139879e',1,'cpp_freertos::Thread']]],
@@ -21,5 +20,6 @@ var searchData=
   ['stop',['Stop',['../classcpp__freertos_1_1_timer.html#a15873ed66f31b28e7c7af88ca0c9d2d5',1,'cpp_freertos::Timer']]],
   ['stopfromisr',['StopFromISR',['../classcpp__freertos_1_1_timer.html#a403285c6e10f401cd3d9fb43843092cb',1,'cpp_freertos::Timer']]],
   ['suspend',['Suspend',['../classcpp__freertos_1_1_thread.html#a9eca55dec69e4758cf397e882338c7e6',1,'cpp_freertos::Thread']]],
-  ['suspendscheduler',['SuspendScheduler',['../classcpp__freertos_1_1_critical_section.html#a27aa6c4e9bf5bbe3da7222030392783c',1,'cpp_freertos::CriticalSection']]]
+  ['suspendscheduler',['SuspendScheduler',['../classcpp__freertos_1_1_critical_section.html#a27aa6c4e9bf5bbe3da7222030392783c',1,'cpp_freertos::CriticalSection']]],
+  ['sync',['Sync',['../classcpp__freertos_1_1_event_group.html#a3b7f5f1f4ce5af448f58c039e1bda551',1,'cpp_freertos::EventGroup']]]
 ];

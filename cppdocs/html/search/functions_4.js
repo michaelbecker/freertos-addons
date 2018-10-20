@@ -9,6 +9,8 @@ var searchData=
   ['enqueuetofrontfromisr',['EnqueueToFrontFromISR',['../classcpp__freertos_1_1_deque.html#a786e2a3c308172f5ca3a47704cc5b594',1,'cpp_freertos::Deque']]],
   ['enter',['Enter',['../classcpp__freertos_1_1_critical_section.html#ac31be583c6674aea582d4fa831e4e3fb',1,'cpp_freertos::CriticalSection']]],
   ['enterfromisr',['EnterFromISR',['../classcpp__freertos_1_1_critical_section.html#ab78166fa2e3130eb0285b9ff88bc090a',1,'cpp_freertos::CriticalSection']]],
+  ['eventgroup',['EventGroup',['../classcpp__freertos_1_1_event_group.html#a8d5e797dbd7a2f10435198ae964511aa',1,'cpp_freertos::EventGroup']]],
+  ['eventgroupcreateexception',['EventGroupCreateException',['../classcpp__freertos_1_1_event_group_create_exception.html#a7f1124d4debc3906cbb8dc2c56327bd8',1,'cpp_freertos::EventGroupCreateException::EventGroupCreateException()'],['../classcpp__freertos_1_1_event_group_create_exception.html#a319e2654747f9b35f52c78e2ad25d63f',1,'cpp_freertos::EventGroupCreateException::EventGroupCreateException(const char *info)']]],
   ['exit',['Exit',['../classcpp__freertos_1_1_critical_section.html#a5f7e9a6a562669d8554658e5e974302a',1,'cpp_freertos::CriticalSection']]],
   ['exitfromisr',['ExitFromISR',['../classcpp__freertos_1_1_critical_section.html#ab3b454d554d41da00bb23c8c32a4b21a',1,'cpp_freertos::CriticalSection']]]
 ];

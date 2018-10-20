@@ -1,6 +1,7 @@
 var searchData=
 [
   ['_7ecworkerthread',['~CWorkerThread',['../classcpp__freertos_1_1_work_queue_1_1_c_worker_thread.html#a1f8f7ce484c63f2771591292979d6427',1,'cpp_freertos::WorkQueue::CWorkerThread']]],
+  ['_7eeventgroup',['~EventGroup',['../classcpp__freertos_1_1_event_group.html#aec45fca847056b3ea8b62899c5903f55',1,'cpp_freertos::EventGroup']]],
   ['_7elockguard',['~LockGuard',['../classcpp__freertos_1_1_lock_guard.html#acf9fd2e90ecd3b193b6292989a644c2c',1,'cpp_freertos::LockGuard']]],
   ['_7ememorypool',['~MemoryPool',['../classcpp__freertos_1_1_memory_pool.html#ac1355e823a11aa0d941408b08a4e2e9b',1,'cpp_freertos::MemoryPool']]],
   ['_7emutex',['~Mutex',['../classcpp__freertos_1_1_mutex.html#ac9e9182407f5f74892318607888e9be4',1,'cpp_freertos::Mutex']]],
