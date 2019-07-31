@@ -738,11 +738,23 @@ void vPortYield( void )
     assert(rc == 0);
 
     success = LookupThread(xTaskGetCurrentTaskHandle(), &ThreadToSuspend);
+    if (success != 1) {
+        printf("Nobody to suspend\n");
+        /* Yielding to self */
+        pthread_mutex_unlock( &xSingleThreadMutex );
+        return;
+    }
     assert(success);
 
     vTaskSwitchContext();
 
     success = LookupThread(xTaskGetCurrentTaskHandle(), &ThreadToResume);
+    if (success != 1) {
+        printf("Nobody to resume\n");
+        /* Yielding to self */
+        pthread_mutex_unlock( &xSingleThreadMutex );
+        return;
+    }
     assert(success);
 
     if ( !pthread_equal(ThreadToSuspend, ThreadToResume) )
