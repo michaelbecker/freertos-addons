@@ -41,7 +41,7 @@
 #define CONDITION_VARIABLE_HPP_
 
 #include <list>
-#include "mutex.hpp"
+#include "freertos/mutex.hpp"
 
 
 /**

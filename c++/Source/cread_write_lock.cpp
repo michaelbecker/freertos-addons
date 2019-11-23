@@ -37,7 +37,7 @@
  ***************************************************************************/
 
 
-#include "read_write_lock.hpp"
+#include "freertos/read_write_lock.hpp"
 
 
 using namespace freertos;

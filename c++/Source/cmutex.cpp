@@ -37,7 +37,7 @@
  ***************************************************************************/
 
 
-#include "mutex.hpp"
+#include "freertos/mutex.hpp"
 
 
 using namespace freertos;

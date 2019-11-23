@@ -39,8 +39,8 @@
 
 
 
-#include "condition_variable.hpp"
-#include "thread.hpp"
+#include "freertos/condition_variable.hpp"
+#include "freertos/thread.hpp"
 
 
 #ifdef CPP_FREERTOS_CONDITION_VARIABLES

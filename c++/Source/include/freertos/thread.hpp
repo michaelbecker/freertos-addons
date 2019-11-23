@@ -55,9 +55,9 @@
 #endif
 #include "FreeRTOS.h"
 #include "task.h"
-#include "mutex.hpp"
-#include "semaphore.hpp"
-#include "condition_variable.hpp"
+#include "freertos/mutex.hpp"
+#include "freertos/semaphore.hpp"
+#include "freertos/condition_variable.hpp"
 
 namespace freertos {
 

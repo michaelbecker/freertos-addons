@@ -43,10 +43,10 @@
 #include <vector>
 #include "FreeRTOS.h"
 #include "task.h"
-#include "thread.hpp"
-#include "ticks.hpp"
-#include "mutex.hpp"
-#include "condition_variable.hpp"
+#include "freertos/thread.hpp"
+#include "freertos/ticks.hpp"
+#include "freertos/mutex.hpp"
+#include "freertos/condition_variable.hpp"
 
 
 using namespace freertos;

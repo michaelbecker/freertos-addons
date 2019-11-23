@@ -37,7 +37,7 @@
  ***************************************************************************/
 
 
-#include "queue.hpp"
+#include "freertos/queue.hpp"
 
 
 using namespace freertos;

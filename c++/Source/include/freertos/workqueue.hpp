@@ -40,9 +40,9 @@
 #ifndef WORK_QUEUE_HPP_
 #define WORK_QUEUE_HPP_
 
-#include "thread.hpp"
-#include "queue.hpp"
-#include "semaphore.hpp"
+#include "freertos/thread.hpp"
+#include "freertos/queue.hpp"
+#include "freertos/semaphore.hpp"
 
 
 namespace freertos {

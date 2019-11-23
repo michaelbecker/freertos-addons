@@ -37,7 +37,7 @@
  ***************************************************************************/
 
 
-#include "semaphore.hpp"
+#include "freertos/semaphore.hpp"
 
 
 using namespace freertos;

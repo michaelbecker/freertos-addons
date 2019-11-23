@@ -37,7 +37,7 @@
  ***************************************************************************/
 
 
-#include "workqueue.hpp"
+#include "freertos/workqueue.hpp"
 
 
 using namespace freertos;

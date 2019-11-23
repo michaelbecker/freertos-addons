@@ -37,7 +37,7 @@
  ***************************************************************************/
 
 
-#include "tickhook.hpp"
+#include "freertos/tickhook.hpp"
 
 #if ( configUSE_TICK_HOOK == 1 )
 

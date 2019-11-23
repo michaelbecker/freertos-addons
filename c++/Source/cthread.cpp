@@ -38,7 +38,7 @@
 
 
 #include <cstring>
-#include "thread.hpp"
+#include "freertos/thread.hpp"
 
 
 using namespace freertos;
