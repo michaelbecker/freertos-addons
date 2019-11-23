@@ -42,7 +42,7 @@
 #if ( configUSE_TICK_HOOK == 1 )
 
 using namespace std;
-using namespace cpp_freertos;
+using namespace freertos;
 
 
 list<TickHook *> TickHook::Callbacks;

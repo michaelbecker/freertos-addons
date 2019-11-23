@@ -40,7 +40,7 @@
 #include "timer.hpp"
 
 
-using namespace cpp_freertos;
+using namespace freertos;
 
 
 Timer::Timer(   const char * const TimerName,

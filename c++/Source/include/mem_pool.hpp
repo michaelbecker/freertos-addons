@@ -59,7 +59,7 @@
 #include "FreeRTOS.h"
 #include "mutex.hpp"
 
-namespace cpp_freertos {
+namespace freertos {
 
 
 #ifndef CPP_FREERTOS_NO_EXCEPTIONS

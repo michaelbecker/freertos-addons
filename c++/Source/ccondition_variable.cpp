@@ -46,7 +46,7 @@
 #ifdef CPP_FREERTOS_CONDITION_VARIABLES
 
 
-using namespace cpp_freertos;
+using namespace freertos;
 
 
 ConditionVariable::ConditionVariable()

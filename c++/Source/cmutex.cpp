@@ -40,7 +40,7 @@
 #include "mutex.hpp"
 
 
-using namespace cpp_freertos;
+using namespace freertos;
 
 
 Mutex::Mutex()

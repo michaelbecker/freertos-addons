@@ -44,7 +44,7 @@
 #include "task.h"
 
 
-namespace cpp_freertos {
+namespace freertos {
 
 
 /**

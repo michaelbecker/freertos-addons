@@ -52,7 +52,7 @@
 #ifdef CPP_FREERTOS_CONDITION_VARIABLES
 
 
-namespace cpp_freertos {
+namespace freertos {
 
 //
 //  Forward declaration. We need to prevent a circular dependency

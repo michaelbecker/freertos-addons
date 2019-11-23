@@ -45,7 +45,7 @@
 #include "semaphore.hpp"
 
 
-namespace cpp_freertos {
+namespace freertos {
 
 
 #define DEFAULT_MAX_WORK_ITEMS          10

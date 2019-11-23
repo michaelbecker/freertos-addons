@@ -59,7 +59,7 @@
 #include "semaphore.hpp"
 #include "condition_variable.hpp"
 
-namespace cpp_freertos {
+namespace freertos {
 
 
 /**

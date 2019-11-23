@@ -40,7 +40,7 @@
 #include "workqueue.hpp"
 
 
-using namespace cpp_freertos;
+using namespace freertos;
 
 
 WorkItem::WorkItem(bool freeAfterComplete)

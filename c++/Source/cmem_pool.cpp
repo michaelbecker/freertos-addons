@@ -43,7 +43,7 @@
 #include "mem_pool.hpp"
 
 
-using namespace cpp_freertos;
+using namespace freertos;
 
 
 void MemoryPool::CalculateValidAlignment()

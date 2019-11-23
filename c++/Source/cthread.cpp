@@ -41,7 +41,7 @@
 #include "thread.hpp"
 
 
-using namespace cpp_freertos;
+using namespace freertos;
 
 
 volatile bool Thread::SchedulerActive = false;

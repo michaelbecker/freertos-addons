@@ -52,7 +52,7 @@
  */
 extern "C" void vApplicationTickHook(void);
 
-namespace cpp_freertos {
+namespace freertos {
 
 /**
  *  Wrapper class for Tick hooks, functions you want to run within 

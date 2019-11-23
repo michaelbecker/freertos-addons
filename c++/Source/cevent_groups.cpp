@@ -38,7 +38,7 @@
 #include "event_groups.hpp"
 
 
-using namespace cpp_freertos;
+using namespace freertos;
 
 
 EventGroup::EventGroup()

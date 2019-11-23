@@ -40,7 +40,7 @@
 #include "semaphore.hpp"
 
 
-using namespace cpp_freertos;
+using namespace freertos;
 
 
 bool Semaphore::Take(TickType_t xBlockTime)

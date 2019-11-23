@@ -41,7 +41,7 @@
 #define VERSION_CPP_WRAPPERS_HPP_
 
 
-namespace cpp_freertos {
+namespace freertos {
 
 #define CPP_WRAPPERS_VERSION_MAJOR      1
 #define CPP_WRAPPERS_VERSION_MINOR      5

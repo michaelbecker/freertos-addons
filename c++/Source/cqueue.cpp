@@ -40,7 +40,7 @@
 #include "queue.hpp"
 
 
-using namespace cpp_freertos;
+using namespace freertos;
 
 
 Queue::Queue(UBaseType_t maxItems, UBaseType_t itemSize)

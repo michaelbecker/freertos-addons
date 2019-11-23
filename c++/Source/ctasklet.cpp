@@ -40,7 +40,7 @@
 #include "tasklet.hpp"
 
 
-using namespace cpp_freertos;
+using namespace freertos;
 
 
 Tasklet::Tasklet()
