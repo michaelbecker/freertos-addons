@@ -612,6 +612,7 @@ portBASE_TYPE xPortStartScheduler( void )
     printf("[%d] Canceling xTaskEndScheduler caller thread.\n", hEndSchedulerCallerThreadIndex);
 #endif
 
+    pthread_sigmask(SIG_SETMASK, &xSignalsBlocked, NULL);
     pthread_cancel(hEndSchedulerCallerThread);
     sleep(1);
 
