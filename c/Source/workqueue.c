@@ -254,7 +254,8 @@ static void WorkerThread(void *parameters)
 
 WorkQueue_t CreateWorkQueueEx(  const char * const Name,
                                 uint16_t StackSize,
-                                UBaseType_t Priority)
+                                UBaseType_t Priority,
+                                BaseType_t core)
 {
     /****************************/
     pvtWorkQueue_t *WorkQueue;
@@ -289,12 +290,14 @@ WorkQueue_t CreateWorkQueueEx(  const char * const Name,
 
 #endif
 
-    rc = xTaskCreate(   WorkerThread,
+    rc = xTaskCreatePinnedToCore(   WorkerThread,
                         Name,
                         StackSize,
                         WorkQueue,
                         Priority,
-                        &WorkQueue->WorkerThread);
+                        &WorkQueue->WorkerThread,
+                        core
+                        );
 
     if (rc != pdPASS) {
         vSemaphoreDelete(WorkQueue->Lock);
