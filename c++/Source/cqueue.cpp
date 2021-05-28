@@ -63,7 +63,7 @@ Queue::~Queue()
 }
 
 
-bool Queue::Enqueue(void *item)
+bool Queue::Enqueue(const void *item)
 {
     BaseType_t success;
 
@@ -73,7 +73,7 @@ bool Queue::Enqueue(void *item)
 }
 
 
-bool Queue::Enqueue(void *item, TickType_t Timeout)
+bool Queue::Enqueue(const void *item, TickType_t Timeout)
 {
     BaseType_t success;
 
@@ -103,7 +103,7 @@ bool Queue::Peek(void *item, TickType_t Timeout)
 }
 
 
-bool Queue::EnqueueFromISR(void *item, BaseType_t *pxHigherPriorityTaskWoken)
+bool Queue::EnqueueFromISR(const void *item, BaseType_t *pxHigherPriorityTaskWoken)
 {
     BaseType_t success;
 
