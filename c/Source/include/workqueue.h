@@ -76,11 +76,13 @@ typedef void * WorkQueue_t;
  *  @param Name The name of the worker thread.
  *  @param StackSize The size of the worker thread stack, in words.
  *  @param Priority The priority of the worker thread.
+ *  @param core The core the task should be pinned to.
  *  @return A handle, or NULL on error.
  */
 WorkQueue_t CreateWorkQueueEx(  const char * const Name,
                                 uint16_t StackSize,
-                                UBaseType_t Priority);
+                                UBaseType_t Priority,
+                                BaseType_t core);
 
 
 /**
