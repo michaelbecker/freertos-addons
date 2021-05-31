@@ -35,64 +35,72 @@
 #
 #############################################################################
 
+CORES ?= $(shell nproc)
+MAKEFLAGS+="-j $(CORES)"
 
+SUBDIRS = 	Linux_g++_binary_semaphore \
+	Linux_g++_binary_semaphore_no_except \
+	Linux_gcc_mem_pools \
+	Linux_gcc_mem_pools_add_extra \
+	Linux_gcc_mem_pools_static \
+	Linux_gcc_read_write_lock_prefer_reader \
+	Linux_gcc_read_write_lock_prefer_writer \
+	Linux_gcc_simple_tasks \
+	Linux_gcc_workqueues \
+	Linux_gcc_workqueues_no_delete \
+	Linux_gcc_zero_copy_queue \
+	Linux_g++_condition_variables \
+	Linux_g++_condition_variables2 \
+	Linux_g++_condition_variables_multiple_producers_consumers \
+	Linux_g++_condition_variables_multiple_producers_consumers2 \
+	Linux_g++_counting_semaphore \
+	Linux_g++_counting_semaphore_no_except \
+	Linux_g++_critical_section \
+	Linux_g++_delay_until \
+	Linux_g++_dynamic_tasks \
+	Linux_g++_dynamic_tasks_high_pri \
+	Linux_g++_dynamic_tasks_multistart_scheduler_off \
+	Linux_g++_dynamic_tasks_multistart_scheduler_on \
+	Linux_g++_mem_pools \
+	Linux_g++_mem_pools_add \
+	Linux_g++_mem_pools_static \
+	Linux_g++_mutex_recursive \
+	Linux_g++_mutex_recursive_no_except \
+	Linux_g++_mutex_standard \
+	Linux_g++_mutex_standard_no_except \
+	Linux_g++_queues_multiple_producers \
+	Linux_g++_queues_multiple_producers_multiple_consumers \
+	Linux_g++_queues_multiple_producers_multiple_consumers_no_except \
+	Linux_g++_queues_multiple_producers_no_except \
+	Linux_g++_queues_simple_producer_consumer \
+	Linux_g++_queues_simple_producer_consumer_no_except \
+	Linux_g++_read_write_lock_prefer_reader \
+	Linux_g++_read_write_lock_prefer_reader_no_except \
+	Linux_g++_read_write_lock_prefer_writer \
+	Linux_g++_read_write_lock_prefer_writer_no_except \
+	Linux_g++_simple_tasks \
+	Linux_g++_simple_tasks_no_cpp_strings \
+	Linux_g++_simple_tasks_no_vTaskDelete \
+	Linux_g++_task_delete \
+	Linux_g++_tasklet_dtor \
+	Linux_g++_tasklet_dtor_no_except \
+	Linux_g++_tasklets \
+	Linux_g++_tasklets_no_except \
+	Linux_g++_tickhook_disable \
+	Linux_g++_tickhooks \
+	Linux_g++_timers \
+	Linux_g++_timers_no_except \
+	Linux_g++_unnamed_tasks \
+	Linux_g++_unnamed_tasks_no_cpp_strings \
+	Linux_g++_workqueues \
+	Linux_g++_workqueues_delete \
 
 all:
-	$(MAKE) -C Linux_g++_binary_semaphore
-	$(MAKE) -C Linux_g++_binary_semaphore_no_except
-	$(MAKE) -C Linux_gcc_mem_pools
-	$(MAKE) -C Linux_gcc_mem_pools_add_extra
-	$(MAKE) -C Linux_gcc_mem_pools_static
-	$(MAKE) -C Linux_gcc_read_write_lock_prefer_reader
-	$(MAKE) -C Linux_gcc_read_write_lock_prefer_writer
-	$(MAKE) -C Linux_gcc_simple_tasks
-	$(MAKE) -C Linux_gcc_workqueues
-	$(MAKE) -C Linux_gcc_workqueues_no_delete
-	$(MAKE) -C Linux_gcc_zero_copy_queue
-	$(MAKE) -C Linux_g++_condition_variables
-	$(MAKE) -C Linux_g++_condition_variables2
-	$(MAKE) -C Linux_g++_condition_variables_multiple_producers_consumers
-	$(MAKE) -C Linux_g++_condition_variables_multiple_producers_consumers2
-	$(MAKE) -C Linux_g++_counting_semaphore
-	$(MAKE) -C Linux_g++_counting_semaphore_no_except
-	$(MAKE) -C Linux_g++_critical_section
-	$(MAKE) -C Linux_g++_delay_until
-	$(MAKE) -C Linux_g++_dynamic_tasks
-	$(MAKE) -C Linux_g++_dynamic_tasks_high_pri
-	$(MAKE) -C Linux_g++_dynamic_tasks_multistart_scheduler_off
-	$(MAKE) -C Linux_g++_dynamic_tasks_multistart_scheduler_on
-	$(MAKE) -C Linux_g++_mem_pools
-	$(MAKE) -C Linux_g++_mem_pools_add
-	$(MAKE) -C Linux_g++_mem_pools_static
-	$(MAKE) -C Linux_g++_mutex_recursive
-	$(MAKE) -C Linux_g++_mutex_recursive_no_except
-	$(MAKE) -C Linux_g++_mutex_standard
-	$(MAKE) -C Linux_g++_mutex_standard_no_except
-	$(MAKE) -C Linux_g++_queues_multiple_producers
-	$(MAKE) -C Linux_g++_queues_multiple_producers_multiple_consumers
-	$(MAKE) -C Linux_g++_queues_multiple_producers_multiple_consumers_no_except
-	$(MAKE) -C Linux_g++_queues_multiple_producers_no_except
-	$(MAKE) -C Linux_g++_queues_simple_producer_consumer
-	$(MAKE) -C Linux_g++_queues_simple_producer_consumer_no_except
-	$(MAKE) -C Linux_g++_read_write_lock_prefer_reader
-	$(MAKE) -C Linux_g++_read_write_lock_prefer_reader_no_except
-	$(MAKE) -C Linux_g++_read_write_lock_prefer_writer
-	$(MAKE) -C Linux_g++_read_write_lock_prefer_writer_no_except
-	$(MAKE) -C Linux_g++_simple_tasks
-	$(MAKE) -C Linux_g++_simple_tasks_no_cpp_strings
-	$(MAKE) -C Linux_g++_simple_tasks_no_vTaskDelete
-	$(MAKE) -C Linux_g++_task_delete
-	$(MAKE) -C Linux_g++_tasklet_dtor
-	$(MAKE) -C Linux_g++_tasklet_dtor_no_except
-	$(MAKE) -C Linux_g++_tasklets
-	$(MAKE) -C Linux_g++_tasklets_no_except
-	$(MAKE) -C Linux_g++_tickhook_disable
-	$(MAKE) -C Linux_g++_tickhooks
-	$(MAKE) -C Linux_g++_timers
-	$(MAKE) -C Linux_g++_timers_no_except
-	$(MAKE) -C Linux_g++_unnamed_tasks
-	$(MAKE) -C Linux_g++_unnamed_tasks_no_cpp_strings
-	$(MAKE) -C Linux_g++_workqueues
-	$(MAKE) -C Linux_g++_workqueues_delete
+	@for dir in $(SUBDIRS); do \
+		$(MAKE) -C $$dir; \
+	done
 
-
+clean:
+	@for dir in $(SUBDIRS); do \
+		$(MAKE) -C $$dir clean; \
+	done
