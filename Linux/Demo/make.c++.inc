@@ -38,11 +38,10 @@
 #############################################################################
 
 
-
-FREERTOS_SRC_DIR=../../../../FreeRTOS/Source
-FREERTOS_INC_DIR=../../../../FreeRTOS/Source/include
-PORTABLE_SRC_DIR=../../portable/GCC/Linux
-PORTABLE_SRC_MEM_MANG_DIR=../../../../FreeRTOS/Source/portable/MemMang
+FREERTOS_SRC_DIR=../../../../FreeRTOS-Kernel
+FREERTOS_INC_DIR=../../../../FreeRTOS-Kernel/include
+PORTABLE_SRC_DIR=../../portable/GCC/null
+PORTABLE_SRC_MEM_MANG_DIR=../../../../FreeRTOS-Kernel/portable/MemMang
 FREERTOS_CPP_SRC_DIR=../../../c++/Source/
 FREERTOS_CPP_INC_DIR=../../../c++/Source/include
 
@@ -50,9 +49,9 @@ FREERTOS_CPP_INC_DIR=../../../c++/Source/include
 CC = gcc
 CXX = g++
 
-CFLAGS += -Wall -Werror -Wextra -Wpedantic -pthread -O0 -g
-CXXFLAGS += -Wall -Werror -Wextra -Wpedantic -pthread -O0 -g -DCPP_FREERTOS_NO_EXCEPTIONS
-LDFLAGS += -Wall -Werror -Wextra -Wpedantic -pthread -O0 -g
+CFLAGS += -Wall -Werror -Wextra -Wpedantic
+CXXFLAGS += -Wall -Werror -Wextra -Wpedantic
+LDFLAGS += -Wall -Werror -Wextra -Wpedantic
 
 
 
@@ -68,14 +67,10 @@ VPATH += ${FREERTOS_SRC_DIR} \
 		 ${PORTABLE_SRC_MEM_MANG_DIR} \
 
 
-TARGET = Linux_g++_counting_semaphore_no_except
-
 default: all
 
 all: ${TARGET}
 
-SRC = \
-	  main.cpp
 
 FREERTOS_SRC= \
 			  event_groups.c \
@@ -85,7 +80,6 @@ FREERTOS_SRC= \
 			  timers.c \
 			  port.c \
 			  heap_3.c \
-			  croutine.c \
 
 
 FREERTOS_CPP_SRC= \
@@ -95,8 +89,8 @@ FREERTOS_CPP_SRC= \
 				  csemaphore.cpp \
 				  ctasklet.cpp \
 				  cthread.cpp \
-				  ctimer.cpp \
 				  ctickhook.cpp \
+				  ctimer.cpp \
 				  cworkqueue.cpp \
 
 
@@ -127,4 +121,5 @@ clean:
 	-rm ${TARGET}
 	-rm *.o
 
+# vim: filetype=make
 

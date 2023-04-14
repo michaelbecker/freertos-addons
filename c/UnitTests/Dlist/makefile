@@ -1,6 +1,6 @@
 #############################################################################
 #
-#  Copyright (c) 2017, Michael Becker (michael.f.becker@gmail.com)
+#  Copyright (c) 2023, Michael Becker (michael.f.becker@gmail.com)
 #
 #  This file is part of the FreeRTOS Add-ons project.
 #
@@ -12,6 +12,8 @@
 #
 #  On-line Documentation:
 #  http://michaelbecker.github.io/freertos-addons/docs/html/index.html
+#
+#  MIT License
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
@@ -34,6 +36,7 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 #############################################################################
+
 
 
 ALG_SRC_DIR=../../Source
