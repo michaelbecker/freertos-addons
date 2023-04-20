@@ -119,9 +119,7 @@ unsigned long ulGetRunTimeCounterValue( void ); /* Prototype of function that re
 #define configGENERATE_RUN_TIME_STATS			1
 /* Make use of times(man 2) to gather run-time statistics on the tasks. */
 extern void vPortFindTicksPerSecond( void );
-#define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS() vPortFindTicksPerSecond()
 extern unsigned long ulPortGetTimerValue( void );
-#define portGET_RUN_TIME_COUNTER_VALUE() ulPortGetTimerValue()
 
 /* This demo makes use of one or more example stats formatting functions.  These
 format the raw data provided by the uxTaskGetSystemState() function in to human

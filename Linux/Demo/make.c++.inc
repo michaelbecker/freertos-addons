@@ -40,18 +40,19 @@
 
 FREERTOS_SRC_DIR=../../../../FreeRTOS-Kernel
 FREERTOS_INC_DIR=../../../../FreeRTOS-Kernel/include
-PORTABLE_SRC_DIR=../../portable/GCC/null
 PORTABLE_SRC_MEM_MANG_DIR=../../../../FreeRTOS-Kernel/portable/MemMang
 FREERTOS_CPP_SRC_DIR=../../../c++/Source/
 FREERTOS_CPP_INC_DIR=../../../c++/Source/include
+PORTABLE_SRC_DIR=../../../../FreeRTOS-Kernel/portable/ThirdParty/GCC/Posix
+PORTABLE_SRC_DIR_UTILS=../../../../FreeRTOS-Kernel/portable/ThirdParty/GCC/Posix/utils
 
 
 CC = gcc
 CXX = g++
 
-CFLAGS += -Wall -Werror -Wextra -Wpedantic
-CXXFLAGS += -Wall -Werror -Wextra -Wpedantic
-LDFLAGS += -Wall -Werror -Wextra -Wpedantic
+CFLAGS += -Wall -Werror -Wextra -Wpedantic -pthread -O0 -g
+CXXFLAGS += -Wall -Werror -Wextra -Wpedantic -pthread -O0 -g
+LDFLAGS += -Wall -Werror -Wextra -Wpedantic -pthread -O0 -g
 
 
 
@@ -59,11 +60,13 @@ INCLUDE_DIRS +=	-I. \
 				-I${FREERTOS_INC_DIR} \
 				-I${FREERTOS_CPP_INC_DIR} \
 				-I${PORTABLE_SRC_DIR} \
+				-I${PORTABLE_SRC_DIR_UTILS}} \
 
 
 VPATH += ${FREERTOS_SRC_DIR} \
 		 ${FREERTOS_CPP_SRC_DIR} \
 		 ${PORTABLE_SRC_DIR} \
+		 ${PORTABLE_SRC_DIR_UTILS} \
 		 ${PORTABLE_SRC_MEM_MANG_DIR} \
 
 
@@ -72,7 +75,7 @@ default: all
 all: ${TARGET}
 
 
-FREERTOS_SRC= \
+FREERTOS_SRC+= \
 			  event_groups.c \
 			  list.c \
 			  queue.c \
@@ -80,9 +83,10 @@ FREERTOS_SRC= \
 			  timers.c \
 			  port.c \
 			  heap_3.c \
+			  wait_for_event.c \
 
 
-FREERTOS_CPP_SRC= \
+FREERTOS_CPP_SRC+= \
 				  cmutex.cpp \
 				  cqueue.cpp \
 				  cread_write_lock.cpp \
@@ -109,10 +113,6 @@ ${FREERTOS_CPP_OJB}: %.o: %.cpp
 $(TARGET):	${FREERTOS_OJB} ${FREERTOS_CPP_OJB} ${OBJ}
 	${CXX} ${LDFLAGS} ${LD_EXE_FLAGS} -o $@ ${FREERTOS_CPP_OJB} ${FREERTOS_OJB} ${OBJ} ${LIBS} 
 
-
-#$(TARGET):	${FREERTOS_OJB}
-#		${CXX} ${INCLUDE_DIRS} ${CPPFLAGS} ${CPP_EXE_FLAGS} -c $? 
-#		${CXX} ${LDFLAGS} ${LD_EXE_FLAGS} -o $@ ${OBJ} ${FREERTOS_CPP_OJB} ${FREERTOS_OJB} ${LIBS} 
 
 .PHONY : clean
 clean:
