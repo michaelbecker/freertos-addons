@@ -6,7 +6,7 @@ After working with FreeRTOS for over 8 years now, I've decided to start adding f
 + C++ Wrappers [![Coverity Scan Build Status](https://scan.coverity.com/projects/9669/badge.svg)](https://scan.coverity.com/projects/michaelbecker-freertos-addons)
   - A collection of C++ wrappers encapsulating FreeRTOS functionality, allowing you to write your RTOS application in C++ while still using FreeRTOS. This wrapper layer does all the integration work for you.
   - This library is for you if you are planning on using C++ and FreeRTOS in your project but don't want to spend the time integrating the two.
-  - Everything was tested successfully using FreeRTOS versions 8.2.3, 9.0.0, and 10.0.0.
+  - Everything was tested successfully using FreeRTOS versions 8.2.3, 9.0.0, 10.0.0, and 10.5.1.
   - There are numerous demo / unit test projects using these wrappers and various features they provide. Last count we are at 48 Demo projects showing how you might use the C++ Wrapper library.
   - Licensing now follows the [MIT Open Source License](https://opensource.org/licenses/MIT), the same as [FreeRTOS](https://www.freertos.org/a00114.html) starting from version 10.0.0.
   - [Project web page](http://michaelbecker.github.io/freertos-addons/)
@@ -24,16 +24,17 @@ After working with FreeRTOS for over 8 years now, I've decided to start adding f
   - [Full cross-referenced documentation](http://michaelbecker.github.io/freertos-addons/cdocs/html/index.html). Documents were auto-generated and cross-referenced using Doxygen.
 
 
-+ Updated Linux port
-  - Licensing is GPLv2, because this is a derivative work.
-  - An update of the Linux / POSIX port of FreeRTOS, for testing and debugging on a Linux PC.
-  - This update was tested successfully with FreeRTOS 8.2.3, 9.0.0, and 10.0.0 
-  - Two Ubuntu workstations were also used, running 18.04, 16.04 and 14.04, 64-bit multicore machines. 
-  - This revised Posix port I renamed to Linux port, since I ended up using a few Linux specific APIs in it.
-  - Thanks to William Davy who wrote the original Posix FreeRTOS port. He did amazing work simulating a real-time system under Linux.
-
++ Updated Linux port - REMOVED
+    - I have switched to using the distributed GCC/Posix port that comes with the FreeRTOS Kernel, under the ThirdParty directory. All demos have been updated to point to this port.
 
 ## Overall Releases
+
+### Version 1.6.1
++ https://github.com/michaelbecker/freertos-addons/releases/tag/v1.6.1
+- Updated Demos to now use the new FreeRTOS-Kernel directory structure hosted on Github.
+- Updated Demos to use the supported, distributed GCC/Posix port in the ThirdParty directory of the FreeRTOS Kernel.
+- Demos work with version 10.5.1 of the FreeRTOS Kernel.
+- Cleaned up Demo Makefiles. Leveraging a few common makefiles which are included in most other ones. Also renamed from makefile to Makefile, to better match Linux / make case conventions.
 
 ### Version 1.6.0
 + https://github.com/michaelbecker/freertos-addons/releases/tag/v1.6.0
