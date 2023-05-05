@@ -1,0 +1,50 @@
+{
+  "name": "freertos-addons",
+  "version": "1.6.1",
+  "description": "A collection of C++ wrappers encapsulating FreeRTOS functionality.",
+  "keywords": "c++, cpp, freertos, addons, freertos-addons, multithreading, rtos",
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/kabot-io/freertos-addons.git"
+  },
+  "authors":
+  [
+    {
+      "name": "Michael Becker",
+      "url": "https://github.com/michaelbecker"
+    },
+    {
+      "name": "Danilo Pucci",
+      "url": "https://github.com/danilopucci"
+    },
+    {
+      "name": "Lukas Neverauskis",
+      "url": "https://github.com/lukasnee"
+    },
+    {
+      "name": "Christian Köhnenkamp",
+      "url": "https://github.com/kohnech"
+    },
+    {
+      "name": "Krzysztof Pochwała",
+      "url": "https://github.com/kpochwala"
+    }
+    
+  ],
+  "license": "MIT",
+  "homepage": "https://michaelbecker.github.io/freertos-addons/",
+  "dependencies": {
+  },
+  "frameworks": "arduino",
+  "platforms": "espressif32",
+  "build": {
+    "srcDir": ".",
+    "srcFilter": "+<*> -<Linux>",
+    "includeDir": ".",
+    "flags": [
+      "-I c/Source/include",
+      "-I c++/Source/include"
+    ]
+  }
+}
