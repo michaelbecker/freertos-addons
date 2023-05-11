@@ -1,6 +1,6 @@
 # freertos-addons
 
-After working with FreeRTOS for over 8 years now, I've decided to start adding features and implementations that I wish would have been there at the beginning. 
+After working with FreeRTOS for over 12 years, I decided to start adding features and implementations that I wish would have been there at the beginning. 
 
 ## Current Features
 + C++ Wrappers [![Coverity Scan Build Status](https://scan.coverity.com/projects/9669/badge.svg)](https://scan.coverity.com/projects/michaelbecker-freertos-addons)
