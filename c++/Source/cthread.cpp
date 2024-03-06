@@ -59,8 +59,9 @@ MutexStandard Thread::StartGuardLock;
 Thread::Thread( const std::string pcName,
                 uint16_t usStackDepth,
                 UBaseType_t uxPriority)
-    :   Name(pcName), 
-        StackDepth(usStackDepth), 
+    :   handle((TaskHandle_t)-1),
+	Name(pcName),
+        StackDepth(usStackDepth),
         Priority(uxPriority),
         ThreadStarted(false)
 {
@@ -72,10 +73,11 @@ Thread::Thread( const std::string pcName,
 
 Thread::Thread( uint16_t usStackDepth,
                 UBaseType_t uxPriority)
-    :   Name("Default"), 
-        StackDepth(usStackDepth), 
-        Priority(uxPriority),
-        ThreadStarted(false)
+  :   handle((TaskHandle_t)-1),
+      Name("Default"), 
+      StackDepth(usStackDepth), 
+      Priority(uxPriority),
+      ThreadStarted(false)
 {
 #if (INCLUDE_vTaskDelayUntil == 1)
     delayUntilInitialized = false;
@@ -92,7 +94,8 @@ Thread::Thread( const char *pcName,
                 UBaseType_t uxPriority)
     :   StackDepth(usStackDepth),
         Priority(uxPriority),
-        ThreadStarted(false)
+        ThreadStarted(false),
+	handle((TaskHandle_t)-1)
 {
     for (int i = 0; i < configMAX_TASK_NAME_LEN - 1; i++) {
         Name[i] = *pcName;
@@ -112,7 +115,8 @@ Thread::Thread( uint16_t usStackDepth,
                 UBaseType_t uxPriority)
     :   StackDepth(usStackDepth),
         Priority(uxPriority),
-        ThreadStarted(false)
+        ThreadStarted(false),
+	handle((TaskHandle_t)-1)	
 {
     memset(Name, 0, sizeof(Name));
 #if (INCLUDE_vTaskDelayUntil == 1)

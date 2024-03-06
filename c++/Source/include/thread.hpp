@@ -149,6 +149,23 @@ class Thread {
         }
 
         /**
+         *  Notify a specific thread.
+         */
+        inline void Notify()
+        {
+            xTaskNotify( GetHandle(), 0, eNoAction );
+        }
+
+        /**
+         *  Notify a specific thread from ISR context.
+         */
+        inline void NotifyFromISR()
+        {
+            BaseType_t higherPriorityTaskWoken = pdFALSE;
+            xTaskNotifyFromISR( GetHandle(), 0, eNoAction, &higherPriorityTaskWoken );
+        }
+
+        /**
          *  Yield the scheduler.
          */
         static inline void Yield()
@@ -287,6 +304,20 @@ class Thread {
          *  method will result in an assert.
          */
         virtual void Run() = 0;
+
+        /**
+         *  Have this thread wait until it gets notification.
+         *
+         *  @param Timeout Allows you to specify a timeout on the Wait,
+         *  if desired.
+         *
+         *  @return Notification Value, which can be set/modified when giving
+         *  a notification
+         */
+        inline uint32_t WaitForNotification( TickType_t Timeout = portMAX_DELAY )
+        {
+            return ulTaskNotifyTake( pdTRUE, Timeout );
+        }
 
 #if (INCLUDE_vTaskDelete == 1)
         /**
