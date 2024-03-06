@@ -59,33 +59,63 @@ TickHook::TickHook()
 
 TickHook::~TickHook()
 {
-    taskENTER_CRITICAL();
-    Callbacks.remove(this);
-    taskEXIT_CRITICAL();
+    #ifdef ESP_PLATFORM
+        portMUX_TYPE mux;
+        taskENTER_CRITICAL(&mux);
+        Callbacks.remove(this);
+        taskEXIT_CRITICAL(&mux);
+    #else
+        taskENTER_CRITICAL();
+        Callbacks.remove(this);
+        taskEXIT_CRITICAL();
+    #endif
 }
 
 
 void TickHook::Register()
 {
-    taskENTER_CRITICAL();
-    Callbacks.push_front(this);
-    taskEXIT_CRITICAL();
+    #ifdef ESP_PLATFORM
+        portMUX_TYPE mux;
+        taskENTER_CRITICAL(&mux);
+        Callbacks.push_front(this);
+        taskEXIT_CRITICAL(&mux);
+    #else
+        taskENTER_CRITICAL();
+        Callbacks.push_front(this);
+        taskEXIT_CRITICAL();
+    #endif
 }
 
 
 void TickHook::Disable()
 {
-    taskENTER_CRITICAL();
-    Enabled = false;
-    taskEXIT_CRITICAL();
+    #ifdef ESP_PLATFORM
+        portMUX_TYPE mux;
+        taskENTER_CRITICAL(&mux);
+        Enabled = false;
+        taskEXIT_CRITICAL(&mux);
+    #else
+        taskENTER_CRITICAL();
+        Enabled = false;
+        taskEXIT_CRITICAL();
+    #endif
+
 }
 
 
 void TickHook::Enable()
 {
-    taskENTER_CRITICAL();
-    Enabled = true;
-    taskEXIT_CRITICAL();
+    #ifdef ESP_PLATFORM
+        portMUX_TYPE mux;
+        taskENTER_CRITICAL(&mux);
+        Enabled = true;
+        taskEXIT_CRITICAL(&mux);
+    #else
+        taskENTER_CRITICAL();
+        Enabled = true;
+        taskEXIT_CRITICAL();
+    #endif
+
 }
 
 
