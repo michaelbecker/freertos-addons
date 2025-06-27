@@ -40,91 +40,83 @@
 
 
 
-#include "mutex.hpp"
+
+
+#include "cConditionVariable.h"
+#include "cThread.h"
+
+
+#ifdef CPP_FREERTOS_CONDITION_VARIABLES
 
 
 using namespace cpp_freertos;
 
 
-Mutex::Mutex()
+ConditionVariable::ConditionVariable()
+    : Lock(), WaitList()
 {
 }
 
 
-Mutex::~Mutex()
+void ConditionVariable::AddToWaitList(Thread *thread)
 {
-    vSemaphoreDelete(handle);
+    //
+    //  Lock the internal condition variable state
+    //
+    Lock.Lock();
+
+    //
+    //  Add the thread to the condition variable wait list.
+    //
+    WaitList.push_back(thread);
+
+    //
+    //  Drop the internal condition variable lock.
+    //
+    Lock.Unlock();
 }
 
 
-MutexStandard::MutexStandard()
+void ConditionVariable::Signal()
 {
-    handle = xSemaphoreCreateMutex();
+    //
+    //  Lock the internal condition variable state
+    //
+    Lock.Lock();
 
-    if (handle == NULL) {
-#ifndef CPP_FREERTOS_NO_EXCEPTIONS
-        throw MutexCreateException();
-#else
-        configASSERT(!"Mutex Constructor Failed");
-#endif
+    if ( !WaitList.empty() ) {
+
+        Thread *thr = WaitList.front();
+        WaitList.pop_front();
+        thr->Signal();
     }
+
+    //
+    //  Drop the internal condition variable lock.
+    //
+    Lock.Unlock();
 }
 
 
-bool MutexStandard::Lock(TickType_t Timeout)
+void ConditionVariable::Broadcast()
 {
-    BaseType_t success = xSemaphoreTake(handle, Timeout);
-    return success == pdTRUE ? true : false;
-}
+    //
+    //  Lock the internal condition variable state
+    //
+    Lock.Lock();
 
+    while ( !WaitList.empty() ) {
 
-bool MutexStandard::Unlock()
-{
-    BaseType_t success = xSemaphoreGive(handle);
-    return success == pdTRUE ? true : false;
-}
-
-
-#if (configUSE_RECURSIVE_MUTEXES == 1)
-
-MutexRecursive::MutexRecursive()
-{
-    handle = xSemaphoreCreateRecursiveMutex();
-
-    if (handle == NULL) {
-#ifndef CPP_FREERTOS_NO_EXCEPTIONS
-        throw MutexCreateException();
-#else
-        configASSERT(!"Mutex Constructor Failed");
-#endif
+        Thread *thr = WaitList.front();
+        WaitList.pop_front();
+        thr->Signal();
     }
-}
 
-
-bool MutexRecursive::Lock(TickType_t Timeout)
-{
-    BaseType_t success = xSemaphoreTakeRecursive(handle, Timeout);
-    return success == pdTRUE ? true : false;
-}
-
-
-bool MutexRecursive::Unlock()
-{
-    BaseType_t success = xSemaphoreGiveRecursive(handle);
-    return success == pdTRUE ? true : false;
+    //
+    //  Drop the internal condition variable lock.
+    //
+    Lock.Unlock();
 }
 
 #endif
 
-
-LockGuard::LockGuard(Mutex& m)
-    : mutex(m)
-{
-    mutex.Lock();
-}
-
-
-LockGuard::~LockGuard()
-{
-    mutex.Unlock();
-}

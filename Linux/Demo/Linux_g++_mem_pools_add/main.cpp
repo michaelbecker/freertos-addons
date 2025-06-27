@@ -46,9 +46,9 @@
 #include <iostream>
 #include "FreeRTOS.h"
 #include "task.h"
-#include "thread.hpp"
-#include "ticks.hpp"
-#include "mem_pool.hpp"
+#include "cThread.h"
+#include "cTicks.h"
+#include "cMemPool.h"
 
 
 using namespace cpp_freertos;

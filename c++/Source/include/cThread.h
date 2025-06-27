@@ -58,9 +58,9 @@
 #endif
 #include "FreeRTOS.h"
 #include "task.h"
-#include "mutex.hpp"
-#include "semaphore.hpp"
-#include "condition_variable.hpp"
+#include "cMutex.h"
+#include "cSemaphore.h"
+#include "cConditionVariable.h"
 
 namespace cpp_freertos {
 
@@ -150,8 +150,11 @@ class Thread {
 
         /**
          *  Yield the scheduler.
+         * Was named Yield(). To be compatible with FreeRTOS window simulator (
+         * https://github.com/FreeRTOS/FreeRTOS/tree/main/FreeRTOS/Demo/WIN32-MSVC ), 
+         * it is renamed to TaskYield() bcz WinBase.h has defined Yield()
          */
-        static inline void Yield()
+        static inline void TaskYield()
         {
             taskYIELD();
         }

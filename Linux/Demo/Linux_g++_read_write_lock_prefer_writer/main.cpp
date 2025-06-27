@@ -44,15 +44,71 @@
 #include <iostream>
 #include "FreeRTOS.h"
 #include "task.h"
-#include "thread.hpp"
-#include "ticks.hpp"
-#include "read_write_lock.hpp"
-
+#include "cThread.h"
+#include "cTicks.h"
+#include "cReadWriteLock.h"
+#include "cQueue.h"
 
 using namespace cpp_freertos;
 using namespace std;
 
+//
+//  Simple implementation of a bounded queue, to demonstrate 
+//  how condition variables work. This is the classical 
+//  exmaple for condition variables.
+//
+//  In the tradtional example, queues are _NOT_ thread safe and 
+//  cannot block. The whole point of condition variables in this 
+//  example is to use them to allow safe access and propegation 
+//  of execution when shared amongst threads.
+//
+class BoundedQueue {
 
+    public:
+        BoundedQueue(int max_size)
+            : MaxSize(max_size), CurSize(0)
+        {
+        }
+
+    void Add(int x)
+    {
+        CurSize++;
+        configASSERT(CurSize <= MaxSize);
+        Queue.push_front(x);
+    }
+
+    int Remove()
+    {
+        CurSize--;
+        configASSERT(CurSize >= 0);
+        int x = Queue.back();
+        Queue.pop_back();
+        return x;
+    }
+
+    bool IsEmpty()
+    {
+        if (CurSize == 0)
+            return true;
+        else 
+            return false;
+    }
+
+    int IsFull()
+    {
+        if (CurSize == MaxSize)
+            return true;
+        else 
+            return false;
+    }
+
+    private:
+        int MaxSize;
+        int CurSize;
+        list<int>Queue;
+};
+
+Queue que(20, sizeof(int));
 
 class ReaderThread : public Thread {
 
@@ -78,6 +134,13 @@ class ReaderThread : public Thread {
                 Lock.ReaderLock();
                 cout << "[ R "<< id << " ] Starting Read" << endl;
                 Delay(Ticks::SecondsToTicks(3));
+                if (!que.IsEmpty())
+                {
+                    cout << "-count= " << que.NumItems() << " ";
+                    int val;
+                    if (que.Dequeue(&val, Ticks::MsToTicks(100)))
+                        cout << " val= " << val;
+                }
                 cout << "[ R "<< id << " ] Ending Read" << endl;
                 Lock.ReaderUnlock();
             }
@@ -114,7 +177,10 @@ class WriterThread : public Thread {
                 Lock.WriterLock();
                 cout << "[ W "<< id << " ] Starting Write" << endl;
                 Delay(Ticks::SecondsToTicks(2));
-                cout << "[ W "<< id << " ] Ending Write" << endl;
+                que.Enqueue(&count);
+                count++;
+                cout << "-count = " << que.NumItems();
+                cout << " [ W "<< id << " ] Ending Write" << endl;
                 Lock.WriterUnlock();
             }
         };
@@ -123,6 +189,7 @@ class WriterThread : public Thread {
         int id;
         int DelayInSeconds;
         ReadWriteLock &Lock;
+        int count = 1;
 };
 
 

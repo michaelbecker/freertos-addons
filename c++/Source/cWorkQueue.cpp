@@ -40,7 +40,7 @@
 
 
 
-#include "workqueue.hpp"
+#include "cWorkQueue.h"
 
 
 using namespace cpp_freertos;

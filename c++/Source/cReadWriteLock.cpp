@@ -40,7 +40,7 @@
 
 
 
-#include "read_write_lock.hpp"
+#include "cReadWriteLock.h"
 
 
 using namespace cpp_freertos;

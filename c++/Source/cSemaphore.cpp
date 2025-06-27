@@ -40,7 +40,7 @@
 
 
 
-#include "semaphore.hpp"
+#include "cSemaphore.h"
 
 
 using namespace cpp_freertos;

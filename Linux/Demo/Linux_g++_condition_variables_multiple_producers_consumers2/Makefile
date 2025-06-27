@@ -45,7 +45,7 @@ SRC = \
 	  main.cpp
 
 FREERTOS_CPP_SRC+= \
-				  ccondition_variable.cpp \
+				  cConditionVariable.cpp \
 
 include ../make.c++.inc
 

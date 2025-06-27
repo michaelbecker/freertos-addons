@@ -44,9 +44,9 @@
 #include <iostream>
 #include "FreeRTOS.h"
 #include "task.h"
-#include "thread.hpp"
-#include "ticks.hpp"
-#include "read_write_lock.hpp"
+#include "cThread.h"
+#include "cTicks.h"
+#include "cReadWriteLock.h"
 
 
 using namespace cpp_freertos;

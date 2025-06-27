@@ -40,83 +40,102 @@
 
 
 
+#include "cTickHook.h"
 
+#if ( configUSE_TICK_HOOK == 1 )
 
-#include "condition_variable.hpp"
-#include "thread.hpp"
-
-
-#ifdef CPP_FREERTOS_CONDITION_VARIABLES
-
-
+using namespace std;
 using namespace cpp_freertos;
 
 
-ConditionVariable::ConditionVariable()
-    : Lock(), WaitList()
+list<TickHook *> TickHook::Callbacks;
+
+
+TickHook::TickHook()
+    : Enabled(true)
 {
 }
 
 
-void ConditionVariable::AddToWaitList(Thread *thread)
+TickHook::~TickHook()
 {
-    //
-    //  Lock the internal condition variable state
-    //
-    Lock.Lock();
-
-    //
-    //  Add the thread to the condition variable wait list.
-    //
-    WaitList.push_back(thread);
-
-    //
-    //  Drop the internal condition variable lock.
-    //
-    Lock.Unlock();
+    #ifdef ESP_PLATFORM
+        portMUX_TYPE mux;
+        taskENTER_CRITICAL(&mux);
+        Callbacks.remove(this);
+        taskEXIT_CRITICAL(&mux);
+    #else
+        taskENTER_CRITICAL();
+        Callbacks.remove(this);
+        taskEXIT_CRITICAL();
+    #endif
 }
 
 
-void ConditionVariable::Signal()
+void TickHook::Register()
 {
-    //
-    //  Lock the internal condition variable state
-    //
-    Lock.Lock();
+    #ifdef ESP_PLATFORM
+        portMUX_TYPE mux;
+        taskENTER_CRITICAL(&mux);
+        Callbacks.push_front(this);
+        taskEXIT_CRITICAL(&mux);
+    #else
+        taskENTER_CRITICAL();
+        Callbacks.push_front(this);
+        taskEXIT_CRITICAL();
+    #endif
+}
 
-    if ( !WaitList.empty() ) {
 
-        Thread *thr = WaitList.front();
-        WaitList.pop_front();
-        thr->Signal();
+void TickHook::Disable()
+{
+    #ifdef ESP_PLATFORM
+        portMUX_TYPE mux;
+        taskENTER_CRITICAL(&mux);
+        Enabled = false;
+        taskEXIT_CRITICAL(&mux);
+    #else
+        taskENTER_CRITICAL();
+        Enabled = false;
+        taskEXIT_CRITICAL();
+    #endif
+
+}
+
+
+void TickHook::Enable()
+{
+    #ifdef ESP_PLATFORM
+        portMUX_TYPE mux;
+        taskENTER_CRITICAL(&mux);
+        Enabled = true;
+        taskEXIT_CRITICAL(&mux);
+    #else
+        taskENTER_CRITICAL();
+        Enabled = true;
+        taskEXIT_CRITICAL();
+    #endif
+
+}
+
+
+/**
+ *  We are a friend of the Tick class, which makes this much simplier.
+ */
+void vApplicationTickHook(void)
+{
+    for (list<TickHook *>::iterator it = TickHook::Callbacks.begin();
+         it != TickHook::Callbacks.end();
+         ++it) {
+
+        TickHook *tickHookObject = *it;
+
+        if (tickHookObject->Enabled){
+            tickHookObject->Run();
+        }
     }
-
-    //
-    //  Drop the internal condition variable lock.
-    //
-    Lock.Unlock();
-}
-
-
-void ConditionVariable::Broadcast()
-{
-    //
-    //  Lock the internal condition variable state
-    //
-    Lock.Lock();
-
-    while ( !WaitList.empty() ) {
-
-        Thread *thr = WaitList.front();
-        WaitList.pop_front();
-        thr->Signal();
-    }
-
-    //
-    //  Drop the internal condition variable lock.
-    //
-    Lock.Unlock();
 }
 
 #endif
+
 

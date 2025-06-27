@@ -40,102 +40,91 @@
 
 
 
-#include "tickhook.hpp"
+#include "cMutex.h"
 
-#if ( configUSE_TICK_HOOK == 1 )
 
-using namespace std;
 using namespace cpp_freertos;
 
 
-list<TickHook *> TickHook::Callbacks;
-
-
-TickHook::TickHook()
-    : Enabled(true)
+Mutex::Mutex()
 {
 }
 
 
-TickHook::~TickHook()
+Mutex::~Mutex()
 {
-    #ifdef ESP_PLATFORM
-        portMUX_TYPE mux;
-        taskENTER_CRITICAL(&mux);
-        Callbacks.remove(this);
-        taskEXIT_CRITICAL(&mux);
-    #else
-        taskENTER_CRITICAL();
-        Callbacks.remove(this);
-        taskEXIT_CRITICAL();
-    #endif
+    vSemaphoreDelete(handle);
 }
 
 
-void TickHook::Register()
+MutexStandard::MutexStandard()
 {
-    #ifdef ESP_PLATFORM
-        portMUX_TYPE mux;
-        taskENTER_CRITICAL(&mux);
-        Callbacks.push_front(this);
-        taskEXIT_CRITICAL(&mux);
-    #else
-        taskENTER_CRITICAL();
-        Callbacks.push_front(this);
-        taskEXIT_CRITICAL();
-    #endif
-}
+    handle = xSemaphoreCreateMutex();
 
-
-void TickHook::Disable()
-{
-    #ifdef ESP_PLATFORM
-        portMUX_TYPE mux;
-        taskENTER_CRITICAL(&mux);
-        Enabled = false;
-        taskEXIT_CRITICAL(&mux);
-    #else
-        taskENTER_CRITICAL();
-        Enabled = false;
-        taskEXIT_CRITICAL();
-    #endif
-
-}
-
-
-void TickHook::Enable()
-{
-    #ifdef ESP_PLATFORM
-        portMUX_TYPE mux;
-        taskENTER_CRITICAL(&mux);
-        Enabled = true;
-        taskEXIT_CRITICAL(&mux);
-    #else
-        taskENTER_CRITICAL();
-        Enabled = true;
-        taskEXIT_CRITICAL();
-    #endif
-
-}
-
-
-/**
- *  We are a friend of the Tick class, which makes this much simplier.
- */
-void vApplicationTickHook(void)
-{
-    for (list<TickHook *>::iterator it = TickHook::Callbacks.begin();
-         it != TickHook::Callbacks.end();
-         ++it) {
-
-        TickHook *tickHookObject = *it;
-
-        if (tickHookObject->Enabled){
-            tickHookObject->Run();
-        }
+    if (handle == NULL) {
+#ifndef CPP_FREERTOS_NO_EXCEPTIONS
+        throw MutexCreateException();
+#else
+        configASSERT(!"Mutex Constructor Failed");
+#endif
     }
+}
+
+
+bool MutexStandard::Lock(TickType_t Timeout)
+{
+    BaseType_t success = xSemaphoreTake(handle, Timeout);
+    return success == pdTRUE ? true : false;
+}
+
+
+bool MutexStandard::Unlock()
+{
+    BaseType_t success = xSemaphoreGive(handle);
+    return success == pdTRUE ? true : false;
+}
+
+
+#if (configUSE_RECURSIVE_MUTEXES == 1)
+
+MutexRecursive::MutexRecursive()
+{
+    handle = xSemaphoreCreateRecursiveMutex();
+
+    if (handle == NULL) {
+#ifndef CPP_FREERTOS_NO_EXCEPTIONS
+        throw MutexCreateException();
+#else
+        configASSERT(!"Mutex Constructor Failed");
+#endif
+    }
+}
+
+
+bool MutexRecursive::Lock(TickType_t Timeout)
+{
+    BaseType_t success = xSemaphoreTakeRecursive(handle, Timeout);
+    return success == pdTRUE ? true : false;
+}
+
+
+bool MutexRecursive::Unlock()
+{
+    BaseType_t success = xSemaphoreGiveRecursive(handle);
+    return success == pdTRUE ? true : false;
 }
 
 #endif
 
 
+LockGuard::LockGuard(Mutex& m)
+    : mutex(m)
+{
+    mutex.Lock();
+}
+
+
+LockGuard::~LockGuard()
+{
+    mutex.Unlock();
+}

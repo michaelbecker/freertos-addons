@@ -44,8 +44,8 @@
 #include <iostream>
 #include "FreeRTOS.h"
 #include "task.h"
-#include "thread.hpp"
-#include "ticks.hpp"
+#include "cThread.h"
+#include "cTicks.h"
 
 
 using namespace cpp_freertos;

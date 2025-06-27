@@ -152,7 +152,7 @@ class EventGroup {
          */
         EventBits_t Sync(   const EventBits_t uxBitsToSet,
                             const EventBits_t uxBitsToWaitFor,
-                            TickType_t xTicksToWait);
+                            TickType_t xTicksToWait) const;
 
         /**
          *  Read bits within an RTOS event group, optionally entering the
@@ -208,7 +208,7 @@ class EventGroup {
         EventBits_t WaitBits(   const EventBits_t uxBitsToWaitFor,
                                 bool xClearOnExit,
                                 bool xWaitForAllBits,
-                                TickType_t xTicksToWait);
+                                TickType_t xTicksToWait) const;
 
         /**
          *  Clear bits (flags) within an event group.
@@ -219,7 +219,7 @@ class EventGroup {
          *  @return The value of the event group before the specified bits
          *  were cleared.
          */
-        EventBits_t ClearBits(const EventBits_t uxBitsToClear);
+        EventBits_t ClearBits(const EventBits_t uxBitsToClear) const;
 
         /**
          *  Clear bits (flags) within an event group from ISR context.
@@ -230,7 +230,7 @@ class EventGroup {
          *  @return The value of the event group before the specified bits
          *  were cleared.
          */
-        BaseType_t ClearBitsFromISR(const EventBits_t uxBitsToClear);
+        BaseType_t ClearBitsFromISR(const EventBits_t uxBitsToClear) const;
 
         /**
         *  Returns the current value of the event bits (event flags) in an
@@ -239,7 +239,7 @@ class EventGroup {
         *  @return The value of the event bits in the event group at the time
         *  EventGroup::GetBitsFromISR was called.
         */
-        EventBits_t GetBits();
+        EventBits_t GetBits() const;
 
         /**
          *  Returns the current value of the event bits (event flags) in an
@@ -248,7 +248,7 @@ class EventGroup {
          *  @return The value of the event bits in the event group at the
          *  time EventGroup::GetBitsFromISR was called.
          */
-        EventBits_t GetBitsFromISR();
+        EventBits_t GetBitsFromISR() const;
 
         /**
          *  Set bits (flags) within an event group.
@@ -259,7 +259,7 @@ class EventGroup {
          *  @return The value of the event group at the time the call to
          *  EventGroup::SetBits returns
          */
-        EventBits_t SetBits(const EventBits_t uxBitsToSet);
+        EventBits_t SetBits(const EventBits_t uxBitsToSet) const;
 
 
         #if ( ( configUSE_TRACE_FACILITY == 1 ) && ( INCLUDE_xTimerPendFunctionCall == 1 ) && ( configUSE_TIMERS == 1 ) )
@@ -282,7 +282,7 @@ class EventGroup {
          *  to false.
          */
         BaseType_t SetBitsFromISR(  const EventBits_t uxBitsToSet,
-                                    BaseType_t *pxHigherPriorityTaskWoken);
+                                    BaseType_t *pxHigherPriorityTaskWoken) const;
 
         #endif
 

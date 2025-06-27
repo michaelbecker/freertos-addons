@@ -87,15 +87,15 @@ FREERTOS_SRC+= \
 
 
 FREERTOS_CPP_SRC+= \
-				  cmutex.cpp \
-				  cqueue.cpp \
-				  cread_write_lock.cpp \
-				  csemaphore.cpp \
-				  ctasklet.cpp \
-				  cthread.cpp \
-				  ctickhook.cpp \
-				  ctimer.cpp \
-				  cworkqueue.cpp \
+				  cMutex.cpp \
+				  cQueue.cpp \
+				  cReadWriteLock.cpp \
+				  cSemaphore.cpp \
+				  cTasklet.cpp \
+				  cThread.cpp \
+				  cTickHook.cpp \
+				  cTimer.cpp \
+				  cWorkQueue.cpp \
 
 
 OBJ = ${SRC:.cpp=.o} 

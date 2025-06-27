@@ -43,7 +43,7 @@ SRC = \
 	  main.cpp
 
 FREERTOS_CPP_SRC+= \
-				  cmem_pool.cpp \
+				  cMemPool.cpp \
 
 include ../make.c++.inc
 

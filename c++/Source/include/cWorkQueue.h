@@ -43,9 +43,9 @@
 #ifndef WORK_QUEUE_HPP_
 #define WORK_QUEUE_HPP_
 
-#include "thread.hpp"
-#include "queue.hpp"
-#include "semaphore.hpp"
+#include "cThread.h"
+#include "cQueue.h"
+#include "cSemaphore.h"
 
 
 namespace cpp_freertos {

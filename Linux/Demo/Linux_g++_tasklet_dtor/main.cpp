@@ -44,9 +44,9 @@
 #include <iostream>
 #include "FreeRTOS.h"
 #include "task.h"
-#include "thread.hpp"
-#include "ticks.hpp"
-#include "tasklet.hpp"
+#include "cThread.h"
+#include "cTicks.h"
+#include "cTasklet.h"
 
 
 using namespace cpp_freertos;
@@ -100,7 +100,7 @@ class TestTaskletWithReschedule : public Tasklet {
                  << Id << "](" << parameter << ")" << endl;
 
             for (int i = 0; i < 100000; i++)
-                Thread::Yield();
+                Thread::TaskYield();
 
             cout << "Complete TasketWithReschedule[" 
                  << Id << "](" << parameter << ")" << endl;

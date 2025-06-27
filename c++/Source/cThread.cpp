@@ -41,7 +41,7 @@
 
 
 #include <cstring>
-#include "thread.hpp"
+#include "cThread.h"
 
 
 using namespace cpp_freertos;

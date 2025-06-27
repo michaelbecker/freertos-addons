@@ -38,7 +38,7 @@
  *
  ***************************************************************************/
 
-#include "event_groups.hpp"
+#include "cEventGroups.h"
 
 
 using namespace cpp_freertos;
@@ -85,7 +85,7 @@ EventGroup::~EventGroup()
 
 EventBits_t EventGroup::Sync(   const EventBits_t uxBitsToSet,
                                 const EventBits_t uxBitsToWaitFor,
-                                TickType_t xTicksToWait)
+                                TickType_t xTicksToWait) const
 {
 
     return xEventGroupSync( handle,
@@ -99,7 +99,7 @@ EventBits_t EventGroup::Sync(   const EventBits_t uxBitsToSet,
 EventBits_t EventGroup::WaitBits(   const EventBits_t uxBitsToWaitFor,
                                     bool xClearOnExit,
                                     bool xWaitForAllBits,
-                                    TickType_t xTicksToWait)
+                                    TickType_t xTicksToWait) const
 {
 
     return xEventGroupWaitBits( handle,
@@ -110,31 +110,31 @@ EventBits_t EventGroup::WaitBits(   const EventBits_t uxBitsToWaitFor,
 }
 
 
-EventBits_t EventGroup::ClearBits(const EventBits_t uxBitsToClear)
+EventBits_t EventGroup::ClearBits(const EventBits_t uxBitsToClear) const
 {
     return xEventGroupClearBits(handle, uxBitsToClear);
 }
 
 
-BaseType_t EventGroup::ClearBitsFromISR(const EventBits_t uxBitsToClear)
+BaseType_t EventGroup::ClearBitsFromISR(const EventBits_t uxBitsToClear) const
 {
     return xEventGroupClearBitsFromISR(handle, uxBitsToClear);
 }
 
 
-EventBits_t EventGroup::GetBits()
+EventBits_t EventGroup::GetBits() const
 {
     return xEventGroupGetBits(handle);
 }
 
 
-EventBits_t EventGroup::GetBitsFromISR()
+EventBits_t EventGroup::GetBitsFromISR() const
 {
     return xEventGroupGetBitsFromISR(handle);
 }
 
 
-EventBits_t EventGroup::SetBits(const EventBits_t uxBitsToSet)
+EventBits_t EventGroup::SetBits(const EventBits_t uxBitsToSet) const
 {
     return xEventGroupSetBits(handle, uxBitsToSet);
 }
@@ -142,7 +142,7 @@ EventBits_t EventGroup::SetBits(const EventBits_t uxBitsToSet)
 
 #if ( ( configUSE_TRACE_FACILITY == 1 ) && ( INCLUDE_xTimerPendFunctionCall == 1 ) && ( configUSE_TIMERS == 1 ) )
 
-BaseType_t EventGroup::SetBitsFromISR(const EventBits_t uxBitsToSet, BaseType_t *pxHigherPriorityTaskWoken)
+BaseType_t EventGroup::SetBitsFromISR(const EventBits_t uxBitsToSet, BaseType_t *pxHigherPriorityTaskWoken) const
 {
     return xEventGroupSetBitsFromISR(handle, uxBitsToSet, pxHigherPriorityTaskWoken);
 }

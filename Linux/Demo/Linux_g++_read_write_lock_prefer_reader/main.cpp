@@ -44,15 +44,15 @@
 #include <iostream>
 #include "FreeRTOS.h"
 #include "task.h"
-#include "thread.hpp"
-#include "ticks.hpp"
-#include "read_write_lock.hpp"
-
+#include "cThread.h"
+#include "cTicks.h"
+#include "cReadWriteLock.h"
+#include "cQueue.h"
 
 using namespace cpp_freertos;
 using namespace std;
 
-
+Queue que(20, sizeof(int));
 
 class ReaderThread : public Thread {
 
@@ -78,7 +78,14 @@ class ReaderThread : public Thread {
                 Lock.ReaderLock();
                 cout << "[ R "<< id << " ] Starting Read" << endl;
                 Delay(Ticks::SecondsToTicks(3));
-                cout << "[ R "<< id << " ] Ending Read" << endl;
+                if (!que.IsEmpty())
+                {
+                    cout << id << " count= " << que.NumItems();
+                    int val;
+                    if (que.Dequeue(&val, Ticks::MsToTicks(100)))
+                        cout << " val= " << val;
+                }
+                cout << " [ R "<< id << " ] Ending Read" << endl;
                 Lock.ReaderUnlock();
             }
         };
@@ -112,9 +119,12 @@ class WriterThread : public Thread {
                 Delay(Ticks::SecondsToTicks(DelayInSeconds));
 
                 Lock.WriterLock();
-                cout << "[ W "<< id << " ] Starting Write ******** " << endl;
+                cout << "[ W "<< id << " ] Starting Write" << endl;
                 Delay(Ticks::SecondsToTicks(2));
-                cout << "[ W "<< id << " ] Ending Write ******** " << endl;
+                que.Enqueue(&count);
+                count++;
+                cout << id << "count = " << que.NumItems();
+                cout << "[ W "<< id << " ] Ending Write" << endl;
                 Lock.WriterUnlock();
             }
         };
@@ -123,18 +133,19 @@ class WriterThread : public Thread {
         int id;
         int DelayInSeconds;
         ReadWriteLock &Lock;
+        int count = 1;
 };
 
 
 int main (void)
 {
     cout << "Testing FreeRTOS C++ wrappers" << endl;
-    cout << "ReadWriteLockPreferReader" << endl;
+    cout << "ReadWriteLockPreferWriter" << endl;
 
-    ReadWriteLockPreferReader *Lock;
+    ReadWriteLockPreferWriter *Lock;
 
     try {
-        Lock = new ReadWriteLockPreferReader();
+        Lock = new ReadWriteLockPreferWriter();
     }
     catch(ReadWriteLockCreateException &ex) {
         cout << "Caught ReadWriteLockCreateException" << endl;

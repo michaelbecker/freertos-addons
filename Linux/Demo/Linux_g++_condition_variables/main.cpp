@@ -45,10 +45,10 @@
 #include <list>
 #include "FreeRTOS.h"
 #include "task.h"
-#include "thread.hpp"
-#include "ticks.hpp"
-#include "mutex.hpp"
-#include "condition_variable.hpp"
+#include "cThread.h"
+#include "cTicks.h"
+#include "cMutex.h"
+#include "cConditionVariable.h"
 
 
 using namespace cpp_freertos;
@@ -158,11 +158,13 @@ class ProducerThread : public Thread {
                     cerr << GetName() << " - queue is full!, waiting..." << endl;
                     Wait(notFullCv, boundedQueueLock);
                 }
-
+                
+                bool isEmpty = boundedQueue->IsEmpty();
                 boundedQueue->Add(DataGenerator);
                 DataGenerator++;
-
-                notEmptyCv.Signal();
+                
+                if (isEmpty)
+                    notEmptyCv.Signal();
 
                 boundedQueueLock.Unlock();
             }
@@ -210,14 +212,15 @@ class ConsumerThread : public Thread {
                     Wait(notEmptyCv, boundedQueueLock);
                 }
 
+                bool isFull = boundedQueue->IsFull();
                 int x = boundedQueue->Remove();
 
                 cerr << GetName() << " dequeued: " << x << endl;
 
                 configASSERT(DataVerified == x);
                 DataVerified++;
-
-                notFullCv.Signal();
+                if (isFull)
+                    notFullCv.Signal();
 
                 boundedQueueLock.Unlock();
             }
